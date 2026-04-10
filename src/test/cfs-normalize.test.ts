@@ -12,6 +12,8 @@ describe("cfs normalization", () => {
     const normalized = normalizeRows(rawSourceRows);
     const actions = extractActionItems(normalized);
     expect(actions.length).toBeGreaterThan(0);
+    expect(actions.some((item) => item.trigger_reason === "Next Steps populated")).toBe(true);
+    expect(actions.some((item) => item.trigger_reason === "Waiting on CFS")).toBe(true);
   });
 
   it("audit reports zero unmapped rows", () => {

@@ -54,6 +54,17 @@ export default function PortfolioPage() {
               <li key={route}><Link className="text-primary underline" to={route}>{route}</Link></li>
             ))}
           </ul>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {customerSummaries.map((summary) => (
+              <Link
+                key={`link-${summary.customer_slug}`}
+                to={`/customers/${summary.customer_slug}`}
+                className="rounded border px-2 py-1 text-xs hover:bg-muted"
+              >
+                Open {summary.customer_name} tracker
+              </Link>
+            ))}
+          </div>
         </section>
 
         <section className="rounded border bg-card p-4">

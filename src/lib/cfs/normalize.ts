@@ -64,10 +64,15 @@ export function normalizeRows(rows: RawSourceRow[]): TrackerItem[] {
 
 export function extractActionItems(items: TrackerItem[]): ActionItem[] {
   const actionItems: ActionItem[] = [];
-  const actionRegex = /follow-up|schedule|deploy|validate|decision|waiting|test/i;
+  const followUpRegex = /follow-up|schedule|deploy|validate|decision|waiting|test/i;
+  const executionRegex = /testing|scheduling|deployment|validation/i;
 
   for (const item of items) {
-    const signals = [item.next_steps, item.notes, item.status_bucket].filter(Boolean).join(" | ");
+    const notesText = `${item.notes ?? ""} ${item.context_details ?? ""}`.trim();
+    const hasExplicitFollowUp = followUpRegex.test(notesText);
+    const impliedExecutionWork = executionRegex.test([item.next_steps, item.notes].filter(Boolean).join(" "));
+    const waitingStatus = item.status_bucket === "Waiting on CFS" || item.status_bucket === "Waiting on Customer";
+
     if (item.next_steps) {
       actionItems.push({
         action_item_id: `ai-next-${item.id}`,
@@ -84,9 +89,10 @@ export function extractActionItems(items: TrackerItem[]): ActionItem[] {
         source_file: item.source_file,
         source_sheet: item.source_sheet,
         source_row: item.source_row,
+        trigger_reason: "Next Steps populated",
         confidence: "high",
       });
-    } else if (actionRegex.test(signals)) {
+    } else if (hasExplicitFollowUp || waitingStatus || impliedExecutionWork) {
       actionItems.push({
         action_item_id: `ai-inferred-${item.id}`,
         customer_name: item.customer_name,
@@ -102,7 +108,12 @@ export function extractActionItems(items: TrackerItem[]): ActionItem[] {
         source_file: item.source_file,
         source_sheet: item.source_sheet,
         source_row: item.source_row,
-        confidence: "medium",
+        trigger_reason: hasExplicitFollowUp
+          ? "Notes contain explicit follow-up"
+          : waitingStatus
+            ? item.status_bucket
+            : "Testing/scheduling/deployment/validation work implied",
+        confidence: waitingStatus ? "high" : "medium",
       });
     }
   }
