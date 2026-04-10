@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { downloadCsv, exportActionCsv, exportRawRowsCsv, exportTrackerCsv } from "@/lib/cfs/csv";
+import { downloadCsv, exportActionCsv, exportTrackerCsv } from "@/lib/cfs/csv";
+import { REQUIRED_CUSTOMER_ROUTES, SHEET_MAPPING_RULES } from "@/lib/cfs/config";
 import { portfolioStore } from "@/lib/cfs/portfolio";
 
 function MetricCard({ label, value }: { label: string; value: number }) {
@@ -19,14 +20,19 @@ export default function PortfolioPage() {
       <section className="mx-auto max-w-7xl space-y-5">
         <header className="rounded border bg-card p-4">
           <h1 className="text-2xl font-bold">CFS Status Tracker Portfolio</h1>
-          <p className="text-sm text-muted-foreground">Executive PM view + source-tab traceability with row-level audit controls.</p>
+          <p className="text-sm text-muted-foreground">Standardized tracker records with source row traceability and customer breakouts.</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <button className="rounded border px-3 py-1.5 text-sm" onClick={() => downloadCsv("cfs-all-standardized.csv", exportTrackerCsv(normalizedItems))}>Download CSV - all standardized data</button>
-            <button className="rounded border px-3 py-1.5 text-sm" onClick={() => downloadCsv("cfs-all-action-items.csv", exportActionCsv(actionItems))}>Download CSV - all action items</button>
-            <button className="rounded border px-3 py-1.5 text-sm" onClick={() => {
-              const deploymentOnly = normalizedItems.filter((item) => ["Deployments", "Pending Deployment"].includes(item.source_sheet));
-              downloadCsv("cfs-deployments-summary.csv", exportTrackerCsv(deploymentOnly));
-            }}>Download CSV - deployment / pending deployment summary</button>
+            <button className="rounded border px-3 py-1.5 text-sm" onClick={() => downloadCsv("cfs-all-standardized.csv", exportTrackerCsv(normalizedItems))}>Download CSV - portfolio all-data</button>
+            <button className="rounded border px-3 py-1.5 text-sm" onClick={() => downloadCsv("cfs-all-action-items.csv", exportActionCsv(actionItems))}>Download CSV - portfolio all-action-items</button>
+            <button
+              className="rounded border px-3 py-1.5 text-sm"
+              onClick={() => {
+                const deploymentOnly = normalizedItems.filter((item) => ["Deployments", "Pending Deployment"].includes(item.source_sheet));
+                downloadCsv("cfs-portfolio-deployment-summary.csv", exportTrackerCsv(deploymentOnly));
+              }}
+            >
+              Download CSV - portfolio deployment summary
+            </button>
           </div>
         </header>
 
@@ -39,6 +45,15 @@ export default function PortfolioPage() {
           <MetricCard label="Action Items" value={actionItems.length} />
           <MetricCard label="Blockers / Risks" value={normalizedItems.filter((item) => item.blocker_flag).length} />
           <MetricCard label="Upcoming Dates / Milestones" value={normalizedItems.filter((item) => item.target_eta || item.milestone_date).length} />
+        </section>
+
+        <section className="rounded border bg-card p-4">
+          <h2 className="mb-2 font-semibold">Required Customer Routes</h2>
+          <ul className="list-disc pl-5 text-sm">
+            {REQUIRED_CUSTOMER_ROUTES.map((route) => (
+              <li key={route}><Link className="text-primary underline" to={route}>{route}</Link></li>
+            ))}
+          </ul>
         </section>
 
         <section className="rounded border bg-card p-4">
@@ -75,6 +90,15 @@ export default function PortfolioPage() {
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section className="rounded border bg-card p-4">
+          <h2 className="mb-2 font-semibold">Sheet Mapping Rules</h2>
+          <ul className="grid gap-1 text-sm">
+            {Object.entries(SHEET_MAPPING_RULES).map(([source, target]) => (
+              <li key={source}><span className="font-medium">{source}</span> → {target}</li>
+            ))}
+          </ul>
         </section>
 
         <section className="rounded border bg-card p-4">
