@@ -38,9 +38,9 @@ export default function CustomerPage() {
     <main className="min-h-screen bg-background px-6 py-6">
       <section className="mx-auto max-w-7xl space-y-5">
         <header className="rounded border bg-card p-4">
-          <Link className="text-sm text-primary underline" to="/">← Portfolio</Link>
+          <Link className="text-sm text-primary underline" to="/status">← Executive Status</Link>
           <h1 className="text-2xl font-bold">{data.customer.customer_name}</h1>
-          <p className="text-sm text-muted-foreground">Customer tracker page with standardized PM view + source tab context.</p>
+          <p className="text-sm text-muted-foreground">Customer tracker page with standardized PM view + source tab context. Use the portfolio route for raw-data exports.</p>
         </header>
 
         <section className="rounded border bg-card p-4">
