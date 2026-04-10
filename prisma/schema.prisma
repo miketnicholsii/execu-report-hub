@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model SourceImport {
+  id         String   @id @default(cuid())
+  sourceFile String
+  importedAt DateTime
+  rowCount   Int
+  rawRows    RawSourceRow[]
+}
+
+model RawSourceRow {
+  id           String   @id @default(cuid())
+  sourceImport SourceImport @relation(fields: [sourceImportId], references: [id])
+  sourceImportId String
+  sourceFile   String
+  sourceSheet  String
+  sourceRow    Int
+  importedAt   DateTime
+  rawRecord    Json
+  trackerItems TrackerItem[]
+
+  @@unique([sourceFile, sourceSheet, sourceRow, importedAt])
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  projects    Project[]
+  trackerItems TrackerItem[]
+  actionItems ActionItem[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  customer    Customer @relation(fields: [customerId], references: [id])
+  customerId  String
+  name        String
+  deliverables Deliverable[]
+}
+
+model Deliverable {
+  id         String   @id @default(cuid())
+  project    Project? @relation(fields: [projectId], references: [id])
+  projectId  String?
+  name       String
+  trackerItems TrackerItem[]
+}
+
+model TrackerItem {
+  id                 String   @id
+  customer           Customer @relation(fields: [customerId], references: [id])
+  customerId         String
+  project            Project? @relation(fields: [projectId], references: [id])
+  projectId          String?
+  deliverableRef     Deliverable? @relation(fields: [deliverableId], references: [id])
+  deliverableId      String?
+  sourceRowRef       RawSourceRow @relation(fields: [sourceRowId], references: [id])
+  sourceRowId        String
+  site               String?
+  workstream         String?
+  category           String?
+  priority           String?
+  rmReference        String?
+  originalStatus     String?
+  standardizedStatus String
+  statusBucket       String
+  owner              String?
+  ownerType          String?
+  topic              String?
+  contextDetails     String?
+  notes              String?
+  nextSteps          String?
+  targetEta          String?
+  lastUpdate         String?
+  completedDate      String?
+  deployedDate       String?
+  milestoneDate      String?
+  blockerFlag        Boolean  @default(false)
+  blockerDetails     String?
+  reviewFlag         Boolean  @default(false)
+  actionItems        ActionItem[]
+}
+
+model ActionItem {
+  id                  String   @id
+  customer            Customer @relation(fields: [customerId], references: [id])
+  customerId          String
+  trackerItem         TrackerItem @relation(fields: [trackerItemId], references: [id])
+  trackerItemId       String
+  actionText          String
+  linkedRmReference   String?
+  owner               String?
+  ownerType           String?
+  dueDate             String?
+  status              String
+  blockers            String?
+  confidence          String
+  sourceFile          String
+  sourceSheet         String
+  sourceRow           Int
+}
