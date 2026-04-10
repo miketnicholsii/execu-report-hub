@@ -1,5 +1,5 @@
-import Dashboard from "@/components/Dashboard";
+import PortfolioPage from "@/pages/PortfolioPage";
 
-const Index = () => <Dashboard />;
+const Index = () => <PortfolioPage />;
 
 export default Index;
