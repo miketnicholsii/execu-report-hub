@@ -90,6 +90,7 @@ export interface ActionItem {
   source_file: string;
   source_sheet: string;
   source_row: number;
+  trigger_reason: string;
   confidence: "high" | "medium" | "low";
 }
 

@@ -89,7 +89,10 @@ export default function CustomerPage() {
             <h3 className="font-semibold">Action Items</h3>
             <ul className="mt-2 space-y-1 text-sm">
               {data.customerActionItems.map((action) => (
-                <li key={action.action_item_id}>{action.action_text} · {action.status}</li>
+                <li key={action.action_item_id}>
+                  {action.action_text} · {action.status}
+                  <span className="text-muted-foreground"> ({action.trigger_reason})</span>
+                </li>
               ))}
               {data.customerActionItems.length === 0 && <li>None</li>}
             </ul>
@@ -133,6 +136,7 @@ export default function CustomerPage() {
                   <th>Topic</th>
                   <th>Owner</th>
                   <th>Next Steps</th>
+                  <th>Section</th>
                   <th>Source Fields</th>
                 </tr>
               </thead>
@@ -143,6 +147,7 @@ export default function CustomerPage() {
                     <td>{item.deliverable ?? item.project_name ?? "—"}</td>
                     <td>{item.owner ?? "—"}</td>
                     <td>{item.next_steps ?? item.notes ?? "—"}</td>
+                    <td>{item.standardized_status}</td>
                     <td>{item.source_file} / {item.source_sheet} / row {item.source_row} / imported {item.imported_at}</td>
                   </tr>
                 ))}
