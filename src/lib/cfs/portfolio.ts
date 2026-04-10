@@ -1,9 +1,12 @@
 import { rawSourceRows } from "@/data/cfsRawSources";
 import { extractActionItems, normalizeRows, runAudit, slugifyCustomer, sortTrackerItems, summarizeCustomers } from "@/lib/cfs/normalize";
+import { REQUIRED_CUSTOMER_SLUGS } from "@/lib/cfs/config";
 
 const normalizedItems = sortTrackerItems(normalizeRows(rawSourceRows));
 const actionItems = extractActionItems(normalizedItems);
-const customerSummaries = summarizeCustomers(normalizedItems, actionItems).sort((a, b) => a.customer_name.localeCompare(b.customer_name));
+const customerSummaries = summarizeCustomers(normalizedItems, actionItems)
+  .filter((customer) => REQUIRED_CUSTOMER_SLUGS.includes(customer.customer_slug))
+  .sort((a, b) => a.customer_name.localeCompare(b.customer_name));
 const audit = runAudit(rawSourceRows, normalizedItems);
 
 export const portfolioStore = {
