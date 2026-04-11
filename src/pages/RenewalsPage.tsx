@@ -1,25 +1,41 @@
+import AppShell from "@/components/AppShell";
+import { StatusBadge } from "@/components/StatusBadge";
+import { getRenewalRows } from "@/lib/cfs/selectors2";
+import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { Link } from "react-router-dom";
-import { getPortfolioSnapshot } from "@/lib/cfs/selectors";
-import { exportDatasetToExcel, exportSectionToPdf } from "@/lib/exportUtils";
 
-const snap = getPortfolioSnapshot();
+const rows = getRenewalRows();
 
 export default function RenewalsPage() {
+  const exportExcel = () => downloadCsv("cfs-renewals.csv", rows.map((r) => ({
+    Customer: r.customer, Type: r.type, Date: r.renewalDate,
+    Confidence: r.confidence, Status: r.status, Quote: r.quoteNumber, Summary: r.summary,
+  })));
+
   return (
-    <main className="min-h-screen bg-slate-100 px-6 py-6">
-      <section className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-xl border bg-white p-4 shadow-sm flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Renewals</h1>
-          <div className="flex gap-2">
-            <button className="rounded-lg border px-3 py-1 text-sm" onClick={() => exportDatasetToExcel("renewals", snap.renewalRows)}>Export</button>
-            <button className="rounded-lg border px-3 py-1 text-sm" onClick={() => exportSectionToPdf("renewals-root")}>PDF</button>
-            <Link className="rounded-lg border px-3 py-1 text-sm" to="/portfolio">Back</Link>
-          </div>
-        </header>
-        <section id="renewals-root" className="rounded-xl border bg-white p-4 shadow-sm overflow-x-auto">
-          <table className="w-full text-sm"><thead><tr className="border-b text-left text-slate-500"><th className="py-2">Customer</th><th>Type</th><th>Date</th><th>Date Confidence</th><th>Status</th><th>Quote</th><th>Summary</th></tr></thead><tbody>{snap.renewalRows.map((row) => <tr key={row.id} className="border-b align-top"><td className="py-2">{row.customer}</td><td>{row.type}</td><td>{row.renewalDate}</td><td>{row.confidence}</td><td>{row.status}</td><td>{row.quoteNumber}</td><td>{row.summary}</td></tr>)}</tbody></table>
-        </section>
+    <AppShell title="Renewals" subtitle="Software maintenance renewals pipeline" onExportExcel={exportExcel} onExportPdf={exportPdf}>
+      <section className="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="sticky top-0 bg-card border-b"><tr className="text-left text-muted-foreground">
+            <th className="py-2.5 px-3">Customer</th><th className="px-3">Type</th><th className="px-3">Date</th><th className="px-3">Confidence</th><th className="px-3">Status</th><th className="px-3">Quote #</th><th className="px-3">Summary</th>
+          </tr></thead>
+          <tbody>{rows.map((r) => (
+            <tr key={r.id} className="border-b hover:bg-muted/30 transition-colors align-top">
+              <td className="py-2.5 px-3"><Link to={`/customers/${r.customer_slug}`} className="text-primary hover:underline font-medium">{r.customer}</Link></td>
+              <td className="px-3 text-xs">{r.type}</td>
+              <td className="px-3 text-xs">{r.renewalDate}</td>
+              <td className="px-3">
+                <span className={`px-2 py-0.5 rounded text-xs font-medium border ${
+                  r.confidence === "high" ? "bg-status-on-track/15 text-status-on-track border-status-on-track/30" : "bg-muted text-muted-foreground border-border"
+                }`}>{r.confidence}</span>
+              </td>
+              <td className="px-3"><StatusBadge status={r.status} /></td>
+              <td className="px-3 font-mono text-xs">{r.quoteNumber}</td>
+              <td className="px-3 text-xs max-w-[250px]">{r.summary}</td>
+            </tr>
+          ))}</tbody>
+        </table>
       </section>
-    </main>
+    </AppShell>
   );
 }
