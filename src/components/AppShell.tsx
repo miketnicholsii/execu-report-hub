@@ -8,8 +8,8 @@ import {
 } from "lucide-react";
 
 const NAV = [
-  { to: "/portfolio", label: "Dashboard", icon: LayoutDashboard, group: "Overview" },
-  { to: "/weekly-summaries", label: "Weekly Summaries", icon: TrendingUp, group: "Overview" },
+  { to: "/", label: "Executive Dashboard", icon: LayoutDashboard, group: "Overview" },
+  { to: "/portfolio", label: "Portfolio", icon: Target, group: "Overview" },
   { to: "/customer-summary", label: "Customers", icon: Users, group: "Portfolio" },
   { to: "/tracker", label: "Issue Tracker", icon: ClipboardList, group: "Portfolio" },
   { to: "/rm-issues", label: "Redmine / RMs", icon: AlertTriangle, group: "Portfolio" },
@@ -62,8 +62,8 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         <div className="p-3 flex items-center justify-between border-b border-sidebar-border">
           {!collapsed && (
             <div>
-              <span className="font-bold text-sm text-sidebar-foreground">CFS Command Center</span>
-              <span className="font-light text-[10px] text-muted-foreground ml-1.5">Computerway Food Systems</span>
+            <span className="font-bold text-sm text-sidebar-foreground tracking-tight">NÈKO</span>
+              <span className="font-light text-[10px] text-muted-foreground ml-1.5">Project Intelligence</span>
             </div>
           )}
           <button onClick={() => setCollapsed(!collapsed)} className="p-1 rounded hover:bg-muted">
@@ -92,7 +92,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
               <div key={group} className="mb-1">
                 {!collapsed && <p className="px-2.5 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">{group}</p>}
                 {items.map((item) => {
-                  const active = location.pathname === item.to || (item.to !== "/portfolio" && location.pathname.startsWith(item.to));
+                  const active = location.pathname === item.to || (item.to !== "/" && item.to !== "/portfolio" && location.pathname.startsWith(item.to));
                   return (
                     <Link
                       key={item.to}
@@ -113,7 +113,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         </nav>
         {!collapsed && (
           <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-sidebar-border bg-sidebar">
-            <p className="text-[10px] text-muted-foreground text-center">CFS Command Center · v3.0</p>
+            <p className="text-[10px] text-muted-foreground text-center">NÈKO · Mike Nichols · v3.0</p>
           </div>
         )}
       </aside>
@@ -123,7 +123,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         <header className="sticky top-0 z-10 bg-card/90 backdrop-blur border-b border-border px-6 py-3 print:static print:border-0">
           {breadcrumbs && breadcrumbs.length > 0 && (
             <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 print:hidden">
-              <Link to="/portfolio" className="hover:text-foreground">Dashboard</Link>
+              <Link to="/" className="hover:text-foreground">Dashboard</Link>
               {breadcrumbs.map((bc, i) => (
                 <span key={i} className="flex items-center gap-1.5">
                   <span>/</span>

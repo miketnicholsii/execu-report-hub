@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ExecutiveDashboardPage from "@/pages/ExecutiveDashboardPage";
 import PortfolioPage from "@/pages/PortfolioPage";
 import CustomerPage from "@/pages/CustomerPage";
 import NotFound from "@/pages/NotFound";
@@ -34,7 +35,7 @@ const App = () => (
       <PasswordGate>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/portfolio" replace />} />
+          <Route path="/" element={<ExecutiveDashboardPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/weekly-summaries" element={<WeeklySummaryPage />} />
           <Route path="/customer-summary" element={<CustomerSummaryPage />} />
