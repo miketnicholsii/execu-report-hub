@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusBadge, FlagBadge } from "@/components/StatusBadge";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { useAiAnalyze } from "@/hooks/useAiAnalyze";
 import { normalizeRm } from "@/lib/rmNormalize";
@@ -230,10 +230,7 @@ export default function RmIssueCenterPage() {
                 <span className="font-mono text-sm font-semibold text-primary">{r.rm_number}</span>
                 <span className="text-sm font-medium text-foreground flex-1 truncate">{r.title || "—"}</span>
                 {r.flags.slice(0, 2).map(f => (
-                  <span key={f} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                    f === "Stale" || f === "Overdue" || f === "Blocked" ? "bg-destructive/10 text-destructive border border-destructive/20"
-                    : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
-                  }`}>{f}</span>
+                  <FlagBadge key={f} flag={f} />
                 ))}
                 <StatusBadge status={r.status} />
                 <span className="text-xs text-muted-foreground">{r.owner}</span>
@@ -276,12 +273,7 @@ export default function RmIssueCenterPage() {
                       {r.dependencies && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Dependencies</h4><p className="text-sm text-foreground">{r.dependencies}</p></div>}
                       {r.flags.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
-                          {r.flags.map(f => (
-                            <span key={f} className={`px-2 py-0.5 rounded text-[10px] font-medium ${
-                              f === "Stale" || f === "Overdue" || f === "Blocked" ? "bg-destructive/10 text-destructive border border-destructive/20"
-                              : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
-                            }`}>{f}</span>
-                          ))}
+                          {r.flags.map(f => <FlagBadge key={f} flag={f} />)}
                         </div>
                       )}
                       <div className="flex gap-2 pt-2">

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
-import { HealthBadge, StatusBadge, PriorityBadge } from "@/components/StatusBadge";
+import { HealthBadge, StatusBadge, PriorityBadge, FlagBadge } from "@/components/StatusBadge";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsvFile } from "@/lib/exportUtils";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";

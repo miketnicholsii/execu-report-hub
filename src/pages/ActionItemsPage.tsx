@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
-import { useUnifiedData } from "@/hooks/useUnifiedData";
+import SortableTable, { Column } from "@/components/SortableTable";
+import { useUnifiedData, UnifiedActionItem } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -18,7 +19,6 @@ export default function ActionItemsPage() {
   const [query, setQuery] = useState("");
   const [ownerFilter, setOwnerFilter] = useState("all");
   const [customerFilter, setCustomerFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [showComplete, setShowComplete] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
@@ -35,19 +35,15 @@ export default function ActionItemsPage() {
     if (!showComplete && CLOSED.includes(r.status)) return false;
     if (ownerFilter !== "all" && r.owner !== ownerFilter) return false;
     if (customerFilter !== "all" && r.customer_name !== customerFilter) return false;
-    if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (priorityFilter !== "all" && r.priority !== priorityFilter) return false;
     if (query) {
       const q = query.toLowerCase();
       return r.title.toLowerCase().includes(q) || r.owner.toLowerCase().includes(q);
     }
     return true;
-  }).sort((a, b) => {
-    const po: Record<string, number> = { High: 0, Medium: 1, Low: 2 };
-    return (po[a.priority] ?? 2) - (po[b.priority] ?? 2);
-  }), [actionItems, query, ownerFilter, customerFilter, statusFilter, priorityFilter, showComplete]);
+  }), [actionItems, query, ownerFilter, customerFilter, priorityFilter, showComplete]);
 
-  const toggleComplete = (item: typeof rows[0]) => {
+  const toggleComplete = (item: UnifiedActionItem) => {
     if (!item.from_db) return;
     const newStatus = CLOSED.includes(item.status) ? "Open" : "Complete";
     updateActionItem.mutate({ id: item.id, status: newStatus });
@@ -65,7 +61,6 @@ export default function ActionItemsPage() {
     setShowAdd(false);
   };
 
-  // Charts
   const byOwner = useMemo(() => {
     const counts: Record<string, number> = {};
     rows.forEach(r => { counts[r.owner] = (counts[r.owner] || 0) + 1; });
@@ -84,6 +79,56 @@ export default function ActionItemsPage() {
   })));
 
   const dbCustomers = customers.filter(c => c.source === "db" || c.source === "both");
+
+  const columns: Column<UnifiedActionItem>[] = [
+    {
+      key: "check", label: "", render: (r) => {
+        const isComplete = CLOSED.includes(r.status);
+        return (
+          <button onClick={(e) => { e.stopPropagation(); toggleComplete(r); }} className={`p-0.5 rounded-full transition-colors ${r.from_db ? "cursor-pointer hover:bg-muted" : "cursor-default opacity-30"}`} disabled={!r.from_db}>
+            {isComplete ? <CheckCircle className="h-4.5 w-4.5 text-emerald-500" /> : <Circle className="h-4.5 w-4.5 text-muted-foreground" />}
+          </button>
+        );
+      }, headerClassName: "w-8",
+    },
+    {
+      key: "title", label: "Action", sortable: true,
+      sortFn: (a, b) => a.title.localeCompare(b.title),
+      render: (r) => <span className={`text-foreground ${CLOSED.includes(r.status) ? "line-through opacity-60" : ""}`}>{r.title}</span>,
+      className: "max-w-[350px]",
+    },
+    {
+      key: "customer", label: "Customer", sortable: true,
+      sortFn: (a, b) => a.customer_name.localeCompare(b.customer_name),
+      render: (r) => r.customer_slug ? <Link to={`/customers/${r.customer_slug}`} className="text-primary hover:underline text-xs">{r.customer_name}</Link> : <span className="text-xs">{r.customer_name}</span>,
+    },
+    {
+      key: "owner", label: "Owner", sortable: true,
+      sortFn: (a, b) => a.owner.localeCompare(b.owner),
+      render: (r) => <span className="text-xs">{r.owner}</span>,
+    },
+    {
+      key: "due", label: "Due", sortable: true,
+      sortFn: (a, b) => (a.due_date || "9999").localeCompare(b.due_date || "9999"),
+      render: (r) => {
+        const overdue = r.due_date && new Date(r.due_date) < new Date() && !CLOSED.includes(r.status);
+        return <span className={`text-xs ${overdue ? "text-destructive font-semibold" : "text-muted-foreground"}`}>{r.due_date || "TBD"}</span>;
+      },
+    },
+    {
+      key: "priority", label: "Priority", sortable: true,
+      sortFn: (a, b) => {
+        const o: Record<string, number> = { High: 0, Medium: 1, Low: 2 };
+        return (o[a.priority] ?? 2) - (o[b.priority] ?? 2);
+      },
+      render: (r) => <PriorityBadge priority={r.priority} />,
+    },
+    {
+      key: "status", label: "Status", sortable: true,
+      sortFn: (a, b) => a.status.localeCompare(b.status),
+      render: (r) => <StatusBadge status={r.status} />,
+    },
+  ];
 
   return (
     <AppShell title="Action Center" subtitle={`${kpis.totalActions} total actions — ${kpis.openActions} open`} onExportExcel={exportExcel} onExportPdf={exportPdf}>
@@ -166,45 +211,18 @@ export default function ActionItemsPage() {
         </section>
       )}
 
-      <section className="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-card border-b">
-            <tr className="text-left text-muted-foreground">
-              <th className="py-2.5 px-3 w-8"></th>
-              <th className="px-3">Action</th>
-              <th className="px-3">Customer</th>
-              <th className="px-3">Owner</th>
-              <th className="px-3">Due</th>
-              <th className="px-3">Priority</th>
-              <th className="px-3">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(r => {
-              const overdue = r.due_date && new Date(r.due_date) < new Date() && !CLOSED.includes(r.status);
-              const isComplete = CLOSED.includes(r.status);
-              return (
-                <tr key={r.id} className={`border-b hover:bg-muted/30 transition-colors align-top ${overdue ? "bg-destructive/5" : ""} ${isComplete ? "opacity-60" : ""}`}>
-                  <td className="py-2.5 px-3">
-                    <button onClick={() => toggleComplete(r)} className={`p-0.5 rounded-full transition-colors ${r.from_db ? "cursor-pointer hover:bg-muted" : "cursor-default opacity-30"}`} disabled={!r.from_db}>
-                      {isComplete ? <CheckCircle className="h-5 w-5 text-emerald-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
-                    </button>
-                  </td>
-                  <td className={`px-3 text-foreground max-w-[350px] ${isComplete ? "line-through" : ""}`}>{r.title}</td>
-                  <td className="px-3 text-xs">{r.customer_slug ? <Link to={`/customers/${r.customer_slug}`} className="text-primary hover:underline">{r.customer_name}</Link> : r.customer_name}</td>
-                  <td className="px-3 text-xs">{r.owner}</td>
-                  <td className={`px-3 text-xs ${overdue ? "text-destructive font-medium" : "text-muted-foreground"}`}>{r.due_date || "TBD"}</td>
-                  <td className="px-3"><PriorityBadge priority={r.priority} /></td>
-                  <td className="px-3"><StatusBadge status={r.status} /></td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {rows.length === 0 && (
-          <div className="p-8 text-center text-muted-foreground text-sm">No action items match your filters.</div>
-        )}
-      </section>
+      <SortableTable
+        columns={columns}
+        data={rows}
+        rowKey={r => r.id}
+        defaultSort="priority"
+        defaultDirection="asc"
+        emptyMessage="No action items match your filters."
+        rowClassName={(r) => {
+          const overdue = r.due_date && new Date(r.due_date) < new Date() && !CLOSED.includes(r.status);
+          return `${overdue ? "bg-destructive/5" : ""} ${CLOSED.includes(r.status) ? "opacity-60" : ""}`;
+        }}
+      />
     </AppShell>
   );
 }
