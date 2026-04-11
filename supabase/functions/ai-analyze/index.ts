@@ -15,7 +15,8 @@ serve(async (req) => {
 
     const systemPrompts: Record<string, string> = {
       "parse-meeting": `You are a CFS project meeting analyst. Parse the meeting notes and extract structured data.
-Return a JSON object with:
+You MUST respond with ONLY a valid JSON object (no markdown, no code fences, no extra text).
+The JSON object must have this structure:
 {
   "title": "meeting title",
   "date": "YYYY-MM-DD",
@@ -32,7 +33,8 @@ Return a JSON object with:
 Be thorough. Extract every action item, RM reference (RM-XXXXX or just 5-digit numbers), decision, and open question.`,
 
       "analyze-document": `You are a CFS project intelligence system. Analyze the uploaded document content and extract structured project data.
-Return a JSON object with:
+You MUST respond with ONLY a valid JSON object (no markdown, no code fences, no extra text).
+The JSON object must have this structure:
 {
   "document_type": "meeting notes | spec | email | tracker | report | other",
   "summary": "document summary",
@@ -52,7 +54,8 @@ Return a JSON object with:
 Extract everything relevant to CFS project tracking.`,
 
       "generate-wiki": `You are a CFS project wiki generator. Based on the provided content, generate a well-structured wiki entry.
-Return a JSON object with:
+You MUST respond with ONLY a valid JSON object (no markdown, no code fences, no extra text).
+The JSON object must have this structure:
 {
   "title": "wiki entry title",
   "category": "Project | Technical | Process | Tool | Customer | Specification",
@@ -64,7 +67,8 @@ Return a JSON object with:
 Write clear, professional documentation suitable for a project team wiki.`,
 
       "explain-code": `You are a CFS technical documentation assistant. Explain the provided code snippet in plain English.
-Return a JSON object with:
+You MUST respond with ONLY a valid JSON object (no markdown, no code fences, no extra text).
+The JSON object must have this structure:
 {
   "language": "detected language",
   "purpose": "what this code does in business terms",
@@ -75,7 +79,8 @@ Return a JSON object with:
 }`,
 
       "summarize-status": `You are a CFS executive reporting assistant. Summarize the provided project data into a clear status update.
-Return a JSON object with:
+You MUST respond with ONLY a valid JSON object (no markdown, no code fences, no extra text).
+The JSON object must have this structure:
 {
   "executive_summary": "2-3 sentence executive summary",
   "key_highlights": ["highlight 1"],
@@ -96,24 +101,12 @@ Return a JSON object with:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage },
         ],
-        tools: [{
-          type: "function",
-          function: {
-            name: "extract_data",
-            description: "Extract structured data from the content",
-            parameters: {
-              type: "object",
-              properties: { data: { type: "object" } },
-              required: ["data"],
-            },
-          },
-        }],
-        tool_choice: { type: "function", function: { name: "extract_data" } },
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -135,26 +128,16 @@ Return a JSON object with:
     }
 
     const result = await response.json();
+    const content_text = result.choices?.[0]?.message?.content || "{}";
+    
     let extracted: any = {};
-
-    // Try tool call response first
-    const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
-    if (toolCall?.function?.arguments) {
-      try {
-        const parsed = JSON.parse(toolCall.function.arguments);
-        extracted = parsed.data || parsed;
-      } catch {
-        extracted = { raw: toolCall.function.arguments };
-      }
-    } else {
-      // Fallback: parse content as JSON
-      const content = result.choices?.[0]?.message?.content || "";
-      try {
-        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/\{[\s\S]*\}/);
-        extracted = jsonMatch ? JSON.parse(jsonMatch[1] || jsonMatch[0]) : { raw: content };
-      } catch {
-        extracted = { raw: content };
-      }
+    try {
+      // Strip markdown code fences if present
+      const cleaned = content_text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+      extracted = JSON.parse(cleaned);
+    } catch {
+      console.error("Failed to parse AI response as JSON:", content_text.substring(0, 500));
+      extracted = { raw: content_text };
     }
 
     return new Response(JSON.stringify({ success: true, data: extracted }), {
