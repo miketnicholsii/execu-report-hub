@@ -198,8 +198,8 @@ export default function MeetingMinutesPage() {
       {/* Meeting Cards */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Meeting Records</h2>
-        {allMeetings.map((mtg) => (
-          <article key={mtg.meeting_id ?? mtg.id} className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        {allMeetings.map((mtg, idx) => (
+          <article key={(mtg as any).meeting_id ?? (mtg as any).id ?? idx} className="rounded-xl border border-border bg-card p-5 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
