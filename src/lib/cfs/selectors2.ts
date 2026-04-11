@@ -1,5 +1,6 @@
 import { loadSeedData } from "@/data/cfsSeedLoader";
 import { formatDateDisplay, vagueMilestoneToLabel, isVagueDate } from "@/lib/cfs/helpers";
+import { normalizeDate, normalizeStatusToCanonical } from "@/lib/cfs/standards";
 
 const seed = loadSeedData();
 
@@ -25,12 +26,24 @@ export function getCustomerOverviews() {
     const ids = new Set(projects.map((p) => p.project_id));
     const actions = seed.actionItems.filter((a) => ids.has(a.project_id));
     const rmIssues = seed.rmIssues.filter((r) => ids.has(r.project_id));
+    const highlights = seed.recentHighlights.filter((h) => ids.has(h.project_id));
     const blockers = seed.blockers.filter((b) => ids.has(b.project_id));
     const milestones = seed.milestones.filter((m) => m.project_id && ids.has(m.project_id));
     const trackerItems = seed.trackerItems.filter((t) => ids.has(t.project_id));
     const openTracker = trackerItems.filter((t) => !["Complete", "Deployed", "Shipped"].includes(t.status));
     const openRm = rmIssues.filter((r) => !["Complete", "Live"].includes(r.normalizedStatus));
     const deployReady = trackerItems.filter((t) => t.status === "Testing Complete").length;
+    const staleRmCount = rmIssues.filter((rm) => {
+      const touched = normalizeDate(rm.created_date);
+      return touched ? Math.floor((Date.now() - new Date(touched).getTime()) / 86400000) > 21 : true;
+    }).length;
+    const lastUpdated = [...trackerItems]
+      .map((item) => normalizeDate(item.last_update))
+      .filter((value): value is string => Boolean(value))
+      .sort((a, b) => b.localeCompare(a))[0] ?? null;
+    const blockedCount = rmIssues.filter((rm) => normalizeStatusToCanonical(rm.normalizedStatus) === "Blocked").length;
+    const missingSpecCount = rmIssues.filter((rm) => !rm.spec_status || /^tbd|missing$/i.test(rm.spec_status)).length;
+    const highRisk = blockedCount > 0 || staleRmCount > 2;
 
     return {
       customer_id: customer.customer_id,
@@ -48,7 +61,13 @@ export function getCustomerOverviews() {
       totalRm: rmIssues.length,
       actionCount: actions.length,
       blockerCount: blockers.length,
+      staleRmCount,
       deployReady,
+      blockedCount,
+      missingSpecCount,
+      lastUpdated,
+      riskIndicator: highRisk ? "High" as const : staleRmCount > 0 ? "Medium" as const : "Low" as const,
+      keyHighlights: highlights.slice(0, 2).map((h) => h.highlight),
       nextMilestone: milestones[0]?.date_text ? vagueMilestoneToLabel(milestones[0].date_text) : "TBD",
       renewals: seed.renewals.filter((r) => r.customer_id === customer.customer_id).length,
       health: blockers.length > 0 ? "At Risk" as const : openRm.length > 3 ? "Caution" as const : "On Track" as const,

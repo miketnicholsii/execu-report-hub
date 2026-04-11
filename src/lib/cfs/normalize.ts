@@ -1,5 +1,14 @@
 import { ActionItem, AuditResult, CustomerSummary, RawSourceRow, TrackerItem } from "@/lib/cfs/model";
 import { mapStatusBucket, rankStatusForSort } from "@/lib/cfs/status";
+import {
+  deriveFlags,
+  detectDuplicateRmKeys,
+  extractRmReferences,
+  normalizeCustomerName,
+  normalizeDate,
+  normalizeRmReference,
+  normalizeStatusToCanonical,
+} from "@/lib/cfs/standards";
 
 function slugify(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -17,13 +26,28 @@ function classifyStandardizedStatus(bucket: TrackerItem["status_bucket"], source
 export function normalizeRows(rows: RawSourceRow[]): TrackerItem[] {
   return rows.map((row) => {
     const raw = row.raw_record;
-    const customer_name = raw.customer_name?.trim() || "Needs Review";
+    const customer_name = normalizeCustomerName(raw.customer_name);
     const original_status = raw.status?.trim() || null;
     const status_bucket = mapStatusBucket(original_status, row.source_sheet);
+    const canonical_status = normalizeStatusToCanonical(original_status, row.source_sheet);
     const next_steps = raw.next_steps?.trim() || null;
     const notes = raw.notes?.trim() || null;
+    const rmFromField = normalizeRmReference(raw.rm_reference);
+    const detectedFromText = extractRmReferences([raw.rm_reference, raw.topic, raw.context_details, raw.notes, raw.next_steps].filter(Boolean).join(" "));
+    const rm_reference = rmFromField.normalized ?? detectedFromText[0]?.normalized ?? null;
+    const stale_days = normalizeDate(raw.last_update)
+      ? Math.floor((Date.now() - new Date(normalizeDate(raw.last_update) ?? "").getTime()) / 86400000)
+      : null;
+    const specLinked = /spec/i.test([raw.project_name, raw.topic, raw.notes, raw.deliverable].filter(Boolean).join(" "));
+    const derived_flags = deriveFlags({
+      owner: raw.owner ?? null,
+      dueDate: normalizeDate(raw.target_eta ?? raw.milestone_date),
+      lastUpdate: normalizeDate(raw.last_update),
+      canonicalStatus: canonical_status,
+      specLinked,
+    });
 
-    const review_flag = customer_name === "Needs Review" || status_bucket === "Needs Review";
+    const review_flag = customer_name === "Needs Review" || status_bucket === "Needs Review" || derived_flags.length > 0;
     const blocker_flag = status_bucket === "Blocked" || status_bucket === "Waiting on CFS" || status_bucket === "Waiting on Customer";
 
     return {
@@ -35,9 +59,12 @@ export function normalizeRows(rows: RawSourceRow[]): TrackerItem[] {
       workstream: row.source_sheet,
       category: raw.category ?? null,
       priority: raw.priority ?? null,
-      rm_reference: raw.rm_reference ?? null,
+      rm_reference,
+      rm_reference_raw: rmFromField.raw,
+      rm_references_detected: detectedFromText.map((entry) => entry.normalized),
       original_status,
       standardized_status: classifyStandardizedStatus(status_bucket, row.source_sheet),
+      canonical_status,
       status_bucket,
       owner: raw.owner ?? null,
       owner_type: raw.owner_type ?? "CFS",
@@ -45,14 +72,16 @@ export function normalizeRows(rows: RawSourceRow[]): TrackerItem[] {
       context_details: raw.context_details ?? null,
       notes,
       next_steps,
-      target_eta: raw.target_eta ?? null,
-      last_update: raw.last_update ?? null,
+      target_eta: normalizeDate(raw.target_eta ?? raw.milestone_date),
+      last_update: normalizeDate(raw.last_update),
+      stale_days,
       completed_date: raw.completed_date ?? null,
       deployed_date: raw.deployed_date ?? null,
       milestone_date: raw.milestone_date ?? null,
       blocker_flag,
       blocker_details: blocker_flag ? notes ?? next_steps ?? "Dependency / blocker present" : null,
       review_flag,
+      derived_flags,
       source_file: row.source_file,
       source_sheet: row.source_sheet,
       source_row: row.source_row,
@@ -125,6 +154,7 @@ export function runAudit(rawRows: RawSourceRow[], normalized: TrackerItem[]): Au
   const ids = new Set(normalized.map((row) => `${row.source_file}-${row.source_sheet}-${row.source_row}`));
   const unmapped = rawRows.filter((row) => !ids.has(`${row.source_file}-${row.source_sheet}-${row.source_row}`));
   const duplicates = normalized.filter((item, idx) => normalized.findIndex((candidate) => candidate.id === item.id) !== idx);
+  const rmDuplicates = detectDuplicateRmKeys(normalized);
 
   return {
     raw_row_count: rawRows.length,
@@ -132,7 +162,7 @@ export function runAudit(rawRows: RawSourceRow[], normalized: TrackerItem[]): Au
     missing_status_count: normalized.filter((item) => !item.original_status).length,
     missing_owner_count: normalized.filter((item) => !item.owner).length,
     unmapped_row_count: unmapped.length,
-    possible_duplicate_count: duplicates.length,
+    possible_duplicate_count: duplicates.length + rmDuplicates.length,
     empty_export_warning: normalized.length === 0,
   };
 }

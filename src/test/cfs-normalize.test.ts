@@ -21,4 +21,11 @@ describe("cfs normalization", () => {
     const audit = runAudit(rawSourceRows, normalized);
     expect(audit.unmapped_row_count).toBe(0);
   });
+
+  it("standardizes rm references and canonical status fields", () => {
+    const normalized = normalizeRows(rawSourceRows);
+    const rmRows = normalized.filter((row) => row.rm_reference);
+    expect(rmRows.every((row) => /^RM-\\d{5}$/.test(row.rm_reference!))).toBe(true);
+    expect(normalized.some((row) => row.canonical_status === "In Development")).toBe(true);
+  });
 });

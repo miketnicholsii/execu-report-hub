@@ -1,24 +1,17 @@
+import { deriveFlags, extractRmReferences as extractCanonicalRmReferences, normalizeRmReference, normalizeStatusToCanonical } from "@/lib/cfs/standards";
+
 /**
  * Normalize any RM reference variant into RM-##### format.
  * Handles: "RM-12721", "RM 12721", "rm12721", "12721", "redmine 12721", "RM#12721"
  */
 export function normalizeRm(raw: string): string {
   if (!raw) return raw;
-  const match = raw.match(/(?:rm|redmine|r\.m\.?)\s*[-#]?\s*(\d{4,6})/i) || raw.match(/^(\d{4,6})$/);
-  if (!match) return raw;
-  return `RM-${match[1]}`;
+  return normalizeRmReference(raw).normalized ?? raw;
 }
 
 /** Extract all RM references from a block of text and normalize them */
 export function extractRmReferences(text: string): string[] {
-  if (!text) return [];
-  const pattern = /(?:rm|redmine|r\.m\.?)\s*[-#]?\s*(\d{4,6})/gi;
-  const found = new Set<string>();
-  let m: RegExpExecArray | null;
-  while ((m = pattern.exec(text)) !== null) {
-    found.add(`RM-${m[1]}`);
-  }
-  return Array.from(found);
+  return extractCanonicalRmReferences(text).map((entry) => entry.normalized);
 }
 
 /** Standardize status text into the controlled vocabulary */
@@ -66,7 +59,7 @@ const STATUS_MAP: Record<string, string> = {
 export function normalizeStatus(raw: string): string {
   if (!raw) return "Not Started";
   const key = raw.toLowerCase().trim();
-  return STATUS_MAP[key] || raw;
+  return STATUS_MAP[key] || normalizeStatusToCanonical(raw);
 }
 
 /** Calculate days between a date and now */
@@ -108,5 +101,12 @@ export function getAttentionFlags(record: {
     if (age !== null && age > 14) flags.push("Needs Attention");
   }
   if (record.status === "Blocked") flags.push("High Risk");
+  flags.push(...deriveFlags({
+    owner: record.owner,
+    dueDate: record.due_date,
+    lastUpdate: record.last_update,
+    canonicalStatus: normalizeStatusToCanonical(record.status),
+    specLinked: true,
+  }).filter((flag) => !flags.includes(flag)));
   return flags;
 }
