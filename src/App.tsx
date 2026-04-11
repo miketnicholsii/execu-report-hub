@@ -16,6 +16,7 @@ import TrackerPage from "@/pages/TrackerPage";
 import RedmineReportBuilderPage from "@/pages/RedmineReportBuilderPage";
 import ReportCenterPage from "@/pages/ReportCenterPage";
 import InitiativeDetailPage from "@/pages/InitiativeDetailPage";
+import WeeklySummaryPage from "@/pages/WeeklySummaryPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/portfolio" replace />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/weekly-summaries" element={<WeeklySummaryPage />} />
           <Route path="/customer-summary" element={<CustomerSummaryPage />} />
           <Route path="/tracker" element={<TrackerPage />} />
           <Route path="/rm-issues" element={<RmIssueCenterPage />} />
