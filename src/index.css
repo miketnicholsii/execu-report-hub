@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
@@ -49,45 +49,45 @@
   }
 
   .dark {
-    --background: 224 28% 8%;
+    --background: 224 28% 6%;
     --foreground: 220 28% 95%;
-    --card: 224 23% 12%;
+    --card: 224 23% 9%;
     --card-foreground: 220 24% 94%;
-    --popover: 224 24% 11%;
+    --popover: 224 24% 8%;
     --popover-foreground: 220 24% 94%;
-    --primary: 218 88% 67%;
-    --primary-foreground: 224 40% 8%;
-    --secondary: 223 17% 18%;
+    --primary: 218 88% 62%;
+    --primary-foreground: 224 40% 4%;
+    --secondary: 223 17% 15%;
     --secondary-foreground: 220 20% 92%;
-    --muted: 223 17% 16%;
-    --muted-foreground: 219 14% 68%;
-    --accent: 223 17% 20%;
+    --muted: 223 17% 13%;
+    --muted-foreground: 219 14% 55%;
+    --accent: 223 17% 17%;
     --accent-foreground: 220 24% 94%;
     --destructive: 0 76% 62%;
     --destructive-foreground: 0 0% 100%;
-    --border: 223 16% 24%;
-    --input: 223 16% 24%;
-    --ring: 218 88% 67%;
+    --border: 223 16% 18%;
+    --input: 223 16% 18%;
+    --ring: 218 88% 62%;
 
     --status-on-track: 142 64% 47%;
-    --status-on-track-bg: 142 50% 18%;
+    --status-on-track-bg: 142 50% 12%;
     --status-caution: 43 96% 58%;
-    --status-caution-bg: 43 62% 18%;
+    --status-caution-bg: 43 62% 12%;
     --status-at-risk: 0 84% 67%;
-    --status-at-risk-bg: 0 50% 19%;
+    --status-at-risk-bg: 0 50% 12%;
     --status-blocked: 0 84% 63%;
-    --status-blocked-bg: 0 45% 16%;
+    --status-blocked-bg: 0 45% 10%;
     --status-info: 214 85% 68%;
-    --status-info-bg: 214 50% 20%;
+    --status-info-bg: 214 50% 14%;
 
-    --sidebar-background: 224 24% 10%;
+    --sidebar-background: 224 24% 7%;
     --sidebar-foreground: 220 26% 95%;
-    --sidebar-primary: 218 88% 67%;
-    --sidebar-primary-foreground: 224 40% 8%;
-    --sidebar-accent: 223 17% 18%;
+    --sidebar-primary: 218 88% 62%;
+    --sidebar-primary-foreground: 224 40% 4%;
+    --sidebar-accent: 223 17% 14%;
     --sidebar-accent-foreground: 220 24% 94%;
-    --sidebar-border: 223 16% 24%;
-    --sidebar-ring: 218 88% 67%;
+    --sidebar-border: 223 16% 16%;
+    --sidebar-ring: 218 88% 62%;
   }
 }
 
@@ -96,14 +96,45 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  .dark body {
     background-image:
-      radial-gradient(circle at 8% -10%, hsl(var(--primary) / 0.1), transparent 32%),
-      radial-gradient(circle at 88% 0%, hsl(var(--status-info) / 0.1), transparent 30%);
+      radial-gradient(ellipse at 10% 0%, hsl(var(--primary) / 0.06), transparent 50%),
+      radial-gradient(ellipse at 90% 5%, hsl(var(--status-info) / 0.04), transparent 40%);
     background-attachment: fixed;
   }
 }
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-lg;
+  }
+}
+
+/* Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.35); }
 
 @media print {
   body {
