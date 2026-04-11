@@ -79,7 +79,7 @@ function useMergedRmData() {
         days_since_update: days,
         overdue,
         flags,
-        source: "db" as const,
+        source: "db" as "db" | "static",
       };
     });
 
@@ -109,7 +109,7 @@ function useMergedRmData() {
           days_since_update: days,
           overdue: false,
           flags,
-          source: "static" as const,
+          source: "static" as "db" | "static",
         });
       }
     }
