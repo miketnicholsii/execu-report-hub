@@ -2,19 +2,15 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend, AreaChart, Area, CartesianGrid,
+  PieChart, Pie, Cell, Legend, CartesianGrid,
 } from "recharts";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
-import { StatusBadge, HealthBadge } from "@/components/StatusBadge";
-import {
-  getCustomerOverviews, getTrackerRows, getRmDetailRows,
-  getActionDetailRows, getKeyDateRows, getRenewalRows, seed,
-} from "@/lib/cfs/selectors2";
+import { StatusBadge, HealthBadge, PriorityBadge } from "@/components/StatusBadge";
+import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import {
-  AlertTriangle, TrendingUp, Calendar, Users, Shield, Clock,
-  FileText, Layers, Target, Activity, ChevronRight,
+  AlertTriangle, Clock, ChevronRight, Layers, Activity, Calendar,
 } from "lucide-react";
 
 const CHART_COLORS = [
@@ -22,75 +18,38 @@ const CHART_COLORS = [
   "hsl(0,72%,55%)", "hsl(270,60%,55%)", "hsl(180,60%,45%)",
   "hsl(330,60%,55%)", "hsl(45,90%,55%)",
 ];
-
-const HEALTH_COLORS: Record<string, string> = {
-  "On Track": "hsl(142,60%,45%)",
-  "Caution": "hsl(38,92%,50%)",
-  "At Risk": "hsl(0,72%,55%)",
-};
-
+const HEALTH_COLORS: Record<string, string> = { Healthy: "hsl(142,60%,45%)", "On Track": "hsl(142,60%,45%)", Caution: "hsl(38,92%,50%)", "At Risk": "hsl(0,72%,55%)" };
 const STATUS_COLORS: Record<string, string> = {
-  "Not Started": "hsl(220,15%,55%)",
-  "Discovery": "hsl(270,50%,55%)",
-  "Drafting Spec": "hsl(200,60%,50%)",
-  "Spec Review": "hsl(200,45%,55%)",
-  "In Development": "hsl(218,80%,55%)",
-  "In Testing": "hsl(38,90%,50%)",
-  "Ready to Deploy": "hsl(142,55%,45%)",
-  "Complete": "hsl(142,70%,35%)",
-  "Blocked": "hsl(0,72%,50%)",
-  "Monitoring": "hsl(180,50%,45%)",
+  "Not Started": "hsl(220,15%,55%)", Discovery: "hsl(270,50%,55%)", "In Development": "hsl(218,80%,55%)",
+  "In Testing": "hsl(38,90%,50%)", "In Progress": "hsl(218,80%,55%)", Complete: "hsl(142,70%,35%)",
+  Deployed: "hsl(142,70%,35%)", Blocked: "hsl(0,72%,50%)", Open: "hsl(38,92%,50%)",
+  "Waiting on Customer": "hsl(0,60%,55%)", "Waiting on CFS": "hsl(0,60%,55%)", Live: "hsl(142,70%,35%)",
 };
+
+const CLOSED = ["Complete", "Deployed", "Closed", "Live", "Shipped", "Done"];
 
 export default function ExecutiveDashboardPage() {
-  const customers = getCustomerOverviews();
-  const trackerRows = getTrackerRows();
-  const rmRows = getRmDetailRows();
-  const actionRows = getActionDetailRows();
-  const keyDates = getKeyDateRows();
-  const renewals = getRenewalRows();
+  const { customers, rmTickets, actionItems, initiatives, kpis, keyDates, renewals } = useUnifiedData();
 
-  const now = Date.now();
-  const openItems = trackerRows.filter((t) => !["Complete", "Deployed", "Shipped"].includes(t.status)).length;
-  const openRm = rmRows.filter((r) => !["Complete", "Live"].includes(r.normalizedStatus)).length;
-  const atRiskCount = customers.filter((c) => c.health === "At Risk").length;
-  const blockerCount = seed.blockers.length;
-  const highUrgency = actionRows.filter((a) => a.urgency === "high").length;
-  const overdueActions = actionRows.filter((a) => a.due_date && new Date(a.due_date).getTime() < now).length;
-  const missingSpecs = customers.reduce((s, c) => s + c.missingSpecCount, 0);
-  const staleRms = customers.reduce((s, c) => s + c.staleRmCount, 0);
+  /* ── Health donut ── */
+  const healthData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    customers.forEach(c => { counts[c.health] = (counts[c.health] || 0) + 1; });
+    return Object.entries(counts).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
+  }, [customers]);
 
-  // Health donut
-  const healthData = [
-    { name: "On Track", value: customers.filter((c) => c.health === "On Track").length },
-    { name: "Caution", value: customers.filter((c) => c.health === "Caution").length },
-    { name: "At Risk", value: customers.filter((c) => c.health === "At Risk").length },
-  ].filter((d) => d.value > 0);
+  /* ── RM Status pie ── */
+  const rmStatusData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    rmTickets.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value, fill: STATUS_COLORS[name] || "hsl(220,15%,55%)" }));
+  }, [rmTickets]);
 
-  // RM by status
-  const rmStatusCounts: Record<string, number> = {};
-  rmRows.forEach((r) => { rmStatusCounts[r.normalizedStatus] = (rmStatusCounts[r.normalizedStatus] || 0) + 1; });
-  const rmStatusData = Object.entries(rmStatusCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, value]) => ({ name, value, fill: STATUS_COLORS[name] || "hsl(220,15%,55%)" }));
-
-  // RM by customer (open only)
-  const rmByCustomer: Record<string, number> = {};
-  rmRows.filter((r) => !["Complete", "Live"].includes(r.normalizedStatus))
-    .forEach((r) => { rmByCustomer[r.customer_name] = (rmByCustomer[r.customer_name] || 0) + 1; });
-  const rmByCustomerData = Object.entries(rmByCustomer).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, value]) => ({ name, value }));
-
-  // Owner workload
-  const ownerCounts: Record<string, number> = {};
-  trackerRows.filter((t) => !["Complete", "Deployed", "Shipped"].includes(t.status))
-    .forEach((t) => { ownerCounts[t.owner] = (ownerCounts[t.owner] || 0) + 1; });
-  const ownerData = Object.entries(ownerCounts).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, value]) => ({ name, value }));
-
-  // Aging buckets for open RMs
+  /* ── RM Aging buckets ── */
   const agingBuckets = useMemo(() => {
     const buckets = { "0–7d": 0, "8–14d": 0, "15–30d": 0, "31–60d": 0, "61+d": 0 };
-    rmRows.filter((r) => !["Complete", "Live"].includes(r.normalizedStatus)).forEach((r) => {
-      const age = r.created_date ? Math.floor((now - new Date(r.created_date).getTime()) / 86400000) : 99;
+    rmTickets.filter(r => !CLOSED.includes(r.status)).forEach(r => {
+      const age = r.days_since_update ?? 99;
       if (age <= 7) buckets["0–7d"]++;
       else if (age <= 14) buckets["8–14d"]++;
       else if (age <= 30) buckets["15–30d"]++;
@@ -98,55 +57,75 @@ export default function ExecutiveDashboardPage() {
       else buckets["61+d"]++;
     });
     return Object.entries(buckets).map(([name, value]) => ({ name, value }));
-  }, [rmRows]);
+  }, [rmTickets]);
 
-  // Upcoming dates (next 30 days)
-  const upcoming = keyDates
-    .filter((d) => { const ms = Date.parse(d.date ?? ""); return Number.isFinite(ms) && ms >= now && ms <= now + 30 * 86400000; })
-    .slice(0, 6);
+  /* ── Open RMs by customer ── */
+  const rmByCustomer = useMemo(() => {
+    const counts: Record<string, number> = {};
+    rmTickets.filter(r => !CLOSED.includes(r.status)).forEach(r => { counts[r.customer_name] = (counts[r.customer_name] || 0) + 1; });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, value]) => ({ name, value }));
+  }, [rmTickets]);
 
-  // Top action items (high urgency, open)
-  const topActions = actionRows
-    .filter((a) => !["Complete", "Done"].includes(a.normalizedStatus))
-    .sort((a, b) => {
-      const o = { high: 0, medium: 1, normal: 2 };
-      return (o[(a.urgency as keyof typeof o) ?? "normal"] ?? 2) - (o[(b.urgency as keyof typeof o) ?? "normal"] ?? 2);
-    })
-    .slice(0, 8);
+  /* ── Workload by owner ── */
+  const ownerData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    rmTickets.filter(r => !CLOSED.includes(r.status)).forEach(r => { counts[r.owner] = (counts[r.owner] || 0) + 1; });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, value]) => ({ name, value }));
+  }, [rmTickets]);
+
+  /* ── Upcoming key dates (next 30 days) ── */
+  const now = Date.now();
+  const upcoming = useMemo(() =>
+    keyDates
+      .filter(d => { const ms = Date.parse(d.date ?? ""); return Number.isFinite(ms) && ms >= now && ms <= now + 30 * 86400000; })
+      .slice(0, 6),
+    [keyDates]
+  );
+
+  /* ── Top action items ── */
+  const topActions = useMemo(() =>
+    actionItems
+      .filter(a => !["Complete", "Done"].includes(a.status))
+      .sort((a, b) => {
+        const o = { High: 0, Medium: 1, Low: 2 };
+        return (o[a.priority as keyof typeof o] ?? 2) - (o[b.priority as keyof typeof o] ?? 2);
+      })
+      .slice(0, 8),
+    [actionItems]
+  );
 
   return (
     <AppShell
       title="Executive Dashboard"
       subtitle={`NÈKO · ${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}`}
-      onExportExcel={() => downloadCsv("neko-executive-summary.csv", customers.map((c) => ({
-        Customer: c.customer_name, Health: c.health, Projects: c.projectCount,
-        "Open Items": c.openItems, "Open RM": c.openRm, Blockers: c.blockerCount,
+      onExportExcel={() => downloadCsv("neko-executive-summary.csv", customers.map(c => ({
+        Customer: c.customer_name, Health: c.health, Initiatives: c.initiativeCount,
+        "Open RMs": c.openRmTickets, "Total RMs": c.totalRmTickets,
+        "Open Actions": c.openActionItems, Blockers: c.blockerCount, Risk: c.riskLevel,
       })))}
       onExportPdf={exportPdf}
     >
-      {/* KPI Row 1 */}
+      {/* KPI Row */}
       <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-        <KpiCard label="Customers" value={customers.length} sub="active" />
-        <KpiCard label="Initiatives" value={seed.projects.length} sub="in flight" />
-        <KpiCard label="Open Items" value={openItems} color="text-status-caution" sub={`of ${trackerRows.length}`} />
-        <KpiCard label="Open RMs" value={openRm} color="text-status-at-risk" sub={`of ${rmRows.length}`} />
-        <KpiCard label="At Risk" value={atRiskCount} color={atRiskCount > 0 ? "text-destructive" : ""} sub="customers" />
-        <KpiCard label="Blockers" value={blockerCount} color={blockerCount > 0 ? "text-destructive" : ""} sub="active" />
-        <KpiCard label="High Urgency" value={highUrgency} color="text-status-caution" sub="actions" />
-        <KpiCard label="Overdue" value={overdueActions} color={overdueActions > 0 ? "text-destructive" : "text-status-on-track"} sub="items" />
+        <KpiCard label="Customers" value={kpis.totalCustomers} />
+        <KpiCard label="Initiatives" value={kpis.totalInitiatives} sub="in flight" />
+        <KpiCard label="Open RMs" value={kpis.openRm} color="text-status-caution" sub={`of ${kpis.totalRm}`} />
+        <KpiCard label="Stale RMs" value={kpis.staleRm} color={kpis.staleRm > 0 ? "text-status-caution" : ""} sub="> 21 days" />
+        <KpiCard label="At Risk" value={kpis.atRiskCustomers} color={kpis.atRiskCustomers > 0 ? "text-destructive" : ""} sub="customers" />
+        <KpiCard label="Blocked" value={kpis.blockedRm} color={kpis.blockedRm > 0 ? "text-destructive" : ""} />
+        <KpiCard label="High Priority" value={kpis.highPriorityActions} color="text-status-caution" sub="actions" />
+        <KpiCard label="Overdue" value={kpis.overdueActions} color={kpis.overdueActions > 0 ? "text-destructive" : "text-status-on-track"} sub="items" />
       </section>
 
-      {/* KPI Row 2 */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiCard label="Missing Specs" value={missingSpecs} color={missingSpecs > 0 ? "text-status-caution" : ""} />
-        <KpiCard label="Stale RMs" value={staleRms} color={staleRms > 0 ? "text-status-caution" : ""} sub="> 21 days" />
-        <KpiCard label="Renewals" value={renewals.length} sub="tracked" />
-        <KpiCard label="Key Dates" value={keyDates.length} sub="upcoming" />
+        <KpiCard label="Open Actions" value={kpis.openActions} sub={`of ${kpis.totalActions}`} />
+        <KpiCard label="Renewals" value={kpis.totalRenewals} sub="tracked" />
+        <KpiCard label="Key Dates" value={kpis.totalKeyDates} sub="upcoming" />
+        <KpiCard label="Meetings" value={kpis.totalMeetings} sub="recorded" />
       </section>
 
       {/* Charts Row 1 */}
       <section className="grid lg:grid-cols-3 gap-4">
-        {/* Portfolio Health */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-foreground mb-1">Portfolio Health</h3>
           <p className="text-xs text-muted-foreground mb-4">Customer health distribution</p>
@@ -154,21 +133,20 @@ export default function ExecutiveDashboardPage() {
             <PieChart>
               <Pie data={healthData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value"
                 label={({ name, value }) => `${name} (${value})`} labelLine={false}>
-                {healthData.map((e) => <Cell key={e.name} fill={HEALTH_COLORS[e.name]} />)}
+                {healthData.map(e => <Cell key={e.name} fill={HEALTH_COLORS[e.name] || "hsl(220,15%,55%)"} />)}
               </Pie>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        {/* RM Status Distribution */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-foreground mb-1">RM Status Distribution</h3>
-          <p className="text-xs text-muted-foreground mb-4">All Redmine tickets by status</p>
+          <p className="text-xs text-muted-foreground mb-4">All {kpis.totalRm} Redmine tickets</p>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie data={rmStatusData} cx="50%" cy="50%" innerRadius={40} outerRadius={75} paddingAngle={2} dataKey="value">
-                {rmStatusData.map((e, i) => <Cell key={e.name} fill={e.fill} />)}
+                {rmStatusData.map(e => <Cell key={e.name} fill={e.fill} />)}
               </Pie>
               <Tooltip />
               <Legend wrapperStyle={{ fontSize: 10 }} />
@@ -176,7 +154,6 @@ export default function ExecutiveDashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Aging Buckets */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-foreground mb-1">RM Aging Buckets</h3>
           <p className="text-xs text-muted-foreground mb-4">Open tickets by age</p>
@@ -198,12 +175,11 @@ export default function ExecutiveDashboardPage() {
 
       {/* Charts Row 2 */}
       <section className="grid lg:grid-cols-2 gap-4">
-        {/* Open RMs by Customer */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-foreground mb-1">Open RMs by Customer</h3>
           <p className="text-xs text-muted-foreground mb-4">Workload distribution</p>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={rmByCustomerData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+            <BarChart data={rmByCustomer} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
               <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={120} stroke="hsl(var(--muted-foreground))" />
               <Tooltip />
@@ -212,10 +188,9 @@ export default function ExecutiveDashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Workload by Owner */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-foreground mb-1">Workload by Owner</h3>
-          <p className="text-xs text-muted-foreground mb-4">Open items assigned per person</p>
+          <p className="text-xs text-muted-foreground mb-4">Open RMs assigned per person</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={ownerData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
               <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
@@ -232,34 +207,37 @@ export default function ExecutiveDashboardPage() {
       {/* Bottom Panels */}
       <section className="grid lg:grid-cols-3 gap-4">
         {/* Customer Health Grid */}
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:col-span-1">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">Customer Health</h3>
-              <p className="text-xs text-muted-foreground">Quick-scan portfolio status</p>
+              <p className="text-xs text-muted-foreground">Quick-scan portfolio</p>
             </div>
-            <Link to="/portfolio" className="text-xs text-primary hover:underline flex items-center gap-0.5">
+            <Link to="/customer-summary" className="text-xs text-primary hover:underline flex items-center gap-0.5">
               View all <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
           <div className="space-y-2">
-            {customers.sort((a, b) => {
-              const order = { "At Risk": 0, "Caution": 1, "On Track": 2 };
-              return (order[a.health as keyof typeof order] ?? 2) - (order[b.health as keyof typeof order] ?? 2);
-            }).slice(0, 10).map((c) => (
-              <Link key={c.customer_id} to={`/customers/${c.slug}`}
-                className="flex items-center justify-between p-2.5 rounded-lg hover:bg-muted/50 transition-colors group">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <HealthBadge health={c.health} />
-                  <span className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{c.customer_name}</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground flex-shrink-0">
-                  <span>{c.openRm} RMs</span>
-                  <span>{c.openItems} items</span>
-                  {c.blockerCount > 0 && <span className="text-destructive font-medium">{c.blockerCount} blocked</span>}
-                </div>
-              </Link>
-            ))}
+            {[...customers]
+              .sort((a, b) => {
+                const order: Record<string, number> = { "At Risk": 0, Caution: 1, Healthy: 2, "On Track": 2 };
+                return (order[a.health] ?? 2) - (order[b.health] ?? 2);
+              })
+              .slice(0, 10)
+              .map(c => (
+                <Link key={c.slug} to={`/customers/${c.slug}`}
+                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-muted/50 transition-colors group">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <HealthBadge health={c.health} />
+                    <span className="text-sm font-medium text-foreground truncate group-hover:text-primary">{c.customer_name}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground flex-shrink-0">
+                    <span>{c.openRmTickets} RMs</span>
+                    <span>{c.openActionItems} actions</span>
+                    {c.blockerCount > 0 && <span className="text-destructive font-medium">{c.blockerCount} blocked</span>}
+                  </div>
+                </Link>
+              ))}
           </div>
         </div>
 
@@ -268,16 +246,16 @@ export default function ExecutiveDashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">Top Action Items</h3>
-              <p className="text-xs text-muted-foreground">Highest urgency open items</p>
+              <p className="text-xs text-muted-foreground">Highest priority open</p>
             </div>
             <Link to="/action-items" className="text-xs text-primary hover:underline flex items-center gap-0.5">
               View all <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
           <div className="space-y-2">
-            {topActions.map((a) => (
-              <div key={a.action_item_id} className="p-2.5 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors">
-                <p className="text-sm text-foreground line-clamp-1">{a.description}</p>
+            {topActions.map(a => (
+              <div key={a.id} className="p-2.5 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors">
+                <p className="text-sm text-foreground line-clamp-1">{a.title}</p>
                 <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
                   <span className="text-primary">{a.customer_name}</span>
                   <span>·</span>
@@ -285,21 +263,17 @@ export default function ExecutiveDashboardPage() {
                   {a.due_date && (
                     <>
                       <span>·</span>
-                      <span className={new Date(a.due_date).getTime() < now ? "text-destructive font-medium" : ""}>
-                        {a.due_date}
-                      </span>
+                      <span className={new Date(a.due_date).getTime() < now ? "text-destructive font-medium" : ""}>{a.due_date}</span>
                     </>
                   )}
-                  {a.urgency === "high" && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">HIGH</span>
-                  )}
+                  <PriorityBadge priority={a.priority} />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Upcoming Dates */}
+        {/* Upcoming Key Dates */}
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -336,34 +310,34 @@ export default function ExecutiveDashboardPage() {
           <Link to="/rm-issues" className="p-4 rounded-xl border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-colors">
             <div className="flex items-center gap-2 mb-1">
               <AlertTriangle className="h-4 w-4 text-destructive" />
-              <span className="text-sm font-semibold text-foreground">Blocked Items</span>
+              <span className="text-sm font-semibold text-foreground">Blocked / High Risk</span>
             </div>
-            <p className="text-2xl font-bold text-destructive">{blockerCount}</p>
+            <p className="text-2xl font-bold text-destructive">{kpis.blockedRm}</p>
             <p className="text-xs text-muted-foreground mt-0.5">Require intervention</p>
           </Link>
-          <Link to="/action-items" className="p-4 rounded-xl border border-status-caution/20 bg-status-caution-bg hover:opacity-80 transition-colors">
+          <Link to="/action-items" className="p-4 rounded-xl border border-status-caution/20 bg-status-caution/5 hover:bg-status-caution/10 transition-colors">
             <div className="flex items-center gap-2 mb-1">
               <Clock className="h-4 w-4 text-status-caution" />
               <span className="text-sm font-semibold text-foreground">Overdue Actions</span>
             </div>
-            <p className="text-2xl font-bold text-status-caution">{overdueActions}</p>
+            <p className="text-2xl font-bold text-status-caution">{kpis.overdueActions}</p>
             <p className="text-xs text-muted-foreground mt-0.5">Past due date</p>
           </Link>
-          <Link to="/specs" className="p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
-            <div className="flex items-center gap-2 mb-1">
-              <Layers className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">Missing Specs</span>
-            </div>
-            <p className="text-2xl font-bold text-primary">{missingSpecs}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Need specification work</p>
-          </Link>
-          <Link to="/rm-issues" className="p-4 rounded-xl border border-status-caution/20 bg-status-caution-bg hover:opacity-80 transition-colors">
+          <Link to="/rm-issues" className="p-4 rounded-xl border border-status-caution/20 bg-status-caution/5 hover:bg-status-caution/10 transition-colors">
             <div className="flex items-center gap-2 mb-1">
               <Activity className="h-4 w-4 text-status-caution" />
               <span className="text-sm font-semibold text-foreground">Stale RMs</span>
             </div>
-            <p className="text-2xl font-bold text-status-caution">{staleRms}</p>
+            <p className="text-2xl font-bold text-status-caution">{kpis.staleRm}</p>
             <p className="text-xs text-muted-foreground mt-0.5">No update in 21+ days</p>
+          </Link>
+          <Link to="/renewals" className="p-4 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
+            <div className="flex items-center gap-2 mb-1">
+              <Calendar className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold text-foreground">Upcoming Renewals</span>
+            </div>
+            <p className="text-2xl font-bold text-primary">{kpis.totalRenewals}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Tracked renewal dates</p>
           </Link>
         </div>
       </section>
