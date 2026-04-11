@@ -1,6 +1,6 @@
 import { loadSeedData } from "@/data/cfsSeedLoader";
 import { formatDateDisplay, vagueMilestoneToLabel, isVagueDate } from "@/lib/cfs/helpers";
-import { normalizeDate, normalizeStatusToCanonical } from "@/lib/cfs/standards";
+import { deriveFlags, normalizeDate, normalizeStatusToCanonical } from "@/lib/cfs/standards";
 
 const seed = loadSeedData();
 
@@ -94,6 +94,17 @@ export function getRmDetailRows() {
     const project = projectById.get(r.project_id);
     const customer = project ? customerById.get(project.customer_id) : null;
     const trackerMatch = seed.trackerItems.find((t) => t.rm_reference === r.rm_reference);
+    const canonical_status = normalizeStatusToCanonical((r as any).source_status ?? r.normalizedStatus);
+    const lastUpdate = normalizeDate(trackerMatch?.last_update ?? null);
+    const dueDate = normalizeDate((r as any).due_date ?? trackerMatch?.target_eta ?? null);
+    const derived_flags = deriveFlags({
+      owner: r.owner,
+      dueDate,
+      lastUpdate,
+      canonicalStatus: canonical_status,
+      specLinked: !(!r.spec_status || /^tbd|missing$/i.test(r.spec_status)),
+    });
+
     return {
       ...r,
       customer_name: customer?.customer_name ?? "Unknown",
@@ -108,6 +119,9 @@ export function getRmDetailRows() {
       next_steps: trackerMatch?.next_steps ?? null,
       priority: trackerMatch?.priority ?? null,
       category: trackerMatch?.category ?? null,
+      canonical_status,
+      source_status: (r as any).source_status ?? r.normalizedStatus,
+      derived_flags,
     };
   });
 }

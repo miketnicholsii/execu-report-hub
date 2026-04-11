@@ -1,5 +1,6 @@
 import rawDataset from "@/data/cfsStructuredDataset.json";
 import { normalizeStatus, slugify } from "@/lib/cfs/helpers";
+import { normalizeRmReference } from "@/lib/cfs/standards";
 
 interface RawCustomer { customer_id: string; customer_name: string; industry?: string; region?: string; account_owner?: string; contract_start?: string | null }
 interface RawSite { site_id: string; customer_id: string; site_name: string }
@@ -150,6 +151,9 @@ export function loadSeedData() {
     })),
     rmIssues: dataset.rm_issues.map((r) => ({
       ...r,
+      rm_reference_raw: r.rm_reference,
+      rm_reference: normalizeRmReference(r.rm_reference).normalized ?? r.rm_reference,
+      source_status: r.status,
       owner: r.owner ?? "Unassigned",
       normalizedStatus: normalizeStatus(r.status),
     })),
@@ -157,6 +161,9 @@ export function loadSeedData() {
     renewals: dataset.renewals.map((r) => ({ ...r, normalizedStatus: normalizeStatus(r.status) })),
     trackerItems: (dataset.tracker_items ?? []).map((t) => ({
       ...t,
+      rm_reference_raw: t.rm_reference,
+      rm_reference: normalizeRmReference(t.rm_reference).normalized ?? t.rm_reference,
+      source_status: t.status,
       normalizedStatus: normalizeStatus(t.status),
       owner: t.owner ?? "Unassigned",
       category: t.category ?? "General",
