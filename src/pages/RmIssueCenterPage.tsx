@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusBadge, FlagBadge } from "@/components/StatusBadge";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { useAiAnalyze } from "@/hooks/useAiAnalyze";
 import { normalizeRm } from "@/lib/rmNormalize";
