@@ -31,8 +31,8 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 p-8 bg-card rounded-xl border border-border shadow-lg">
         <div className="flex flex-col items-center gap-2">
           <Lock className="h-8 w-8 text-primary" />
-          <h1 className="text-lg font-semibold text-foreground">CFS Command Center</h1>
-          <p className="text-sm text-muted-foreground">Enter password to continue</p>
+          <h1 className="text-lg font-semibold text-foreground">NÈKO</h1>
+          <p className="text-sm text-muted-foreground">Mike Nichols — Project Intelligence</p>
         </div>
         <input
           type="password"
