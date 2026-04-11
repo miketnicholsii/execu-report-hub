@@ -18,6 +18,8 @@ import ReportCenterPage from "@/pages/ReportCenterPage";
 import InitiativeDetailPage from "@/pages/InitiativeDetailPage";
 import WeeklySummaryPage from "@/pages/WeeklySummaryPage";
 import WikiPage from "@/pages/WikiPage";
+import DocumentUploadPage from "@/pages/DocumentUploadPage";
+import SettingsPage from "@/pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/renewals" element={<RenewalsPage />} />
           <Route path="/meeting-minutes" element={<MeetingMinutesPage />} />
           <Route path="/wiki" element={<WikiPage />} />
+          <Route path="/documents" element={<DocumentUploadPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/reports" element={<ReportCenterPage />} />
           <Route path="/customers/:customerSlug" element={<CustomerPage />} />
           <Route path="/initiatives/:projectId" element={<InitiativeDetailPage />} />

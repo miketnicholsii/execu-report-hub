@@ -3,7 +3,8 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, FileText, Calendar, RefreshCw, AlertTriangle,
   MessageSquare, ClipboardList, ChevronLeft, ChevronRight, Download,
-  Search, FileDown, Wrench, TrendingUp, Target, Layers, Settings, BookOpen
+  Search, FileDown, Wrench, TrendingUp, Target, Layers, Settings, BookOpen,
+  Upload, FolderOpen
 } from "lucide-react";
 
 const NAV = [
@@ -16,12 +17,14 @@ const NAV = [
   { to: "/key-dates", label: "Key Dates & Installs", icon: Calendar, group: "Operations" },
   { to: "/renewals", label: "Renewals", icon: RefreshCw, group: "Operations" },
   { to: "/meeting-minutes", label: "Meeting Minutes", icon: MessageSquare, group: "Operations" },
+  { to: "/documents", label: "Document Intelligence", icon: Upload, group: "Knowledge" },
   { to: "/wiki", label: "Project Wiki", icon: BookOpen, group: "Knowledge" },
   { to: "/rm-report-builder", label: "RM Report Builder", icon: Wrench, group: "Reports" },
   { to: "/reports", label: "Export Center", icon: FileDown, group: "Reports" },
+  { to: "/settings", label: "Settings", icon: Settings, group: "System" },
 ];
 
-const GROUPS = ["Overview", "Portfolio", "Operations", "Knowledge", "Reports"];
+const GROUPS = ["Overview", "Portfolio", "Operations", "Knowledge", "Reports", "System"];
 
 interface Props {
   children: React.ReactNode;
@@ -96,7 +99,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         </nav>
         {!collapsed && (
           <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border bg-card">
-            <p className="text-[10px] text-muted-foreground text-center">CFS Projects · v2.0</p>
+            <p className="text-[10px] text-muted-foreground text-center">CFS Projects · v3.0</p>
           </div>
         )}
       </aside>
@@ -104,7 +107,6 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
       {/* Main */}
       <div className="flex-1 min-w-0">
         <header className="sticky top-0 z-10 bg-card border-b border-border px-6 py-3 print:static print:border-0">
-          {/* Breadcrumbs */}
           {breadcrumbs && breadcrumbs.length > 0 && (
             <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 print:hidden">
               <Link to="/portfolio" className="hover:text-foreground">Dashboard</Link>
