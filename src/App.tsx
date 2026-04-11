@@ -20,6 +20,7 @@ import WeeklySummaryPage from "@/pages/WeeklySummaryPage";
 import WikiPage from "@/pages/WikiPage";
 import DocumentUploadPage from "@/pages/DocumentUploadPage";
 import SettingsPage from "@/pages/SettingsPage";
+import PasswordGate from "@/components/PasswordGate";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PasswordGate>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/portfolio" replace />} />
@@ -50,6 +52,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </PasswordGate>
     </TooltipProvider>
   </QueryClientProvider>
 );
