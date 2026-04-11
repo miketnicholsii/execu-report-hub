@@ -28,7 +28,7 @@ export function exportTrackerCsv(items: TrackerItem[]) {
 }
 
 export function exportActionCsv(items: ActionItem[]) {
-  return toCsv(items);
+  return toCsv(items as unknown as Record<string, unknown>[]);
 }
 
 export function exportRawRowsCsv(rows: RawSourceRow[]) {
