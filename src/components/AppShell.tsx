@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, FileText, Calendar, RefreshCw, AlertTriangle,
   MessageSquare, ClipboardList, ChevronLeft, ChevronRight, Download,
   Search, FileDown, Wrench, TrendingUp, Target, Layers, Settings, BookOpen,
-  Upload, FolderOpen
+  Upload, FolderOpen, MoonStar, SunMedium
 } from "lucide-react";
 
 const NAV = [
@@ -42,15 +42,27 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [globalSearch, setGlobalSearch] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const stored = localStorage.getItem("cfs-theme");
+    if (stored === "dark") return true;
+    if (stored === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("cfs-theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   return (
     <div className="min-h-screen flex bg-background print:bg-white">
       {/* Sidebar */}
-      <aside className={`${collapsed ? "w-14" : "w-56"} bg-card border-r border-border flex-shrink-0 transition-all duration-200 print:hidden sticky top-0 h-screen overflow-y-auto`}>
-        <div className="p-3 flex items-center justify-between border-b border-border">
+      <aside className={`${collapsed ? "w-14" : "w-56"} bg-sidebar border-r border-sidebar-border flex-shrink-0 transition-all duration-200 print:hidden sticky top-0 h-screen overflow-y-auto`}>
+        <div className="p-3 flex items-center justify-between border-b border-sidebar-border">
           {!collapsed && (
             <div>
-              <span className="font-bold text-sm text-foreground">CFS Command Center</span>
+              <span className="font-bold text-sm text-sidebar-foreground">CFS Command Center</span>
               <span className="font-light text-[10px] text-muted-foreground ml-1.5">Computerway Food Systems</span>
             </div>
           )}
@@ -86,7 +98,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
                       key={item.to}
                       to={item.to}
                       className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors ${
-                        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        active ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
                       }`}
                       title={item.label}
                     >
@@ -100,7 +112,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
           })}
         </nav>
         {!collapsed && (
-          <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border bg-card">
+          <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-sidebar-border bg-sidebar">
             <p className="text-[10px] text-muted-foreground text-center">CFS Command Center · v3.0</p>
           </div>
         )}
@@ -108,7 +120,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
 
       {/* Main */}
       <div className="flex-1 min-w-0">
-        <header className="sticky top-0 z-10 bg-card border-b border-border px-6 py-3 print:static print:border-0">
+        <header className="sticky top-0 z-10 bg-card/90 backdrop-blur border-b border-border px-6 py-3 print:static print:border-0">
           {breadcrumbs && breadcrumbs.length > 0 && (
             <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 print:hidden">
               <Link to="/portfolio" className="hover:text-foreground">Dashboard</Link>
@@ -126,6 +138,14 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
               {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
             </div>
             <div className="flex items-center gap-2 print:hidden">
+              <button
+                onClick={() => setIsDarkMode((prev) => !prev)}
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors"
+                title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {isDarkMode ? <SunMedium className="h-3.5 w-3.5" /> : <MoonStar className="h-3.5 w-3.5" />}
+                {isDarkMode ? "Light" : "Dark"}
+              </button>
               {actions}
               {onExportExcel && (
                 <button onClick={onExportExcel} className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors">
