@@ -17,6 +17,7 @@ import RedmineReportBuilderPage from "@/pages/RedmineReportBuilderPage";
 import ReportCenterPage from "@/pages/ReportCenterPage";
 import InitiativeDetailPage from "@/pages/InitiativeDetailPage";
 import WeeklySummaryPage from "@/pages/WeeklySummaryPage";
+import WikiPage from "@/pages/WikiPage";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/key-dates" element={<KeyDatesPage />} />
           <Route path="/renewals" element={<RenewalsPage />} />
           <Route path="/meeting-minutes" element={<MeetingMinutesPage />} />
+          <Route path="/wiki" element={<WikiPage />} />
           <Route path="/reports" element={<ReportCenterPage />} />
           <Route path="/customers/:customerSlug" element={<CustomerPage />} />
           <Route path="/initiatives/:projectId" element={<InitiativeDetailPage />} />

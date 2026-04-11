@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, FileText, Calendar, RefreshCw, AlertTriangle,
   MessageSquare, ClipboardList, ChevronLeft, ChevronRight, Download,
-  Search, FileDown, Wrench, TrendingUp, Target, Layers, Settings
+  Search, FileDown, Wrench, TrendingUp, Target, Layers, Settings, BookOpen
 } from "lucide-react";
 
 const NAV = [
