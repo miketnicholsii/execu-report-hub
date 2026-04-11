@@ -107,3 +107,24 @@
     size: portrait;
   }
 }
+
+@media print {
+  .print-break {
+    page-break-after: always;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #d1d5db;
+    padding: 0.35rem;
+    vertical-align: top;
+  }
+
+  [data-print-target="true"] {
+    display: block;
+  }
+}
