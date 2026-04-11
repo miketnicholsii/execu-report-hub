@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ExecutiveDashboardPage from "@/pages/ExecutiveDashboardPage";
 import PortfolioPage from "@/pages/PortfolioPage";
 import CustomerPage from "@/pages/CustomerPage";
+import CustomerDrilldownPage from "@/pages/CustomerDrilldownPage";
 import NotFound from "@/pages/NotFound";
 import CustomerSummaryPage from "@/pages/CustomerSummaryPage";
 import ActionItemsPage from "@/pages/ActionItemsPage";
@@ -53,6 +54,7 @@ const App = () => (
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/reports" element={<ReportCenterPage />} />
           <Route path="/customers/:customerSlug" element={<CustomerPage />} />
+          <Route path="/customer-drilldown/:customerId" element={<CustomerDrilldownPage />} />
           <Route path="/initiatives/:projectId" element={<InitiativeDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
