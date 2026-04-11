@@ -1,7 +1,7 @@
 import rawDataset from "@/data/cfsStructuredDataset.json";
 import { normalizeStatus, slugify } from "@/lib/cfs/helpers";
 
-interface RawCustomer { customer_id: string; customer_name: string }
+interface RawCustomer { customer_id: string; customer_name: string; industry?: string; region?: string; account_owner?: string; contract_start?: string | null }
 interface RawSite { site_id: string; customer_id: string; site_name: string }
 interface RawProject {
   project_id: string;
@@ -9,9 +9,21 @@ interface RawProject {
   site_id: string | null;
   project_name: string;
   deliverable: string | null;
+  initiative_type?: string | null;
   summary: string;
+  business_goal?: string | null;
+  technical_goal?: string | null;
   status: string;
+  phase?: string | null;
+  percent_complete?: number | null;
+  priority?: string | null;
   owner: string | null;
+  sponsor?: string | null;
+  start_date?: string | null;
+  target_date?: string | null;
+  last_updated?: string | null;
+  dependencies?: string[];
+  deployment_notes?: string | null;
 }
 interface RawMilestone {
   milestone_id: string;
@@ -27,6 +39,7 @@ interface RawAction {
   owner: string | null;
   due_date: string | null;
   urgency: string | null;
+  status?: string | null;
 }
 interface RawRmIssue {
   rm_issue_id: string;
@@ -36,6 +49,18 @@ interface RawRmIssue {
   status: string;
   urgency: string | null;
   owner: string | null;
+  type?: string | null;
+  severity?: string | null;
+  spec_status?: string | null;
+  code_status?: string | null;
+  testing_status?: string | null;
+  deployment_status?: string | null;
+  created_date?: string | null;
+  due_date?: string | null;
+  business_context?: string | null;
+  technical_context?: string | null;
+  key_requirements?: string | null;
+  open_questions?: string | null;
 }
 interface RawBlocker {
   blocker_id: string;
@@ -67,6 +92,7 @@ interface RawTrackerItem {
   notes: string | null;
   next_steps: string | null;
   owner: string | null;
+  category?: string | null;
 }
 interface RawMeetingMinute {
   meeting_id: string;
@@ -106,13 +132,35 @@ export function loadSeedData() {
   return {
     customers: dataset.customers.map((c) => ({ ...c, slug: slugify(c.customer_name) })),
     sites: dataset.sites,
-    projects: dataset.projects.map((p) => ({ ...p, normalizedStatus: normalizeStatus(p.status), owner: p.owner ?? "Unassigned" })),
+    projects: dataset.projects.map((p) => ({
+      ...p,
+      normalizedStatus: normalizeStatus(p.status),
+      owner: p.owner ?? "Unassigned",
+      initiative_type: p.initiative_type ?? "General",
+      phase: p.phase ?? "TBD",
+      percent_complete: p.percent_complete ?? 0,
+      priority: p.priority ?? "Medium",
+      dependencies: p.dependencies ?? [],
+    })),
     milestones: dataset.milestones,
-    actionItems: dataset.action_items.map((a) => ({ ...a, owner: a.owner ?? "Unassigned", normalizedStatus: "Open" as const })),
-    rmIssues: dataset.rm_issues.map((r) => ({ ...r, owner: r.owner ?? "Unassigned", normalizedStatus: normalizeStatus(r.status) })),
+    actionItems: dataset.action_items.map((a) => ({
+      ...a,
+      owner: a.owner ?? "Unassigned",
+      normalizedStatus: a.status ?? "Open",
+    })),
+    rmIssues: dataset.rm_issues.map((r) => ({
+      ...r,
+      owner: r.owner ?? "Unassigned",
+      normalizedStatus: normalizeStatus(r.status),
+    })),
     blockers: dataset.blockers,
     renewals: dataset.renewals.map((r) => ({ ...r, normalizedStatus: normalizeStatus(r.status) })),
-    trackerItems: (dataset.tracker_items ?? []).map((t) => ({ ...t, normalizedStatus: normalizeStatus(t.status), owner: t.owner ?? "Unassigned" })),
+    trackerItems: (dataset.tracker_items ?? []).map((t) => ({
+      ...t,
+      normalizedStatus: normalizeStatus(t.status),
+      owner: t.owner ?? "Unassigned",
+      category: t.category ?? "General",
+    })),
     meetingMinutes: dataset.meeting_minutes ?? [],
     linkedResources: dataset.linked_resources,
     recentHighlights: dataset.recent_highlights,

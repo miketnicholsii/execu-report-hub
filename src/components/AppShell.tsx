@@ -2,7 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import {
   LayoutDashboard, Users, FileText, Calendar, RefreshCw, AlertTriangle,
-  MessageSquare, ClipboardList, ChevronLeft, ChevronRight, Download
+  MessageSquare, ClipboardList, ChevronLeft, ChevronRight, Download,
+  Search, FileDown, Wrench
 } from "lucide-react";
 
 const NAV = [
@@ -10,10 +11,12 @@ const NAV = [
   { to: "/customer-summary", label: "Customer Summary", icon: Users },
   { to: "/tracker", label: "Issue Tracker", icon: ClipboardList },
   { to: "/rm-issues", label: "RM / Redmine Center", icon: AlertTriangle },
+  { to: "/rm-report-builder", label: "RM Report Builder", icon: Wrench },
   { to: "/action-items", label: "Action Center", icon: FileText },
   { to: "/key-dates", label: "Key Dates", icon: Calendar },
   { to: "/renewals", label: "Renewals", icon: RefreshCw },
   { to: "/meeting-minutes", label: "Meeting Minutes", icon: MessageSquare },
+  { to: "/reports", label: "Report & Export Center", icon: FileDown },
 ];
 
 interface Props {
@@ -28,6 +31,7 @@ interface Props {
 export default function AppShell({ children, title, subtitle, onExportExcel, onExportPdf, actions }: Props) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [globalSearch, setGlobalSearch] = useState("");
 
   return (
     <div className="min-h-screen flex bg-background print:bg-white">
@@ -39,8 +43,22 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </button>
         </div>
+        {!collapsed && (
+          <div className="px-2 pt-2">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search pages..."
+                value={globalSearch}
+                onChange={(e) => setGlobalSearch(e.target.value)}
+                className="w-full rounded-md border border-border bg-background pl-8 pr-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </div>
+        )}
         <nav className="p-2 space-y-0.5">
-          {NAV.map((item) => {
+          {NAV.filter((item) => !globalSearch || item.label.toLowerCase().includes(globalSearch.toLowerCase())).map((item) => {
             const active = location.pathname === item.to || (item.to !== "/portfolio" && location.pathname.startsWith(item.to));
             return (
               <Link

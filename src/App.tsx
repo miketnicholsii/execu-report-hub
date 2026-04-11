@@ -13,6 +13,9 @@ import RenewalsPage from "@/pages/RenewalsPage";
 import RmIssueCenterPage from "@/pages/RmIssueCenterPage";
 import MeetingMinutesPage from "@/pages/MeetingMinutesPage";
 import TrackerPage from "@/pages/TrackerPage";
+import RedmineReportBuilderPage from "@/pages/RedmineReportBuilderPage";
+import ReportCenterPage from "@/pages/ReportCenterPage";
+import InitiativeDetailPage from "@/pages/InitiativeDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -28,11 +31,14 @@ const App = () => (
           <Route path="/customer-summary" element={<CustomerSummaryPage />} />
           <Route path="/tracker" element={<TrackerPage />} />
           <Route path="/rm-issues" element={<RmIssueCenterPage />} />
+          <Route path="/rm-report-builder" element={<RedmineReportBuilderPage />} />
           <Route path="/action-items" element={<ActionItemsPage />} />
           <Route path="/key-dates" element={<KeyDatesPage />} />
           <Route path="/renewals" element={<RenewalsPage />} />
           <Route path="/meeting-minutes" element={<MeetingMinutesPage />} />
+          <Route path="/reports" element={<ReportCenterPage />} />
           <Route path="/customers/:customerSlug" element={<CustomerPage />} />
+          <Route path="/initiatives/:projectId" element={<InitiativeDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

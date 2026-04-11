@@ -30,11 +30,15 @@ export function getCustomerOverviews() {
     const trackerItems = seed.trackerItems.filter((t) => ids.has(t.project_id));
     const openTracker = trackerItems.filter((t) => !["Complete", "Deployed", "Shipped"].includes(t.status));
     const openRm = rmIssues.filter((r) => !["Complete", "Live"].includes(r.normalizedStatus));
+    const deployReady = trackerItems.filter((t) => t.status === "Testing Complete").length;
 
     return {
       customer_id: customer.customer_id,
       customer_name: customer.customer_name,
       slug: customer.slug,
+      industry: customer.industry ?? "",
+      region: customer.region ?? "",
+      account_owner: customer.account_owner ?? "TBD",
       projectCount: projects.length,
       projects,
       openItems: openTracker.length,
@@ -44,6 +48,7 @@ export function getCustomerOverviews() {
       totalRm: rmIssues.length,
       actionCount: actions.length,
       blockerCount: blockers.length,
+      deployReady,
       nextMilestone: milestones[0]?.date_text ? vagueMilestoneToLabel(milestones[0].date_text) : "TBD",
       renewals: seed.renewals.filter((r) => r.customer_id === customer.customer_id).length,
       health: blockers.length > 0 ? "At Risk" as const : openRm.length > 3 ? "Caution" as const : "On Track" as const,
@@ -69,7 +74,6 @@ export function getRmDetailRows() {
   return seed.rmIssues.map((r) => {
     const project = projectById.get(r.project_id);
     const customer = project ? customerById.get(project.customer_id) : null;
-    // Find matching tracker item for extra spec detail
     const trackerMatch = seed.trackerItems.find((t) => t.rm_reference === r.rm_reference);
     return {
       ...r,
@@ -78,13 +82,13 @@ export function getRmDetailRows() {
       project_name: project?.project_name ?? "Unknown",
       project_status: project?.normalizedStatus ?? "TBD",
       project_owner: project?.owner ?? "Unassigned",
-      // Spec-level detail from tracker
       context: trackerMatch?.context ?? null,
       last_update: trackerMatch?.last_update ?? null,
       target_eta: trackerMatch?.target_eta ?? null,
       notes: trackerMatch?.notes ?? null,
       next_steps: trackerMatch?.next_steps ?? null,
       priority: trackerMatch?.priority ?? null,
+      category: trackerMatch?.category ?? null,
     };
   });
 }
@@ -152,7 +156,6 @@ export function getCustomerDeepData(slug: string) {
   const openTracker = trackerItems.filter((t) => !["Complete", "Deployed", "Shipped"].includes(t.status));
   const completeTracker = trackerItems.filter((t) => ["Complete", "Deployed", "Shipped"].includes(t.status));
 
-  // RM detail with full spec info
   const rmDetail = rmIssues.map((r) => {
     const trackerMatch = trackerItems.find((t) => t.rm_reference === r.rm_reference);
     return {
@@ -164,6 +167,7 @@ export function getCustomerDeepData(slug: string) {
       next_steps: trackerMatch?.next_steps ?? null,
       priority: trackerMatch?.priority ?? null,
       topic: trackerMatch?.topic ?? r.description,
+      category: trackerMatch?.category ?? null,
     };
   });
 
@@ -198,4 +202,69 @@ export function getMeetingAllActions() {
       customer_slug: customer?.slug ?? "",
     }));
   });
+}
+
+export function getAllRmReferences() {
+  const refs: { rm_reference: string; customer_name: string; customer_slug: string; project_name: string; description: string; status: string; owner: string; urgency: string; severity: string; type: string }[] = [];
+  for (const r of seed.rmIssues) {
+    const project = projectById.get(r.project_id);
+    const customer = project ? customerById.get(project.customer_id) : null;
+    refs.push({
+      rm_reference: r.rm_reference,
+      customer_name: customer?.customer_name ?? "Unknown",
+      customer_slug: customer?.slug ?? "",
+      project_name: project?.project_name ?? "Unknown",
+      description: r.description,
+      status: r.normalizedStatus,
+      owner: r.owner,
+      urgency: r.urgency ?? "normal",
+      severity: (r as any).severity ?? "Medium",
+      type: (r as any).type ?? "General",
+    });
+  }
+  // Also find RM references in tracker items that don't have dedicated RM records
+  for (const t of seed.trackerItems) {
+    if (t.rm_reference && !refs.some((r) => r.rm_reference === t.rm_reference)) {
+      const project = projectById.get(t.project_id);
+      const customer = project ? customerById.get(project.customer_id) : null;
+      refs.push({
+        rm_reference: t.rm_reference,
+        customer_name: customer?.customer_name ?? "Unknown",
+        customer_slug: customer?.slug ?? "",
+        project_name: project?.project_name ?? "Unknown",
+        description: t.topic,
+        status: t.status,
+        owner: t.owner,
+        urgency: "normal",
+        severity: "Medium",
+        type: "Tracker Item",
+      });
+    }
+  }
+  return refs;
+}
+
+export function getProjectDetail(projectId: string) {
+  const project = projectById.get(projectId);
+  if (!project) return null;
+  const customer = customerById.get(project.customer_id);
+  const trackerItems = seed.trackerItems.filter((t) => t.project_id === projectId);
+  const rmIssues = seed.rmIssues.filter((r) => r.project_id === projectId);
+  const actions = seed.actionItems.filter((a) => a.project_id === projectId);
+  const milestones = seed.milestones.filter((m) => m.project_id === projectId);
+  const blockers = seed.blockers.filter((b) => b.project_id === projectId);
+  const highlights = seed.recentHighlights.filter((h) => h.project_id === projectId);
+  const resources = seed.linkedResources.filter((r) => r.project_id === projectId);
+  const openTracker = trackerItems.filter((t) => !["Complete", "Deployed", "Shipped"].includes(t.status));
+  return {
+    project: { ...project, customer_name: customer?.customer_name ?? "Unknown", customer_slug: customer?.slug ?? "" },
+    trackerItems,
+    openTracker,
+    rmIssues,
+    actions,
+    milestones,
+    blockers,
+    highlights,
+    resources,
+  };
 }
