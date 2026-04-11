@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area, CartesianGrid } from "recharts";
 import AppShell from "@/components/AppShell";
@@ -7,7 +8,7 @@ import GanttChart from "@/components/GanttChart";
 import { getCustomerOverviews, getTrackerRows, getRmDetailRows, getActionDetailRows, getKeyDateRows, getRenewalRows, seed, projectById, customerById } from "@/lib/cfs/selectors2";
 import { weeklySummaries } from "@/data/weeklySummaries";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
-import { AlertTriangle, TrendingUp, Calendar, Target, Users, Package, Shield, Clock } from "lucide-react";
+import { AlertTriangle, TrendingUp, Calendar, Target, Users, Package, Shield, Clock, Pin, PinOff, Star } from "lucide-react";
 
 const customers = getCustomerOverviews();
 const trackerRows = getTrackerRows();
@@ -97,7 +98,110 @@ const exportAll = () => {
   })));
 };
 
+type SavedViewKey =
+  | "myActionItems"
+  | "overdueItems"
+  | "waitingOnCustomer"
+  | "specsNeeded"
+  | "staleRms"
+  | "upcomingMilestones"
+  | "recentlyUpdated";
+
+type SavedViewDefinition = {
+  key: SavedViewKey;
+  label: string;
+  subtitle: string;
+  metric: () => number;
+  customers: () => string[];
+};
+
 export default function PortfolioPage() {
+  const [activeView, setActiveView] = useState<SavedViewKey>("myActionItems");
+  const [preferredOwner, setPreferredOwner] = useState(() => localStorage.getItem("cfs-preferred-owner") ?? "Manny");
+  const [favoriteCustomers, setFavoriteCustomers] = useState<string[]>(() => JSON.parse(localStorage.getItem("cfs-fav-customers") ?? "[]"));
+  const [favoriteViews, setFavoriteViews] = useState<SavedViewKey[]>(() => JSON.parse(localStorage.getItem("cfs-fav-views") ?? "[]"));
+  const [importantRm, setImportantRm] = useState<string[]>(() => JSON.parse(localStorage.getItem("cfs-important-rm") ?? "[]"));
+
+  useEffect(() => localStorage.setItem("cfs-preferred-owner", preferredOwner), [preferredOwner]);
+  useEffect(() => localStorage.setItem("cfs-fav-customers", JSON.stringify(favoriteCustomers)), [favoriteCustomers]);
+  useEffect(() => localStorage.setItem("cfs-fav-views", JSON.stringify(favoriteViews)), [favoriteViews]);
+  useEffect(() => localStorage.setItem("cfs-important-rm", JSON.stringify(importantRm)), [importantRm]);
+
+  const savedViews = useMemo<SavedViewDefinition[]>(() => {
+    const now = Date.now();
+    const openStatuses = new Set(["Complete", "Deployed", "Shipped"]);
+    return [
+      {
+        key: "myActionItems",
+        label: "My Action Items",
+        subtitle: "Your assigned actions and RM ownership footprint",
+        metric: () => actionRows.filter((a) => a.owner.toLowerCase().includes(preferredOwner.toLowerCase())).length,
+        customers: () => Array.from(new Set(actionRows.filter((a) => a.owner.toLowerCase().includes(preferredOwner.toLowerCase())).map((a) => a.customer_name))),
+      },
+      {
+        key: "overdueItems",
+        label: "Overdue Items",
+        subtitle: "Actionable items that have crossed a target date",
+        metric: () => trackerRows.filter((item) => !openStatuses.has(item.status) && !!item.target_eta && new Date(item.target_eta).getTime() < now).length + keyDates.filter((item) => item.isPast).length,
+        customers: () => Array.from(new Set([
+          ...trackerRows.filter((item) => !openStatuses.has(item.status) && !!item.target_eta && new Date(item.target_eta).getTime() < now).map((item) => item.customer_name),
+          ...keyDates.filter((item) => item.isPast).map((item) => item.customer),
+        ])),
+      },
+      {
+        key: "waitingOnCustomer",
+        label: "Waiting on Customer",
+        subtitle: "Dependencies awaiting customer decisions or assets",
+        metric: () => trackerRows.filter((item) => `${item.status} ${item.context ?? ""} ${item.next_steps ?? ""}`.toLowerCase().includes("waiting on customer")).length,
+        customers: () => Array.from(new Set(trackerRows.filter((item) => `${item.status} ${item.context ?? ""} ${item.next_steps ?? ""}`.toLowerCase().includes("waiting on customer")).map((item) => item.customer_name))),
+      },
+      {
+        key: "specsNeeded",
+        label: "Specs Needed",
+        subtitle: "Projects blocked on missing or TBD specification detail",
+        metric: () => customers.reduce((sum, customer) => sum + customer.missingSpecCount, 0),
+        customers: () => customers.filter((customer) => customer.missingSpecCount > 0).map((customer) => customer.customer_name),
+      },
+      {
+        key: "staleRms",
+        label: "Stale RMs",
+        subtitle: "Redmine records with aging activity",
+        metric: () => customers.reduce((sum, customer) => sum + customer.staleRmCount, 0),
+        customers: () => customers.filter((customer) => customer.staleRmCount > 0).map((customer) => customer.customer_name),
+      },
+      {
+        key: "upcomingMilestones",
+        label: "Upcoming Milestones",
+        subtitle: "Upcoming dated milestones in the next 21 days",
+        metric: () => keyDates.filter((item) => {
+          const ms = Date.parse(item.date ?? "");
+          return Number.isFinite(ms) && ms >= now && ms <= now + 21 * 86400000;
+        }).length,
+        customers: () => Array.from(new Set(keyDates.filter((item) => {
+          const ms = Date.parse(item.date ?? "");
+          return Number.isFinite(ms) && ms >= now && ms <= now + 21 * 86400000;
+        }).map((item) => item.customer))),
+      },
+      {
+        key: "recentlyUpdated",
+        label: "Recently Updated",
+        subtitle: "Customers touched in the last 7 days",
+        metric: () => customers.filter((customer) => customer.lastUpdated && Date.parse(customer.lastUpdated) >= now - 7 * 86400000).length,
+        customers: () => customers.filter((customer) => customer.lastUpdated && Date.parse(customer.lastUpdated) >= now - 7 * 86400000).map((customer) => customer.customer_name),
+      },
+    ];
+  }, [preferredOwner]);
+
+  const selectedView = savedViews.find((view) => view.key === activeView) ?? savedViews[0];
+  const selectedViewCustomers = selectedView.customers();
+
+  const favoriteCustomerRows = customers.filter((customer) => favoriteCustomers.includes(customer.customer_id));
+  const importantRmRows = rmRows.filter((rm) => importantRm.includes(rm.rm_reference));
+
+  const toggleArrayValue = <T extends string>(values: T[], value: T, set: (next: T[]) => void) => {
+    set(values.includes(value) ? values.filter((item) => item !== value) : [...values, value]);
+  };
+
   return (
     <AppShell title="Portfolio Dashboard" subtitle={`CFS Command Center · ${new Date().toLocaleDateString()}`} onExportExcel={exportAll} onExportPdf={exportPdf}>
       {/* KPIs - Two Rows */}
@@ -116,6 +220,114 @@ export default function PortfolioPage() {
         <KpiCard label="Upcoming Renewals" value={renewals.length} />
         <KpiCard label="Key Dates" value={keyDates.length} sub="tracked" />
         <KpiCard label="Action Items" value={actionRows.length} sub="total" />
+      </section>
+
+      <section className="grid xl:grid-cols-[1.15fr_1fr] gap-4">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div>
+              <h2 className="text-base font-semibold text-foreground">Saved Views</h2>
+              <p className="text-xs text-muted-foreground">Curated operational lenses with one-click recall.</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Owner Lens</p>
+              <input
+                value={preferredOwner}
+                onChange={(event) => setPreferredOwner(event.target.value)}
+                className="mt-1 w-28 rounded-md border border-border bg-background px-2 py-1 text-xs"
+                placeholder="Your name"
+              />
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-2.5">
+            {savedViews.map((view) => {
+              const isFavorite = favoriteViews.includes(view.key);
+              return (
+                <button
+                  key={view.key}
+                  onClick={() => setActiveView(view.key)}
+                  className={`text-left rounded-xl border p-3 transition-all ${activeView === view.key ? "border-primary/50 bg-primary/10 shadow-sm" : "border-border hover:border-primary/30 hover:bg-muted/40"}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium text-foreground">{view.label}</p>
+                    <span
+                      className="text-muted-foreground hover:text-primary"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleArrayValue(favoriteViews, view.key, setFavoriteViews);
+                      }}
+                    >
+                      <Star className={`h-3.5 w-3.5 ${isFavorite ? "fill-primary text-primary" : ""}`} />
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{view.subtitle}</p>
+                  <p className="mt-2 text-xl font-semibold text-foreground">{view.metric()}</p>
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-4 rounded-xl border border-border/70 bg-muted/20 p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{selectedView.label}</p>
+            <p className="text-sm text-foreground mt-1">{selectedView.subtitle}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {selectedViewCustomers.length === 0 && <span className="text-xs text-muted-foreground">No matching customers in this slice.</span>}
+              {selectedViewCustomers.map((name) => (
+                <span key={name} className="rounded-full border border-border bg-card px-2 py-0.5 text-xs text-foreground">
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-base font-semibold text-foreground">Personalization</h2>
+              <p className="text-xs text-muted-foreground">Pin what matters most to your executive workflow.</p>
+            </div>
+            <Pin className="h-4 w-4 text-primary" />
+          </div>
+          <div className="space-y-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Favorite Views</p>
+              <div className="flex flex-wrap gap-1.5">
+                {favoriteViews.length === 0 && <span className="text-xs text-muted-foreground">Star views above to pin them.</span>}
+                {favoriteViews.map((viewKey) => {
+                  const view = savedViews.find((item) => item.key === viewKey);
+                  if (!view) return null;
+                  return (
+                    <button key={view.key} onClick={() => setActiveView(view.key)} className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                      {view.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Favorite Customers</p>
+              <div className="space-y-1.5 max-h-28 overflow-auto pr-1">
+                {customers.slice(0, 14).map((customer) => (
+                  <button key={customer.customer_id} onClick={() => toggleArrayValue(favoriteCustomers, customer.customer_id, setFavoriteCustomers)} className="w-full flex items-center justify-between rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted/40">
+                    <span className="truncate">{customer.customer_name}</span>
+                    {favoriteCustomers.includes(customer.customer_id) ? <Pin className="h-3.5 w-3.5 text-primary" /> : <PinOff className="h-3.5 w-3.5 text-muted-foreground" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Important RM Records</p>
+              <div className="space-y-1.5 max-h-28 overflow-auto pr-1">
+                {rmRows.slice(0, 10).map((rm) => (
+                  <button key={rm.rm_reference} onClick={() => toggleArrayValue(importantRm, rm.rm_reference, setImportantRm)} className="w-full flex items-center justify-between rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted/40">
+                    <span className="truncate">{rm.rm_reference} · {rm.customer_name}</span>
+                    {importantRm.includes(rm.rm_reference) ? <Pin className="h-3.5 w-3.5 text-primary" /> : <PinOff className="h-3.5 w-3.5 text-muted-foreground" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Week-at-a-Glance from weekly summary */}
@@ -151,6 +363,36 @@ export default function PortfolioPage() {
                 ))}</ul>
               </div>
             )}
+          </div>
+        </section>
+      )}
+
+      {(favoriteCustomerRows.length > 0 || importantRmRows.length > 0) && (
+        <section className="grid md:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2"><Pin className="h-4 w-4 text-primary" /> Pinned Customers</h3>
+            <div className="space-y-1.5">
+              {favoriteCustomerRows.map((customer) => (
+                <div key={customer.customer_id} className="flex items-center justify-between rounded-lg border border-border/60 px-2.5 py-1.5 text-sm">
+                  <Link to={`/customers/${customer.slug}`} className="font-medium text-primary hover:underline">{customer.customer_name}</Link>
+                  <span className="text-xs text-muted-foreground">{customer.openItems} open · {customer.openRm} RM</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2"><Pin className="h-4 w-4 text-primary" /> Pinned RM Records</h3>
+            <div className="space-y-1.5">
+              {importantRmRows.map((rm) => (
+                <div key={rm.rm_reference} className="rounded-lg border border-border/60 px-2.5 py-1.5">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium text-foreground">{rm.rm_reference}</span>
+                    <StatusBadge status={rm.normalizedStatus} />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{rm.customer_name} · {rm.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
