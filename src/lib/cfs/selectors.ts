@@ -13,8 +13,10 @@ export function getPortfolioSnapshot() {
     const actions = seed.actionItems.filter((a) => ids.has(a.project_id));
     const rmIssues = seed.rmIssues.filter((r) => ids.has(r.project_id));
     const blockers = seed.blockers.filter((b) => ids.has(b.project_id));
-    const milestones = seed.milestones.filter((m) => ids.has(m.project_id));
+    const milestones = seed.milestones.filter((m) => m.project_id && ids.has(m.project_id));
+    const trackerItems = seed.trackerItems.filter((t) => ids.has(t.project_id));
     const openRm = rmIssues.filter((r) => !["Complete", "Live"].includes(r.normalizedStatus));
+    const openTrackerItems = trackerItems.filter((t) => !["Complete", "Deployed", "Live"].includes(t.normalizedStatus));
 
     return {
       customer: customer.customer_name,
@@ -26,13 +28,15 @@ export function getPortfolioSnapshot() {
       blockedOrTbd: blockers.length + projects.filter((p) => p.normalizedStatus === "TBD").length,
       openRisks: blockers.length,
       openRmCount: openRm.length,
+      openTrackerItems: openTrackerItems.length,
+      totalTrackerItems: trackerItems.length,
       topStatus: projects[0]?.normalizedStatus ?? "TBD",
       health: blockers.length > 0 ? "At Risk" : openRm.length > 3 ? "Caution" : "On Track",
     };
   });
 
   const upcomingDates = seed.milestones.map((m) => {
-    const project = projectById.get(m.project_id);
+    const project = m.project_id ? projectById.get(m.project_id) : null;
     const customer = project ? customerById.get(project.customer_id) : null;
     return {
       customer: customer?.customer_name ?? "Unknown",
@@ -101,7 +105,7 @@ export function getPortfolioSnapshot() {
   });
 
   const keyDateRows = seed.milestones.map((m) => {
-    const project = projectById.get(m.project_id);
+    const project = m.project_id ? projectById.get(m.project_id) : null;
     const customer = project ? customerById.get(project.customer_id) : null;
     return {
       id: m.milestone_id,

@@ -15,7 +15,7 @@ interface RawProject {
 }
 interface RawMilestone {
   milestone_id: string;
-  project_id: string;
+  project_id: string | null;
   title: string;
   date_text: string | null;
   date_confidence: "high" | "medium" | "low" | null;
@@ -54,6 +54,32 @@ interface RawRenewal {
   summary: string;
   quote_number: string | null;
 }
+interface RawTrackerItem {
+  item_id: string;
+  project_id: string;
+  priority: string;
+  topic: string;
+  rm_reference: string | null;
+  status: string;
+  context: string | null;
+  last_update: string | null;
+  target_eta: string | null;
+  notes: string | null;
+  next_steps: string | null;
+  owner: string | null;
+}
+interface RawMeetingMinute {
+  meeting_id: string;
+  customer_id: string;
+  project_id: string;
+  title: string;
+  date: string;
+  attendees: string[];
+  summary: string;
+  decisions: string[];
+  discussion_notes: string[];
+  action_items_from_meeting: { description: string; owner: string; due_date: string | null; status: string }[];
+}
 interface RawNeedReview { needs_review_id: string; entity_type: string; entity_id: string; reason: string; date_confidence: string | null }
 interface RawResource { resource_id: string; project_id: string | null; resource_type: string; label: string; href: string | null; notes: string | null }
 interface RawHighlight { highlight_id: string; project_id: string; highlight: string; date_text: string | null }
@@ -67,6 +93,8 @@ interface RawDataset {
   rm_issues: RawRmIssue[];
   blockers: RawBlocker[];
   renewals: RawRenewal[];
+  tracker_items?: RawTrackerItem[];
+  meeting_minutes?: RawMeetingMinute[];
   linked_resources: RawResource[];
   recent_highlights: RawHighlight[];
   needs_review: RawNeedReview[];
@@ -84,6 +112,8 @@ export function loadSeedData() {
     rmIssues: dataset.rm_issues.map((r) => ({ ...r, owner: r.owner ?? "Unassigned", normalizedStatus: normalizeStatus(r.status) })),
     blockers: dataset.blockers,
     renewals: dataset.renewals.map((r) => ({ ...r, normalizedStatus: normalizeStatus(r.status) })),
+    trackerItems: (dataset.tracker_items ?? []).map((t) => ({ ...t, normalizedStatus: normalizeStatus(t.status), owner: t.owner ?? "Unassigned" })),
+    meetingMinutes: dataset.meeting_minutes ?? [],
     linkedResources: dataset.linked_resources,
     recentHighlights: dataset.recent_highlights,
     needsReview: dataset.needs_review,
