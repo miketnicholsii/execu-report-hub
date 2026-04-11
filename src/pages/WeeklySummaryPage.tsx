@@ -1,161 +1,200 @@
 import { useState, useMemo } from "react";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
-import { weeklySummaries } from "@/data/weeklySummaries";
-import { customerById } from "@/lib/cfs/selectors2";
+import { useSupabaseRmTickets } from "@/hooks/useSupabaseRmTickets";
+import { useSupabaseActionItems } from "@/hooks/useSupabaseActionItems";
+import { useSupabaseCustomers } from "@/hooks/useSupabaseCustomers";
+import { useSupabaseMeetings } from "@/hooks/useSupabaseMeetings";
+import { useSupabaseInitiatives } from "@/hooks/useSupabaseInitiatives";
+import { useAiAnalyze } from "@/hooks/useAiAnalyze";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
-import { CalendarDays, Sun, Cloud, Moon } from "lucide-react";
-
-const PERIOD_LABELS = { BOW: "Beginning of Week", MOW: "Mid-Week", EOW: "End of Week" };
-const PERIOD_ICONS = { BOW: Sun, MOW: Cloud, EOW: Moon };
-const PERIOD_COLORS = { BOW: "text-status-caution", MOW: "text-primary", EOW: "text-status-on-track" };
-
-const weeks = Array.from(new Set(weeklySummaries.map((s) => s.week))).sort().reverse();
+import { Sparkles, Calendar, FileText, Loader2 } from "lucide-react";
 
 export default function WeeklySummaryPage() {
-  const [weekFilter, setWeekFilter] = useState(weeks[0] || "");
-  const [levelFilter, setLevelFilter] = useState<"all" | "portfolio" | "customer" | "initiative">("all");
-  const [periodFilter, setPeriodFilter] = useState<"all" | "BOW" | "MOW" | "EOW">("all");
+  const { tickets } = useSupabaseRmTickets();
+  const { actionItems } = useSupabaseActionItems();
+  const { customers } = useSupabaseCustomers();
+  const { meetings } = useSupabaseMeetings();
+  const { initiatives } = useSupabaseInitiatives();
+  const { analyze, loading } = useAiAnalyze();
+  const [generatedSummary, setGeneratedSummary] = useState<any>(null);
+  const [summaryType, setSummaryType] = useState<"midweek" | "weekend">("midweek");
 
-  const filtered = useMemo(() => {
-    return weeklySummaries.filter((s) => {
-      if (weekFilter && s.week !== weekFilter) return false;
-      if (levelFilter !== "all" && s.level !== levelFilter) return false;
-      if (periodFilter !== "all" && s.period !== periodFilter) return false;
-      return true;
-    });
-  }, [weekFilter, levelFilter, periodFilter]);
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const isMidweek = dayOfWeek >= 1 && dayOfWeek <= 3;
 
-  const portfolioSummaries = filtered.filter((s) => s.level === "portfolio");
-  const customerSummaries = filtered.filter((s) => s.level === "customer");
+  // Compute stats for summary
+  const openTickets = tickets.filter(t => t.status !== "Complete");
+  const blockedTickets = tickets.filter(t => t.status === "Blocked" || t.status === "Waiting on Customer");
+  const openActions = actionItems.filter(a => !["Complete", "Done"].includes(a.status));
+  const overdueActions = openActions.filter(a => a.due_date && new Date(a.due_date) < new Date());
+  const recentMeetings = meetings.filter(m => {
+    const d = new Date(m.date);
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+    return d >= weekAgo;
+  });
 
-  const totalHighlights = filtered.reduce((a, s) => a + s.highlights.length, 0);
-  const totalBlockers = filtered.reduce((a, s) => a + s.blockers.length, 0);
-  const totalQuestions = filtered.reduce((a, s) => a + s.openQuestions.length, 0);
+  // Stale tickets
+  const staleTickets = tickets.filter(t => {
+    if (t.status === "Complete") return false;
+    if (!t.last_update) return true;
+    const days = Math.floor((Date.now() - new Date(t.last_update).getTime()) / 86400000);
+    return days > 14;
+  });
 
-  const exportExcel = () => downloadCsv("cfs-weekly-summaries.csv", filtered.flatMap((s) => [
-    ...s.highlights.map((h) => ({ Week: s.week, Period: s.period, Level: s.level, Customer: s.customer_id ? (customerById.get(s.customer_id)?.customer_name ?? s.customer_id) : "Portfolio", Type: "Highlight", Content: h, Owner: s.owner })),
-    ...s.openQuestions.map((q) => ({ Week: s.week, Period: s.period, Level: s.level, Customer: s.customer_id ? (customerById.get(s.customer_id)?.customer_name ?? s.customer_id) : "Portfolio", Type: "Open Question", Content: q, Owner: s.owner })),
-    ...s.blockers.map((b) => ({ Week: s.week, Period: s.period, Level: s.level, Customer: s.customer_id ? (customerById.get(s.customer_id)?.customer_name ?? s.customer_id) : "Portfolio", Type: "Blocker", Content: b, Owner: s.owner })),
-    ...s.nextSteps.map((n) => ({ Week: s.week, Period: s.period, Level: s.level, Customer: s.customer_id ? (customerById.get(s.customer_id)?.customer_name ?? s.customer_id) : "Portfolio", Type: "Next Step", Content: n, Owner: s.owner })),
-  ]));
+  const generateSummary = async () => {
+    const context = `
+Today is ${today.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}.
+Summary type: ${summaryType === "midweek" ? "Midweek (Wednesday)" : "End of Week (Friday)"}
+
+PORTFOLIO STATUS:
+- ${customers.length} active customers
+- ${openTickets.length} open RM tickets (${blockedTickets.length} blocked)
+- ${staleTickets.length} stale tickets (no update in 14+ days)
+- ${openActions.length} open action items (${overdueActions.length} overdue)
+- ${recentMeetings.length} meetings this week
+
+OPEN RM TICKETS:
+${openTickets.slice(0, 30).map(t => `- ${t.rm_number}: ${t.title || "No title"} [${t.status}] Owner: ${t.owner || "Unassigned"} Last: ${t.last_update || "Never"}`).join("\n")}
+
+BLOCKED / WAITING:
+${blockedTickets.map(t => `- ${t.rm_number}: ${t.title || "No title"} [${t.status}]`).join("\n") || "None"}
+
+STALE TICKETS (14+ days no update):
+${staleTickets.slice(0, 20).map(t => `- ${t.rm_number}: ${t.title || "No title"} Last: ${t.last_update || "Never"}`).join("\n") || "None"}
+
+OVERDUE ACTION ITEMS:
+${overdueActions.map(a => `- ${a.title} (Owner: ${a.owner}, Due: ${a.due_date})`).join("\n") || "None"}
+
+RECENT MEETINGS:
+${recentMeetings.map(m => `- ${m.title} (${m.date}): ${m.summary || "No summary"}`).join("\n") || "None"}
+
+INITIATIVES:
+${initiatives.slice(0, 15).map(i => `- ${i.title} [${i.status}] Health: ${i.health}`).join("\n") || "None"}
+`;
+
+    const data = await analyze("summarize-status", context, `Generate a ${summaryType === "midweek" ? "midweek Wednesday" : "end of week Friday"} status summary for Mike Nichols at CFS. Include: Key Highlights, Development Updates, Upcoming Deployments, Blocked Items, Action Items Due, Open Questions, and Recommended Focus Areas.`);
+
+    if (data) {
+      setGeneratedSummary({
+        type: summaryType,
+        date: today.toLocaleDateString(),
+        data,
+        raw: context,
+      });
+    }
+  };
+
+  const exportExcel = () => {
+    if (!generatedSummary) return;
+    const d = generatedSummary.data;
+    downloadCsv("neko-weekly-summary.csv", [
+      { Section: "Summary", Content: d.summary || "" },
+      ...(d.highlights || []).map((h: string) => ({ Section: "Highlight", Content: h })),
+      ...(d.blockers || []).map((b: string) => ({ Section: "Blocker", Content: b })),
+      ...(d.action_items || []).map((a: any) => ({ Section: "Action Item", Content: typeof a === "string" ? a : a.description || a.title })),
+      ...(d.open_questions || []).map((q: string) => ({ Section: "Open Question", Content: q })),
+      ...(d.next_steps || []).map((n: string) => ({ Section: "Next Step", Content: n })),
+    ]);
+  };
 
   return (
-    <AppShell title="Weekly Summaries" subtitle="BOW / MOW / EOW status framework" onExportExcel={exportExcel} onExportPdf={exportPdf}>
+    <AppShell title="Weekly Summary Generator" subtitle="Auto-generate midweek and weekend status reports from live data" onExportExcel={generatedSummary ? exportExcel : undefined} onExportPdf={exportPdf}>
       <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <KpiCard label="Summaries" value={filtered.length} />
-        <KpiCard label="Highlights" value={totalHighlights} color="text-status-on-track" />
-        <KpiCard label="Open Questions" value={totalQuestions} color="text-status-caution" />
-        <KpiCard label="Blockers" value={totalBlockers} color="text-destructive" />
-        <KpiCard label="Week" value={weekFilter} />
+        <KpiCard label="OPEN RMs" value={openTickets.length} />
+        <KpiCard label="BLOCKED" value={blockedTickets.length} color="text-destructive" />
+        <KpiCard label="STALE (14d+)" value={staleTickets.length} color="text-status-caution" />
+        <KpiCard label="OPEN ACTIONS" value={openActions.length} />
+        <KpiCard label="OVERDUE" value={overdueActions.length} color={overdueActions.length > 0 ? "text-destructive" : ""} />
       </section>
 
-      {/* Filters */}
-      <section className="rounded-xl border border-border bg-card p-4 shadow-sm print:hidden">
-        <div className="grid md:grid-cols-3 gap-2">
-          <select className="rounded-lg border border-border bg-background px-3 py-2 text-sm" value={weekFilter} onChange={(e) => setWeekFilter(e.target.value)}>
-            {weeks.map((w) => <option key={w}>{w}</option>)}
-          </select>
-          <select className="rounded-lg border border-border bg-background px-3 py-2 text-sm" value={periodFilter} onChange={(e) => setPeriodFilter(e.target.value as any)}>
-            <option value="all">All Periods</option>
-            <option value="BOW">Beginning of Week</option>
-            <option value="MOW">Mid-Week</option>
-            <option value="EOW">End of Week</option>
-          </select>
-          <select className="rounded-lg border border-border bg-background px-3 py-2 text-sm" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value as any)}>
-            <option value="all">All Levels</option>
-            <option value="portfolio">Portfolio</option>
-            <option value="customer">Customer</option>
-            <option value="initiative">Initiative</option>
-          </select>
+      {/* Generate Controls */}
+      <section className="rounded-xl border border-border bg-card p-5 shadow-sm print:hidden">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex gap-2">
+            <button onClick={() => setSummaryType("midweek")} className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${summaryType === "midweek" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+              <Calendar className="h-4 w-4" /> Midweek (Wed)
+            </button>
+            <button onClick={() => setSummaryType("weekend")} className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${summaryType === "weekend" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+              <Calendar className="h-4 w-4" /> End of Week (Fri)
+            </button>
+          </div>
+          <button onClick={generateSummary} disabled={loading} className="flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            {loading ? "Generating..." : "Generate Summary"}
+          </button>
+          <p className="text-xs text-muted-foreground">
+            {isMidweek ? "📅 It's midweek — recommended: Midweek summary" : "📅 End of week — recommended: Weekend summary"}
+          </p>
         </div>
       </section>
 
-      {/* Portfolio Summaries */}
-      {portfolioSummaries.length > 0 && (
+      {/* Generated Summary */}
+      {generatedSummary && (
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-primary" /> Portfolio-Level Summaries
-          </h2>
-          {portfolioSummaries.map((s) => {
-            const Icon = PERIOD_ICONS[s.period];
-            return (
-              <article key={s.id} className="rounded-xl border border-border bg-card p-5 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <Icon className={`h-5 w-5 ${PERIOD_COLORS[s.period]}`} />
-                  <h3 className="font-semibold text-foreground">{PERIOD_LABELS[s.period]}</h3>
-                  <span className="text-xs text-muted-foreground ml-auto">Updated {s.lastUpdated} · {s.owner}</span>
-                </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {s.highlights.length > 0 && (
-                    <SummaryBlock title="Key Highlights" items={s.highlights} icon="✦" color="text-status-on-track" />
-                  )}
-                  {s.progress.length > 0 && (
-                    <SummaryBlock title="Notable Progress" items={s.progress} icon="→" color="text-primary" />
-                  )}
-                  {s.openQuestions.length > 0 && (
-                    <SummaryBlock title="Open Questions" items={s.openQuestions} icon="?" color="text-status-caution" />
-                  )}
-                  {s.blockers.length > 0 && (
-                    <SummaryBlock title="Blockers" items={s.blockers} icon="!" color="text-destructive" />
-                  )}
-                  {s.nextSteps.length > 0 && (
-                    <SummaryBlock title="Next Steps" items={s.nextSteps} icon="▸" color="text-foreground" />
-                  )}
-                  {s.rmUpdates.length > 0 && (
-                    <SummaryBlock title="RM Updates" items={s.rmUpdates} icon="⚙" color="text-muted-foreground" />
-                  )}
-                  {s.deploymentUpdates.length > 0 && (
-                    <SummaryBlock title="Deployments" items={s.deploymentUpdates} icon="🚀" color="text-status-info" />
-                  )}
-                </div>
-              </article>
-            );
-          })}
+          <div className="rounded-xl border border-primary/30 bg-card p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <FileText className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-semibold text-foreground">
+                {generatedSummary.type === "midweek" ? "Midweek Status Summary" : "End of Week Summary"}
+              </h2>
+              <span className="text-xs text-muted-foreground ml-auto">{generatedSummary.date}</span>
+            </div>
+
+            {generatedSummary.data.summary && (
+              <div className="mb-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+                <h3 className="text-xs font-semibold uppercase text-muted-foreground mb-2">Executive Summary</h3>
+                <p className="text-sm text-foreground">{generatedSummary.data.summary}</p>
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {generatedSummary.data.highlights?.length > 0 && (
+                <SummaryBlock title="Key Highlights" items={generatedSummary.data.highlights} color="text-emerald-500" icon="✦" />
+              )}
+              {generatedSummary.data.rm_updates?.length > 0 && (
+                <SummaryBlock title="RM Updates" items={generatedSummary.data.rm_updates} color="text-primary" icon="⚙" />
+              )}
+              {generatedSummary.data.deployments?.length > 0 && (
+                <SummaryBlock title="Upcoming Deployments" items={generatedSummary.data.deployments} color="text-primary" icon="🚀" />
+              )}
+              {generatedSummary.data.blockers?.length > 0 && (
+                <SummaryBlock title="Blocked Items" items={generatedSummary.data.blockers} color="text-destructive" icon="!" />
+              )}
+              {generatedSummary.data.action_items?.length > 0 && (
+                <SummaryBlock title="Action Items Due" items={generatedSummary.data.action_items.map((a: any) => typeof a === "string" ? a : `${a.description || a.title} (${a.owner || "TBD"})`)} color="text-status-caution" icon="→" />
+              )}
+              {generatedSummary.data.open_questions?.length > 0 && (
+                <SummaryBlock title="Open Questions" items={generatedSummary.data.open_questions} color="text-status-caution" icon="?" />
+              )}
+              {generatedSummary.data.next_steps?.length > 0 && (
+                <SummaryBlock title="Recommended Focus" items={generatedSummary.data.next_steps} color="text-foreground" icon="▸" />
+              )}
+            </div>
+          </div>
         </section>
       )}
 
-      {/* Customer Summaries */}
-      {customerSummaries.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Customer-Level Summaries</h2>
-          {customerSummaries.map((s) => {
-            const Icon = PERIOD_ICONS[s.period];
-            const custName = s.customer_id ? (customerById.get(s.customer_id)?.customer_name ?? s.customer_id) : "Unknown";
-            return (
-              <article key={s.id} className="rounded-xl border border-border bg-card p-5 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <Icon className={`h-4 w-4 ${PERIOD_COLORS[s.period]}`} />
-                  <h3 className="font-semibold text-foreground">{custName}</h3>
-                  <span className="px-2 py-0.5 rounded text-xs font-medium border border-border bg-muted text-muted-foreground">{PERIOD_LABELS[s.period]}</span>
-                  <span className="text-xs text-muted-foreground ml-auto">{s.owner} · {s.lastUpdated}</span>
-                </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {s.highlights.length > 0 && <SummaryBlock title="Highlights" items={s.highlights} icon="✦" color="text-status-on-track" />}
-                  {s.openQuestions.length > 0 && <SummaryBlock title="Open Questions" items={s.openQuestions} icon="?" color="text-status-caution" />}
-                  {s.blockers.length > 0 && <SummaryBlock title="Blockers" items={s.blockers} icon="!" color="text-destructive" />}
-                  {s.nextSteps.length > 0 && <SummaryBlock title="Next Steps" items={s.nextSteps} icon="▸" color="text-foreground" />}
-                  {s.rmUpdates.length > 0 && <SummaryBlock title="RM Updates" items={s.rmUpdates} icon="⚙" color="text-muted-foreground" />}
-                  {s.deploymentUpdates.length > 0 && <SummaryBlock title="Deployments" items={s.deploymentUpdates} icon="🚀" color="text-status-info" />}
-                </div>
-              </article>
-            );
-          })}
+      {/* Quick Stats */}
+      {!generatedSummary && (
+        <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <div className="text-center py-8">
+            <Sparkles className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+            <h3 className="font-semibold text-foreground mb-1">Generate Your Weekly Summary</h3>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              AI will analyze all your open RMs, action items, meetings, and initiatives to create a comprehensive status report ready for stakeholders.
+            </p>
+          </div>
         </section>
-      )}
-
-      {filtered.length === 0 && (
-        <div className="rounded-xl border border-border bg-card p-8 text-center">
-          <p className="text-muted-foreground">No summaries match the selected filters.</p>
-        </div>
       )}
     </AppShell>
   );
 }
 
-function SummaryBlock({ title, items, icon, color }: { title: string; items: string[]; icon: string; color: string }) {
+function SummaryBlock({ title, items, color, icon }: { title: string; items: string[]; color: string; icon: string }) {
   return (
-    <div className="rounded-lg border border-border p-3 bg-muted/10">
+    <div className="rounded-lg border border-border p-4 bg-muted/10">
       <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2">{title}</h4>
       <ul className="space-y-1.5 text-sm">
         {items.map((item, i) => (
