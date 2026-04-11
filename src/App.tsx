@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ExecutiveDashboardPage from "@/pages/ExecutiveDashboardPage";
 import PortfolioPage from "@/pages/PortfolioPage";
 import CustomerPage from "@/pages/CustomerPage";
-import CustomerDrilldownPage from "@/pages/CustomerDrilldownPage";
+
 import NotFound from "@/pages/NotFound";
 import CustomerSummaryPage from "@/pages/CustomerSummaryPage";
 import ActionItemsPage from "@/pages/ActionItemsPage";
