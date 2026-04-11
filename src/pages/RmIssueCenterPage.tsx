@@ -230,10 +230,7 @@ export default function RmIssueCenterPage() {
                 <span className="font-mono text-sm font-semibold text-primary">{r.rm_number}</span>
                 <span className="text-sm font-medium text-foreground flex-1 truncate">{r.title || "—"}</span>
                 {r.flags.slice(0, 2).map(f => (
-                  <span key={f} className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                    f === "Stale" || f === "Overdue" || f === "Blocked" ? "bg-destructive/10 text-destructive border border-destructive/20"
-                    : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
-                  }`}>{f}</span>
+                  <FlagBadge key={f} flag={f} />
                 ))}
                 <StatusBadge status={r.status} />
                 <span className="text-xs text-muted-foreground">{r.owner}</span>
