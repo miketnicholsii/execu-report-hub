@@ -1,10 +1,10 @@
 import { useState, useMemo } from "react";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
-import { StatusBadge } from "@/components/StatusBadge";
 import { useAiAnalyze } from "@/hooks/useAiAnalyze";
 import { normalizeRm } from "@/lib/rmNormalize";
-import { Plus, X, Sparkles, FileText, ChevronDown, ChevronUp, Search, Download, Trash2, Edit2, Check } from "lucide-react";
+import { exportSpecToCsv, exportSpecToText, downloadTextFile, downloadCsvFile } from "@/lib/exportUtils";
+import { Plus, X, Sparkles, FileText, ChevronDown, ChevronUp, Search, Download, Trash2, Edit2, Check, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 interface Spec {
@@ -38,6 +38,7 @@ export default function SpecsWorkspacePage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [editing, setEditing] = useState<string | null>(null);
   const [aiMode, setAiMode] = useState<"ai" | "manual">("ai");
   const [aiInput, setAiInput] = useState("");
   const [aiCustomer, setAiCustomer] = useState("");
@@ -53,6 +54,14 @@ export default function SpecsWorkspacePage() {
   const [mSpec, setMSpec] = useState("");
   const [mQuestions, setMQuestions] = useState("");
 
+  // Edit fields
+  const [eTitle, setETitle] = useState("");
+  const [eOverview, setEOverview] = useState("");
+  const [eGoals, setEGoals] = useState("");
+  const [eScope, setEScope] = useState("");
+  const [eSpec, setESpec] = useState("");
+  const [eQuestions, setEQuestions] = useState("");
+
   const filtered = useMemo(() => specs.filter((s) => {
     if (statusFilter !== "all" && s.status !== statusFilter) return false;
     if (search) {
@@ -64,72 +73,88 @@ export default function SpecsWorkspacePage() {
 
   const toggle = (id: string) => { const s = new Set(expanded); s.has(id) ? s.delete(id) : s.add(id); setExpanded(s); };
 
+  const persist = (updated: Spec[]) => { setSpecs(updated); saveSpecs(updated); };
+
   const addSpec = (spec: Omit<Spec, "id" | "created_at" | "updated_at">) => {
     const now = new Date().toISOString();
     const newSpec: Spec = { ...spec, id: crypto.randomUUID(), created_at: now, updated_at: now };
-    const updated = [newSpec, ...specs];
-    setSpecs(updated);
-    saveSpecs(updated);
+    persist([newSpec, ...specs]);
     toast.success(`Spec "${spec.title}" created`);
   };
 
-  const deleteSpec = (id: string) => {
-    const updated = specs.filter((s) => s.id !== id);
-    setSpecs(updated);
-    saveSpecs(updated);
-  };
+  const deleteSpec = (id: string) => persist(specs.filter((s) => s.id !== id));
 
   const updateStatus = (id: string, status: string) => {
-    const updated = specs.map((s) => s.id === id ? { ...s, status, updated_at: new Date().toISOString() } : s);
-    setSpecs(updated);
-    saveSpecs(updated);
+    persist(specs.map((s) => s.id === id ? { ...s, status, updated_at: new Date().toISOString() } : s));
+  };
+
+  const startEdit = (spec: Spec) => {
+    setEditing(spec.id);
+    setETitle(spec.title); setEOverview(spec.request_overview); setEGoals(spec.goals);
+    setEScope(spec.scope); setESpec(spec.specification); setEQuestions(spec.open_questions);
+  };
+
+  const saveEdit = (id: string) => {
+    persist(specs.map((s) => s.id === id ? { ...s, title: eTitle, request_overview: eOverview, goals: eGoals, scope: eScope, specification: eSpec, open_questions: eQuestions, updated_at: new Date().toISOString() } : s));
+    setEditing(null);
+    toast.success("Spec updated");
   };
 
   const handleAiGenerate = async () => {
     if (!aiInput.trim()) return;
     const data = await analyze("analyze-document", aiInput.trim(), `Generate a CFS specification document from these notes. Customer: ${aiCustomer || "Unknown"}`);
     if (!data) return;
-
     const rmRefs = data.rm_references?.map(normalizeRm) || [];
     addSpec({
       title: data.wiki_entry?.title || data.summary?.slice(0, 60) || "AI-Generated Spec",
-      rm_numbers: rmRefs,
-      customer: aiCustomer || data.customer_references?.[0] || "",
-      author: "AI Draft",
-      status: "Draft",
+      rm_numbers: rmRefs, customer: aiCustomer || data.customer_references?.[0] || "",
+      author: "AI Draft", status: "Draft",
       request_overview: data.summary || "",
       goals: data.wiki_entry?.content?.split("\n").find((l: string) => l.includes("goal"))?.replace(/^#+\s*/, "") || "See specification for details.",
       scope: data.deliverables?.map((d: any) => `• ${d.name} — ${d.status}`).join("\n") || "",
       specification: data.wiki_entry?.content || data.summary || "",
       open_questions: (data.open_questions || []).join("\n• ") || "",
     });
-    setAiInput("");
-    setShowAdd(false);
+    setAiInput(""); setShowAdd(false);
   };
 
   const handleManualAdd = () => {
     if (!mTitle.trim()) return;
     addSpec({
-      title: mTitle,
-      rm_numbers: mRm.split(",").map((r) => normalizeRm(r.trim())).filter(Boolean),
-      customer: mCustomer,
-      author: mAuthor || "Mike Nichols",
-      status: "Draft",
-      request_overview: mOverview,
-      goals: mGoals,
-      scope: mScope,
-      specification: mSpec,
-      open_questions: mQuestions,
+      title: mTitle, rm_numbers: mRm.split(",").map((r) => normalizeRm(r.trim())).filter(Boolean),
+      customer: mCustomer, author: mAuthor || "Mike Nichols", status: "Draft",
+      request_overview: mOverview, goals: mGoals, scope: mScope, specification: mSpec, open_questions: mQuestions,
     });
     setMTitle(""); setMRm(""); setMCustomer(""); setMAuthor(""); setMOverview(""); setMGoals(""); setMScope(""); setMSpec(""); setMQuestions("");
     setShowAdd(false);
+  };
+
+  const exportAllSpecsCsv = () => {
+    downloadCsvFile("all-specs.csv", specs.map((s) => ({
+      Title: s.title, Customer: s.customer, Author: s.author, Status: s.status,
+      "RM Numbers": s.rm_numbers.join(", "), "Request Overview": s.request_overview,
+      Goals: s.goals, Scope: s.scope, Specification: s.specification,
+      "Open Questions": s.open_questions, Created: s.created_at,
+    })));
+    toast.success("All specs exported");
+  };
+
+  const exportSpecAsDoc = (spec: Spec) => {
+    const text = exportSpecToText(spec);
+    downloadTextFile(`spec-${spec.title.replace(/\s+/g, "-").toLowerCase()}.txt`, text);
+    toast.success("Spec document exported");
+  };
+
+  const copySpecToClipboard = (spec: Spec) => {
+    navigator.clipboard.writeText(exportSpecToText(spec));
+    toast.success("Spec copied to clipboard");
   };
 
   const draftCount = specs.filter((s) => s.status === "Draft").length;
   const reviewCount = specs.filter((s) => s.status === "In Review").length;
 
   return (
-    <AppShell title="Specs Workspace" subtitle="Create, manage, and track specifications for RMs and initiatives">
+    <AppShell title="Specs Workspace" subtitle="Create, manage, and track specifications" onExportExcel={exportAllSpecsCsv}>
       <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <KpiCard label="Total Specs" value={specs.length} />
         <KpiCard label="Drafts" value={draftCount} color="text-status-caution" />
@@ -170,29 +195,28 @@ export default function SpecsWorkspacePage() {
 
           {aiMode === "ai" ? (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Paste meeting notes, emails, requirements, or any context. AI will generate a structured spec draft with Request Overview, Goals, Scope, Specification, and Open Questions.</p>
+              <p className="text-sm text-muted-foreground">Paste meeting notes, emails, requirements, or any context. AI will generate a structured spec draft.</p>
               <input className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Customer name" value={aiCustomer} onChange={(e) => setAiCustomer(e.target.value)} />
-              <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[200px] font-mono" placeholder="Paste notes, requirements, emails, or project context here..." value={aiInput} onChange={(e) => setAiInput(e.target.value)} />
+              <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[200px] font-mono" placeholder="Paste notes, requirements, emails..." value={aiInput} onChange={(e) => setAiInput(e.target.value)} />
               <button onClick={handleAiGenerate} disabled={loading || !aiInput.trim()} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50">
-                <Sparkles className="h-4 w-4" />
-                {loading ? "Generating Spec..." : "Generate Spec Draft"}
+                <Sparkles className="h-4 w-4" /> {loading ? "Generating..." : "Generate Spec Draft"}
               </button>
             </div>
           ) : (
             <div className="space-y-3">
               <div className="grid md:grid-cols-2 gap-3">
                 <input className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Spec title *" value={mTitle} onChange={(e) => setMTitle(e.target.value)} />
-                <input className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="RM numbers (comma separated, e.g. RM-12721, 13692)" value={mRm} onChange={(e) => setMRm(e.target.value)} />
+                <input className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="RM numbers (comma separated)" value={mRm} onChange={(e) => setMRm(e.target.value)} />
               </div>
               <div className="grid md:grid-cols-2 gap-3">
                 <input className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Customer" value={mCustomer} onChange={(e) => setMCustomer(e.target.value)} />
                 <input className="rounded-lg border border-border bg-background px-3 py-2 text-sm" placeholder="Author" value={mAuthor} onChange={(e) => setMAuthor(e.target.value)} />
               </div>
               <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" placeholder="Request Overview" value={mOverview} onChange={(e) => setMOverview(e.target.value)} />
-              <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" placeholder="Goals for this request" value={mGoals} onChange={(e) => setMGoals(e.target.value)} />
+              <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" placeholder="Goals" value={mGoals} onChange={(e) => setMGoals(e.target.value)} />
               <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" placeholder="Scope of changes" value={mScope} onChange={(e) => setMScope(e.target.value)} />
               <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[120px] font-mono" placeholder="Specification details" value={mSpec} onChange={(e) => setMSpec(e.target.value)} />
-              <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" placeholder="Open Questions / Considerations" value={mQuestions} onChange={(e) => setMQuestions(e.target.value)} />
+              <textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" placeholder="Open Questions" value={mQuestions} onChange={(e) => setMQuestions(e.target.value)} />
               <button onClick={handleManualAdd} disabled={!mTitle.trim()} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50">Save Spec</button>
             </div>
           )}
@@ -215,12 +239,7 @@ export default function SpecsWorkspacePage() {
               <h3 className="font-medium text-foreground flex-1">{spec.title}</h3>
               {spec.rm_numbers.map((rm) => <span key={rm} className="font-mono text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded">{rm}</span>)}
               {spec.customer && <span className="text-xs text-muted-foreground">{spec.customer}</span>}
-              <select
-                value={spec.status}
-                onChange={(e) => { e.stopPropagation(); updateStatus(spec.id, e.target.value); }}
-                onClick={(e) => e.stopPropagation()}
-                className="text-xs rounded border border-border bg-background px-2 py-1"
-              >
+              <select value={spec.status} onChange={(e) => { e.stopPropagation(); updateStatus(spec.id, e.target.value); }} onClick={(e) => e.stopPropagation()} className="text-xs rounded border border-border bg-background px-2 py-1">
                 {SPEC_STATUSES.map((s) => <option key={s}>{s}</option>)}
               </select>
               <span className="text-xs text-muted-foreground">{new Date(spec.updated_at).toLocaleDateString()}</span>
@@ -235,41 +254,35 @@ export default function SpecsWorkspacePage() {
                   <div><span className="text-xs font-semibold text-muted-foreground block">Created</span>{new Date(spec.created_at).toLocaleDateString()}</div>
                 </div>
 
-                {spec.request_overview && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Request Overview</h4>
-                    <p className="text-sm text-foreground whitespace-pre-wrap">{spec.request_overview}</p>
+                {editing === spec.id ? (
+                  <div className="space-y-3">
+                    <input className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-semibold" value={eTitle} onChange={(e) => setETitle(e.target.value)} />
+                    <div><label className="text-xs font-semibold text-muted-foreground">Request Overview</label><textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" value={eOverview} onChange={(e) => setEOverview(e.target.value)} /></div>
+                    <div><label className="text-xs font-semibold text-muted-foreground">Goals</label><textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" value={eGoals} onChange={(e) => setEGoals(e.target.value)} /></div>
+                    <div><label className="text-xs font-semibold text-muted-foreground">Scope</label><textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" value={eScope} onChange={(e) => setEScope(e.target.value)} /></div>
+                    <div><label className="text-xs font-semibold text-muted-foreground">Specification</label><textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[120px] font-mono" value={eSpec} onChange={(e) => setESpec(e.target.value)} /></div>
+                    <div><label className="text-xs font-semibold text-muted-foreground">Open Questions</label><textarea className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm min-h-[60px]" value={eQuestions} onChange={(e) => setEQuestions(e.target.value)} /></div>
+                    <div className="flex gap-2">
+                      <button onClick={() => saveEdit(spec.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium"><Check className="h-3 w-3" /> Save</button>
+                      <button onClick={() => setEditing(null)} className="px-3 py-1.5 rounded-lg bg-muted text-muted-foreground text-xs font-medium">Cancel</button>
+                    </div>
                   </div>
-                )}
-                {spec.goals && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Goals</h4>
-                    <p className="text-sm text-foreground whitespace-pre-wrap">{spec.goals}</p>
-                  </div>
-                )}
-                {spec.scope && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Scope of Changes</h4>
-                    <p className="text-sm text-foreground whitespace-pre-wrap">{spec.scope}</p>
-                  </div>
-                )}
-                {spec.specification && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Specification</h4>
-                    <div className="text-sm text-foreground whitespace-pre-wrap bg-card rounded-lg border border-border p-3">{spec.specification}</div>
-                  </div>
-                )}
-                {spec.open_questions && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Open Questions / Considerations</h4>
-                    <p className="text-sm text-foreground whitespace-pre-wrap">{spec.open_questions}</p>
-                  </div>
+                ) : (
+                  <>
+                    {spec.request_overview && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Request Overview</h4><p className="text-sm text-foreground whitespace-pre-wrap">{spec.request_overview}</p></div>}
+                    {spec.goals && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Goals</h4><p className="text-sm text-foreground whitespace-pre-wrap">{spec.goals}</p></div>}
+                    {spec.scope && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Scope of Changes</h4><p className="text-sm text-foreground whitespace-pre-wrap">{spec.scope}</p></div>}
+                    {spec.specification && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Specification</h4><div className="text-sm text-foreground whitespace-pre-wrap bg-card rounded-lg border border-border p-3">{spec.specification}</div></div>}
+                    {spec.open_questions && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Open Questions</h4><p className="text-sm text-foreground whitespace-pre-wrap">{spec.open_questions}</p></div>}
+                  </>
                 )}
 
                 <div className="flex items-center gap-2 pt-3 border-t border-border">
-                  <button onClick={() => deleteSpec(spec.id)} className="flex items-center gap-1 px-2 py-1 rounded text-xs text-destructive hover:bg-destructive/10">
-                    <Trash2 className="h-3 w-3" /> Delete
-                  </button>
+                  <button onClick={() => startEdit(spec)} className="flex items-center gap-1 px-2 py-1 rounded text-xs text-primary hover:bg-primary/10"><Edit2 className="h-3 w-3" /> Edit</button>
+                  <button onClick={() => exportSpecAsDoc(spec)} className="flex items-center gap-1 px-2 py-1 rounded text-xs text-primary hover:bg-primary/10"><Download className="h-3 w-3" /> Export Doc</button>
+                  <button onClick={() => exportSpecToCsv(spec)} className="flex items-center gap-1 px-2 py-1 rounded text-xs text-primary hover:bg-primary/10"><Download className="h-3 w-3" /> CSV</button>
+                  <button onClick={() => copySpecToClipboard(spec)} className="flex items-center gap-1 px-2 py-1 rounded text-xs text-primary hover:bg-primary/10"><Copy className="h-3 w-3" /> Copy</button>
+                  <button onClick={() => deleteSpec(spec.id)} className="flex items-center gap-1 px-2 py-1 rounded text-xs text-destructive hover:bg-destructive/10 ml-auto"><Trash2 className="h-3 w-3" /> Delete</button>
                 </div>
               </div>
             )}
