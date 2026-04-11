@@ -10,6 +10,7 @@ import CustomerSummaryPage from "@/pages/CustomerSummaryPage";
 import ActionItemsPage from "@/pages/ActionItemsPage";
 import KeyDatesPage from "@/pages/KeyDatesPage";
 import RenewalsPage from "@/pages/RenewalsPage";
+import RmIssueCenterPage from "@/pages/RmIssueCenterPage";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/" element={<Navigate to="/portfolio" replace />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/customer-summary" element={<CustomerSummaryPage />} />
+          <Route path="/rm-issues" element={<RmIssueCenterPage />} />
           <Route path="/action-items" element={<ActionItemsPage />} />
           <Route path="/key-dates" element={<KeyDatesPage />} />
           <Route path="/renewals" element={<RenewalsPage />} />

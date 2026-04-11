@@ -14,45 +14,68 @@ export default function CustomerPage() {
   const ids = new Set(projects.map((p) => p.project_id));
   const actions = seed.actionItems.filter((a) => ids.has(a.project_id));
   const milestones = seed.milestones.filter((m) => ids.has(m.project_id));
-  const blockers = seed.risks.filter((r) => ids.has(r.project_id) && r.status === "OPEN");
+  const rmIssues = seed.rmIssues.filter((r) => ids.has(r.project_id));
+  const blockers = seed.blockers.filter((r) => ids.has(r.project_id));
+  const resources = seed.linkedResources.filter((r) => r.project_id && ids.has(r.project_id));
+  const highlights = seed.recentHighlights.filter((h) => ids.has(h.project_id));
 
   return (
-    <main id={`customer-${customer.slug}`} className="min-h-screen bg-slate-50 px-4 py-6 print:bg-white">
+    <main id={`customer-${customer.slug}`} className="min-h-screen bg-slate-100 px-4 py-6 print:bg-white">
       <section className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded border bg-white p-4">
+        <header className="rounded-xl border bg-white p-5 shadow-sm print-avoid-break">
           <div className="flex items-start justify-between gap-2">
             <div>
               <Link className="text-sm text-blue-700 underline" to="/portfolio">← Portfolio</Link>
-              <h1 className="text-2xl font-semibold">{customer.customer_name}</h1>
-              <p className="text-sm text-slate-600">Projects: {projects.length} · Action Items: {actions.length} · Open Blockers: {blockers.length}</p>
+              <h1 className="text-3xl font-semibold">{customer.customer_name}</h1>
+              <p className="text-sm text-slate-600">Executive PMO Customer Detail · Generated {new Date().toLocaleString()}</p>
             </div>
-            <button className="rounded border px-3 py-1 text-sm print:hidden" onClick={() => exportCustomerPdf(customer.slug)}>Customer PDF</button>
+            <button className="rounded-lg border px-3 py-1 text-sm print:hidden" onClick={() => exportCustomerPdf(customer.slug)}>Export PDF</button>
           </div>
         </header>
 
-        {projects.map((project) => {
-          const pMilestones = milestones.filter((m) => m.project_id === project.project_id);
-          const pActions = actions.filter((a) => a.project_id === project.project_id);
-          const pRisks = blockers.filter((r) => r.project_id === project.project_id);
-          const resources = seed.linkedResources.filter((r) => r.note.toLowerCase().includes(customer.customer_name.split(" ")[0].toLowerCase()));
+        <section className="grid gap-4 md:grid-cols-2">
+          <section className="rounded-xl border bg-white p-4 shadow-sm">
+            <h2 className="font-semibold">Executive Summary</h2>
+            <p className="text-sm mt-2">Projects: {projects.length} · Active RM Issues: {rmIssues.length} · Open blockers: {blockers.length}.</p>
+            <p className="text-sm mt-2">Customer health is {blockers.length ? "At Risk" : "On Track"} based on blocker proximity and RM volume.</p>
+          </section>
+          <section className="rounded-xl border bg-white p-4 shadow-sm">
+            <h2 className="font-semibold">Key Dates</h2>
+            <ul className="mt-2 list-disc pl-5 text-sm">{milestones.length ? milestones.map((m) => <li key={m.milestone_id}>{m.title}: {vagueMilestoneToLabel(m.date_text)} <span className="text-slate-500">({m.date_confidence ?? "low"} confidence)</span></li>) : <li>TBD</li>}</ul>
+          </section>
+        </section>
 
-          return (
-            <section key={project.project_id} className="rounded border bg-white p-4 print-avoid-break">
-              <h2 className="text-lg font-semibold">{project.project_name}</h2>
-              <p className="text-sm">Status: <strong>{project.normalizedStatus}</strong></p>
-              <p className="text-sm text-slate-700">{project.summary}</p>
+        <section className="rounded-xl border bg-white p-4 shadow-sm">
+          <h2 className="font-semibold">Risks / Blockers (Priority)</h2>
+          <ul className="mt-2 list-disc pl-5 text-sm">{blockers.length ? blockers.map((r) => <li key={r.blocker_id}>{r.description}</li>) : <li>No active blockers.</li>}</ul>
+        </section>
 
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <div><h3 className="font-medium">Key Dates</h3><ul className="list-disc pl-5 text-sm">{pMilestones.length ? pMilestones.map((m) => <li key={m.milestone_id}>{m.title}: {vagueMilestoneToLabel(m.date)}</li>) : <li>TBD</li>}</ul></div>
-                <div><h3 className="font-medium">Action Items</h3><ul className="list-disc pl-5 text-sm">{pActions.length ? pActions.map((a) => <li key={a.action_item_id}>{a.description} (Owner: {a.owner}; Due: {a.due_date ?? "TBD"})</li>) : <li>None</li>}</ul></div>
-                <div><h3 className="font-medium">Blockers</h3><ul className="list-disc pl-5 text-sm">{pRisks.length ? pRisks.map((r) => <li key={r.risk_id}>{r.description}</li>) : <li>No active blockers</li>}</ul></div>
-                <div><h3 className="font-medium">Linked Trackers / Resources</h3><ul className="list-disc pl-5 text-sm">{resources.length ? resources.map((r) => <li key={r.resource_id}>{r.label} ({r.availability})</li>) : <li>No linked resources</li>}</ul></div>
-              </div>
+        <section className="grid gap-4 md:grid-cols-2 print-break-before">
+          <section className="rounded-xl border bg-white p-4 shadow-sm">
+            <h2 className="font-semibold">Active Workstreams</h2>
+            <ul className="mt-2 list-disc pl-5 text-sm">{projects.map((project) => <li key={project.project_id}><strong>{project.project_name}</strong> · {project.deliverable ?? "TBD"} · {project.normalizedStatus}</li>)}</ul>
+          </section>
+          <section className="rounded-xl border bg-white p-4 shadow-sm">
+            <h2 className="font-semibold">Action Items</h2>
+            <ul className="mt-2 list-disc pl-5 text-sm">{actions.length ? actions.map((a) => <li key={a.action_item_id}>{a.description} (Owner: {a.owner}; Due: {a.due_date ?? "TBD"})</li>) : <li>None</li>}</ul>
+          </section>
+        </section>
 
-              <div className="mt-3"><h3 className="font-medium">Recent Highlights</h3><ul className="list-disc pl-5 text-sm">{project.recent_highlights.length ? project.recent_highlights.map((h, i) => <li key={i}>{h}</li>) : <li>No highlights captured in dataset.</li>}</ul></div>
-            </section>
-          );
-        })}
+        <section className="rounded-xl border bg-white p-4 shadow-sm overflow-x-auto">
+          <h2 className="font-semibold">RM / Issue Tracker</h2>
+          <table className="mt-2 w-full text-sm"><thead><tr className="border-b text-left"><th className="py-2">RM Ref</th><th>Description</th><th>Status</th><th>Owner</th></tr></thead><tbody>{rmIssues.length ? rmIssues.map((r) => <tr key={r.rm_issue_id} className="border-b"><td className="py-2 font-medium">{r.rm_reference}</td><td>{r.description}</td><td>{r.normalizedStatus}</td><td>{r.owner}</td></tr>) : <tr><td className="py-2" colSpan={4}>No RM issues</td></tr>}</tbody></table>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-2">
+          <section className="rounded-xl border bg-white p-4 shadow-sm">
+            <h2 className="font-semibold">Recent Highlights</h2>
+            <ul className="mt-2 list-disc pl-5 text-sm">{highlights.length ? highlights.map((h) => <li key={h.highlight_id}>{h.highlight}</li>) : <li>No highlights captured.</li>}</ul>
+          </section>
+          <section className="rounded-xl border bg-white p-4 shadow-sm">
+            <h2 className="font-semibold">Related Trackers / Resources</h2>
+            <ul className="mt-2 list-disc pl-5 text-sm">{resources.length ? resources.map((r) => <li key={r.resource_id}>{r.label} · {r.resource_type} · {r.notes ?? "TBD"}</li>) : <li>No linked resources.</li>}</ul>
+          </section>
+        </section>
       </section>
     </main>
   );
