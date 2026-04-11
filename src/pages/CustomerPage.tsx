@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import GanttChart from "@/components/GanttChart";
-import { StatusBadge, PriorityBadge, HealthBadge } from "@/components/StatusBadge";
+import { StatusBadge, PriorityBadge, HealthBadge, FlagBadge } from "@/components/StatusBadge";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { vagueMilestoneToLabel } from "@/lib/cfs/helpers";
