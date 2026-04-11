@@ -1,3 +1,5 @@
+import { CanonicalStatus, DerivedFlag } from "@/lib/cfs/standards";
+
 export const STANDARD_STATUS_BUCKETS = [
   "Not Started",
   "Planning",
@@ -51,8 +53,11 @@ export interface TrackerItem {
   category: string | null;
   priority: string | null;
   rm_reference: string | null;
+  rm_reference_raw: string | null;
+  rm_references_detected: string[];
   original_status: string | null;
   standardized_status: string;
+  canonical_status: CanonicalStatus;
   status_bucket: StandardStatusBucket;
   owner: string | null;
   owner_type: string | null;
@@ -62,12 +67,14 @@ export interface TrackerItem {
   next_steps: string | null;
   target_eta: string | null;
   last_update: string | null;
+  stale_days: number | null;
   completed_date: string | null;
   deployed_date: string | null;
   milestone_date: string | null;
   blocker_flag: boolean;
   blocker_details: string | null;
   review_flag: boolean;
+  derived_flags: DerivedFlag[];
   source_file: string;
   source_sheet: string;
   source_row: number;

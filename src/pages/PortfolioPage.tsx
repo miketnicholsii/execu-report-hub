@@ -290,9 +290,10 @@ export default function PortfolioPage() {
       <section className="rounded-xl border border-border bg-card p-4 shadow-sm overflow-x-auto">
         <h2 className="font-semibold mb-3 text-foreground flex items-center gap-2"><Users className="h-4 w-4" /> Customer Portfolio</h2>
         <table className="w-full text-sm">
-          <thead><tr className="border-b text-left text-muted-foreground">
+          <thead className="sticky top-0 bg-card z-10"><tr className="border-b text-left text-muted-foreground">
             <th className="py-2 pr-3">Customer</th><th className="pr-3">Health</th><th className="pr-3">Projects</th>
             <th className="pr-3">Open / Total</th><th className="pr-3">Open RM</th><th className="pr-3">Actions</th>
+            <th className="pr-3">Stale RM</th><th className="pr-3">Risk</th><th className="pr-3">Missing Spec</th><th className="pr-3">Last Updated</th>
             <th className="pr-3">Blockers</th><th className="pr-3">Deploy Ready</th><th className="pr-3">Next Milestone</th><th>Renewals</th>
           </tr></thead>
           <tbody>{customers.sort((a, b) => a.customer_name.localeCompare(b.customer_name)).map((c) => (
@@ -303,6 +304,10 @@ export default function PortfolioPage() {
               <td className="pr-3"><span className="font-medium">{c.openItems}</span> / {c.totalItems}</td>
               <td className="pr-3">{c.openRm}</td>
               <td className="pr-3">{c.actionCount}</td>
+              <td className="pr-3">{c.staleRmCount}</td>
+              <td className="pr-3"><PriorityBadge priority={c.riskIndicator === "High" ? "High" : c.riskIndicator === "Medium" ? "Medium" : "Low"} /></td>
+              <td className="pr-3">{c.missingSpecCount}</td>
+              <td className="pr-3 text-xs">{c.lastUpdated ? new Date(c.lastUpdated).toLocaleDateString() : "Unknown"}</td>
               <td className="pr-3">{c.blockerCount > 0 ? <span className="text-destructive font-medium">{c.blockerCount}</span> : "0"}</td>
               <td className="pr-3">{c.deployReady > 0 ? <span className="text-status-on-track font-medium">{c.deployReady}</span> : "0"}</td>
               <td className="pr-3 text-xs">{c.nextMilestone}</td>
