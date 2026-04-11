@@ -130,9 +130,9 @@ export default function DocumentUploadPage() {
       {/* KPIs */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KpiCard label="TOTAL DOCUMENTS" value={documents.length} />
-        <KpiCard label="PROCESSED" value={processed} valueColor="text-emerald-600" />
-        <KpiCard label="PENDING" value={pending} valueColor="text-amber-500" />
-        <KpiCard label="ACTION ITEMS FOUND" value={documents.reduce((acc, d) => acc + (d.extracted_data?.action_items?.length || 0), 0)} valueColor="text-primary" />
+        <KpiCard label="PROCESSED" value={processed} color="text-emerald-600" />
+        <KpiCard label="PENDING" value={pending} color="text-amber-500" />
+        <KpiCard label="ACTION ITEMS FOUND" value={documents.reduce((acc, d) => acc + (d.extracted_data?.action_items?.length || 0), 0)} color="text-primary" />
       </section>
 
       {/* Upload Area */}
