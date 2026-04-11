@@ -2,11 +2,14 @@ import { Link, useParams } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
+import GanttChart from "@/components/GanttChart";
 import { StatusBadge, PriorityBadge, HealthBadge, UrgencyBadge } from "@/components/StatusBadge";
-import { getCustomerDeepData } from "@/lib/cfs/selectors2";
+import { EditableText, EditableSelect } from "@/components/EditableCell";
+import { getCustomerDeepData, seed, customerById } from "@/lib/cfs/selectors2";
 import { vagueMilestoneToLabel } from "@/lib/cfs/helpers";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { useState } from "react";
+import { Eye, Layers, ChevronDown, ChevronUp } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
   "Testing Complete": "hsl(142,60%,40%)", "Complete": "hsl(142,70%,35%)", "Deployed": "hsl(142,70%,35%)", "Shipped": "hsl(142,60%,40%)",
@@ -17,14 +20,14 @@ const STATUS_COLORS: Record<string, string> = {
   "Waiting on Customer": "hsl(0,72%,51%)", "Waiting on Case Farms": "hsl(0,72%,51%)", "Waiting on Info": "hsl(0,72%,51%)",
   "On Hold": "hsl(0,0%,60%)", "Quote Sent": "hsl(260,50%,55%)",
 };
-const PRIORITY_COLORS: Record<string, string> = {
-  Highest: "hsl(0,72%,51%)", High: "hsl(0,60%,55%)", Medium: "hsl(38,92%,50%)", Low: "hsl(220,15%,60%)",
-};
+const PRIORITY_COLORS: Record<string, string> = { Highest: "hsl(0,72%,51%)", High: "hsl(0,60%,55%)", Medium: "hsl(38,92%,50%)", Low: "hsl(220,15%,60%)" };
 
 export default function CustomerPage() {
   const { customerSlug = "" } = useParams();
   const data = getCustomerDeepData(customerSlug);
   const [rmExpanded, setRmExpanded] = useState<Set<string>>(new Set());
+  const [mode, setMode] = useState<"executive" | "operational">("executive");
+  const [showComplete, setShowComplete] = useState(false);
 
   if (!data) return (
     <AppShell title="Not Found" subtitle="">
@@ -33,6 +36,7 @@ export default function CustomerPage() {
   );
 
   const { customer, projects, actions, milestones, rmIssues, rmDetail, blockers, highlights, trackerItems, openTracker, completeTracker, meetings, resources, health } = data;
+  const displayedTracker = showComplete ? trackerItems : openTracker;
 
   // Charts
   const statusCounts: Record<string, number> = {};
@@ -44,45 +48,39 @@ export default function CustomerPage() {
   const statusData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
   const priorityData = Object.entries(priorityCounts).map(([name, value]) => ({ name, value }));
 
-  const toggleRm = (id: string) => {
-    const next = new Set(rmExpanded);
-    next.has(id) ? next.delete(id) : next.add(id);
-    setRmExpanded(next);
-  };
+  // Gantt
+  const ganttItems = projects.filter((p) => (p as any).start_date || (p as any).target_date).map((p) => {
+    const ms = milestones.filter((m) => m.project_id === p.project_id && m.date_text && !m.date_text.includes("TBD")).map((m) => ({ date: m.date_text!, label: m.title }));
+    return { id: p.project_id, label: p.project_name, startDate: (p as any).start_date, endDate: (p as any).target_date, milestones: ms, percentComplete: p.percent_complete, status: p.normalizedStatus, owner: p.owner };
+  });
+
+  const toggleRm = (id: string) => { const n = new Set(rmExpanded); n.has(id) ? n.delete(id) : n.add(id); setRmExpanded(n); };
 
   const exportTrackerExcel = () => downloadCsv(`${customer.slug}-tracker.csv`, trackerItems.map((t) => ({
-    Priority: t.priority, Topic: t.topic, RM_Reference: t.rm_reference ?? "",
-    Status: t.status, Context: t.context ?? "", Last_Update: t.last_update ?? "",
-    Target_ETA: t.target_eta ?? "", Notes: t.notes ?? "", Next_Steps: t.next_steps ?? "", Owner: t.owner,
+    Priority: t.priority, Topic: t.topic, RM: t.rm_reference ?? "", Status: t.status, Context: t.context ?? "", Last_Update: t.last_update ?? "", ETA: t.target_eta ?? "", Notes: t.notes ?? "", Next_Steps: t.next_steps ?? "", Owner: t.owner,
   })));
-
-  const exportActionsExcel = () => downloadCsv(`${customer.slug}-actions.csv`, actions.map((a) => ({
-    Description: a.description, Owner: a.owner, Due: a.due_date ?? "TBD", Urgency: a.urgency ?? "normal",
-  })));
-
-  const exportRmExcel = () => downloadCsv(`${customer.slug}-rm-issues.csv`, rmDetail.map((r) => ({
-    RM_Reference: r.rm_reference, Description: r.description, Status: r.normalizedStatus,
-    Urgency: r.urgency ?? "normal", Owner: r.owner, Context: r.context ?? "",
-    Notes: r.notes ?? "", Next_Steps: r.next_steps ?? "", Priority: r.priority ?? "",
-    Last_Update: r.last_update ?? "", Target_ETA: r.target_eta ?? "",
-  })));
-
-  const exportMeetingsExcel = () => downloadCsv(`${customer.slug}-meetings.csv`, meetings.flatMap((m) =>
-    m.action_items_from_meeting.map((a) => ({
-      Meeting: m.title, Date: m.date, Attendees: m.attendees.join("; "),
-      Action: a.description, Owner: a.owner, Due: a.due_date ?? "TBD", Status: a.status,
-    }))
-  ));
-
-  const exportAll = () => {
-    exportTrackerExcel();
-    setTimeout(exportActionsExcel, 200);
-    setTimeout(exportRmExcel, 400);
-    setTimeout(exportMeetingsExcel, 600);
-  };
+  const exportActionsExcel = () => downloadCsv(`${customer.slug}-actions.csv`, actions.map((a) => ({ Description: a.description, Owner: a.owner, Due: a.due_date ?? "TBD", Urgency: a.urgency ?? "normal" })));
+  const exportRmExcel = () => downloadCsv(`${customer.slug}-rm.csv`, rmDetail.map((r) => ({ RM: r.rm_reference, Description: r.description, Status: r.normalizedStatus, Owner: r.owner, Context: r.context ?? "", Next_Steps: r.next_steps ?? "" })));
+  const exportAll = () => { exportTrackerExcel(); setTimeout(exportActionsExcel, 200); setTimeout(exportRmExcel, 400); };
 
   return (
-    <AppShell title={customer.customer_name} subtitle={`Customer Deep Dive · ${new Date().toLocaleDateString()}`} onExportExcel={exportAll} onExportPdf={exportPdf}>
+    <AppShell
+      title={customer.customer_name}
+      subtitle={`Customer Deep Dive · ${new Date().toLocaleDateString()}`}
+      onExportExcel={exportAll}
+      onExportPdf={exportPdf}
+      breadcrumbs={[{ label: "Customers", to: "/customer-summary" }, { label: customer.customer_name }]}
+      actions={
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-background p-0.5">
+          <button onClick={() => setMode("executive")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "executive" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+            <Eye className="h-3 w-3" /> Executive
+          </button>
+          <button onClick={() => setMode("operational")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "operational" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+            <Layers className="h-3 w-3" /> Operational
+          </button>
+        </div>
+      }
+    >
       {/* KPIs */}
       <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
         <KpiCard label="Projects" value={projects.length} />
@@ -124,6 +122,9 @@ export default function CustomerPage() {
         </section>
       )}
 
+      {/* Gantt Timeline */}
+      {ganttItems.length > 0 && <GanttChart items={ganttItems} title="Initiative Timeline" />}
+
       {/* Executive Summary Block */}
       <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-3">Executive Summary</h2>
@@ -131,14 +132,20 @@ export default function CustomerPage() {
           {projects.map((p) => (
             <div key={p.project_id} className="rounded-lg border border-border p-4 bg-muted/10">
               <div className="flex items-center gap-3 flex-wrap mb-2">
-                <span className="font-semibold text-foreground">{p.project_name}</span>
+                <Link to={`/initiatives/${p.project_id}`} className="font-semibold text-primary hover:underline">{p.project_name}</Link>
                 {p.deliverable && <span className="text-xs text-muted-foreground">· {p.deliverable}</span>}
                 <StatusBadge status={p.normalizedStatus} />
-                <span className="text-xs text-muted-foreground ml-auto">Owner: {p.owner}</span>
+                <PriorityBadge priority={p.priority} />
+                <span className="text-xs text-muted-foreground ml-auto">
+                  {p.percent_complete}% · Owner: {p.owner}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex-1 h-1.5 bg-muted rounded-full max-w-[200px]">
+                  <div className="h-1.5 bg-primary rounded-full transition-all" style={{ width: `${p.percent_complete}%` }} />
+                </div>
               </div>
               <p className="text-sm text-foreground">{p.summary}</p>
-
-              {/* Key dates for this project */}
               {milestones.filter((m) => m.project_id === p.project_id).length > 0 && (
                 <div className="mt-2">
                   <span className="text-xs font-semibold text-muted-foreground">Key Dates: </span>
@@ -166,32 +173,48 @@ export default function CustomerPage() {
         </section>
       )}
 
-      {/* Open Tracker Items — Full Detail */}
-      {openTracker.length > 0 && (
+      {/* Operational: Tracker Items */}
+      {(mode === "operational" || openTracker.length > 0) && (
         <section className="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
-          <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-            <h2 className="font-semibold text-foreground">Open Items ({openTracker.length})</h2>
-            <button onClick={exportTrackerExcel} className="text-xs text-primary hover:underline print:hidden">Export Tracker ↓</button>
+          <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-3">
+            <h2 className="font-semibold text-foreground">{showComplete ? "All" : "Open"} Items ({displayedTracker.length})</h2>
+            <div className="flex items-center gap-3 print:hidden">
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                <input type="checkbox" checked={showComplete} onChange={(e) => setShowComplete(e.target.checked)} className="rounded" />
+                Show completed
+              </label>
+              <button onClick={exportTrackerExcel} className="text-xs text-primary hover:underline">Export ↓</button>
+            </div>
           </div>
           <table className="w-full text-sm">
             <thead className="sticky top-0 bg-card border-b"><tr className="text-left text-muted-foreground">
               <th className="py-2 px-3">Priority</th><th className="px-3">Topic</th><th className="px-3">RM#</th>
-              <th className="px-3">Status</th><th className="px-3">Owner</th><th className="px-3">Last Update</th><th className="px-3">ETA</th><th className="px-3">Next Steps</th>
+              <th className="px-3">Status</th><th className="px-3">Owner</th>
+              {mode === "operational" && <><th className="px-3">Last Update</th><th className="px-3">ETA</th></>}
+              <th className="px-3">Next Steps</th>
             </tr></thead>
-            <tbody>{openTracker.map((t) => (
+            <tbody>{displayedTracker.map((t) => (
               <tr key={t.item_id} className="border-b hover:bg-muted/30 transition-colors align-top">
                 <td className="py-2 px-3"><PriorityBadge priority={t.priority} /></td>
                 <td className="px-3 max-w-[280px]">
                   <div className="font-medium text-foreground">{t.topic}</div>
-                  {t.context && <div className="text-xs text-muted-foreground mt-0.5">{t.context}</div>}
-                  {t.notes && <div className="text-xs text-muted-foreground/70 mt-0.5 italic">{t.notes}</div>}
+                  {mode === "operational" && t.context && <div className="text-xs text-muted-foreground mt-0.5">{t.context}</div>}
+                  {mode === "operational" && t.notes && <div className="text-xs text-muted-foreground/70 mt-0.5 italic">{t.notes}</div>}
                 </td>
                 <td className="px-3 font-mono text-xs">{t.rm_reference ?? "—"}</td>
-                <td className="px-3"><StatusBadge status={t.status} /></td>
-                <td className="px-3 text-xs">{t.owner}</td>
-                <td className="px-3 text-xs text-muted-foreground">{t.last_update ?? "—"}</td>
-                <td className="px-3 text-xs text-muted-foreground">{t.target_eta ?? "—"}</td>
-                <td className="px-3 text-xs max-w-[180px]">{t.next_steps ?? "—"}</td>
+                <td className="px-3">
+                  <EditableSelect entityId={t.item_id} field="status" defaultValue={t.status} options={["Open", "In Progress", "In Programming", "In-Testing", "Testing Active", "Testing Complete", "Moved To Programming", "Waiting on Customer", "Complete", "Deployed", "On Hold"]} renderBadge={(v) => <StatusBadge status={v} />} />
+                </td>
+                <td className="px-3 text-xs">
+                  <EditableText entityId={t.item_id} field="owner" defaultValue={t.owner} />
+                </td>
+                {mode === "operational" && <>
+                  <td className="px-3 text-xs text-muted-foreground">{t.last_update ?? "—"}</td>
+                  <td className="px-3 text-xs text-muted-foreground">{t.target_eta ?? "—"}</td>
+                </>}
+                <td className="px-3 text-xs max-w-[180px]">
+                  <EditableText entityId={t.item_id} field="next_steps" defaultValue={t.next_steps ?? ""} />
+                </td>
               </tr>
             ))}</tbody>
           </table>
@@ -216,17 +239,34 @@ export default function CustomerPage() {
               </div>
               {rmExpanded.has(r.rm_issue_id) && (
                 <div className="border-t border-border px-4 py-3 bg-muted/20">
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-3 gap-4">
                     <dl className="text-sm space-y-1.5">
-                      <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Owner:</dt><dd>{r.owner}</dd></div>
+                      <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Owner:</dt><dd><EditableText entityId={r.rm_issue_id} field="owner" defaultValue={r.owner} /></dd></div>
                       {r.priority && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Priority:</dt><dd><PriorityBadge priority={r.priority} /></dd></div>}
                       {r.target_eta && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Target ETA:</dt><dd>{r.target_eta}</dd></div>}
                       {r.last_update && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Last Update:</dt><dd>{r.last_update}</dd></div>}
+                      {(r as any).type && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Type:</dt><dd>{(r as any).type}</dd></div>}
+                      {(r as any).severity && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Severity:</dt><dd>{(r as any).severity}</dd></div>}
+                    </dl>
+                    <dl className="text-sm space-y-1.5">
+                      {(r as any).spec_status && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Spec:</dt><dd><StatusBadge status={(r as any).spec_status} /></dd></div>}
+                      {(r as any).code_status && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Code:</dt><dd className="text-xs">{(r as any).code_status}</dd></div>}
+                      {(r as any).testing_status && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Testing:</dt><dd className="text-xs">{(r as any).testing_status}</dd></div>}
+                      {(r as any).deployment_status && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Deploy:</dt><dd className="text-xs">{(r as any).deployment_status}</dd></div>}
+                      {(r as any).created_date && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Created:</dt><dd className="text-xs">{(r as any).created_date}</dd></div>}
+                      {(r as any).due_date && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Due:</dt><dd className="text-xs">{(r as any).due_date}</dd></div>}
                     </dl>
                     <div className="space-y-2">
+                      {(r as any).business_context && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground">Business Context</h4><p className="text-sm">{(r as any).business_context}</p></div>}
+                      {(r as any).technical_context && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground">Technical Context</h4><p className="text-sm">{(r as any).technical_context}</p></div>}
+                      {(r as any).key_requirements && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground">Requirements</h4><p className="text-sm">{(r as any).key_requirements}</p></div>}
+                      {(r as any).open_questions && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground">Open Questions</h4><p className="text-sm text-status-caution">{(r as any).open_questions}</p></div>}
                       {r.context && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground">Context</h4><p className="text-sm">{r.context}</p></div>}
                       {r.notes && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground">Notes</h4><p className="text-sm">{r.notes}</p></div>}
-                      {r.next_steps && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground">Next Steps</h4><p className="text-sm">{r.next_steps}</p></div>}
+                      <div>
+                        <h4 className="text-xs font-semibold uppercase text-muted-foreground">Next Steps</h4>
+                        <EditableText entityId={r.rm_issue_id} field="next_steps" defaultValue={r.next_steps ?? ""} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -244,20 +284,19 @@ export default function CustomerPage() {
         </div>
         <table className="w-full text-sm">
           <thead className="bg-card border-b"><tr className="text-left text-muted-foreground">
-            <th className="py-2 px-3">Action</th><th className="px-3">Owner</th><th className="px-3">Due</th><th className="px-3">Urgency</th>
+            <th className="py-2 px-3">Action</th><th className="px-3">Owner</th><th className="px-3">Due</th><th className="px-3">Urgency</th><th className="px-3">Status</th>
           </tr></thead>
           <tbody>{actions.length ? actions.map((a) => (
             <tr key={a.action_item_id} className="border-b hover:bg-muted/30 transition-colors align-top">
-              <td className="py-2 px-3">{a.description}</td>
-              <td className="px-3 text-xs">{a.owner}</td>
+              <td className="py-2 px-3"><EditableText entityId={a.action_item_id} field="description" defaultValue={a.description} /></td>
+              <td className="px-3 text-xs"><EditableText entityId={a.action_item_id} field="owner" defaultValue={a.owner} /></td>
               <td className="px-3 text-xs text-muted-foreground">{a.due_date ?? "TBD"}</td>
+              <td className="px-3"><UrgencyBadge urgency={a.urgency ?? "normal"} /></td>
               <td className="px-3">
-                <span className={`px-2 py-0.5 rounded text-xs font-medium border ${a.urgency === "high" ? "bg-destructive/15 text-destructive border-destructive/30" : "bg-muted text-muted-foreground border-border"}`}>
-                  {a.urgency ?? "normal"}
-                </span>
+                <EditableSelect entityId={a.action_item_id} field="status" defaultValue={a.normalizedStatus} options={["Open", "In Progress", "Complete", "Done", "Waiting", "On Hold"]} renderBadge={(v) => <StatusBadge status={v} />} />
               </td>
             </tr>
-          )) : <tr><td className="py-3 px-3 text-muted-foreground" colSpan={4}>No action items.</td></tr>}</tbody>
+          )) : <tr><td className="py-3 px-3 text-muted-foreground" colSpan={5}>No action items.</td></tr>}</tbody>
         </table>
       </section>
 
@@ -275,12 +314,9 @@ export default function CustomerPage() {
       )}
 
       {/* Meeting Minutes */}
-      {meetings.length > 0 && (
+      {meetings.length > 0 && mode === "operational" && (
         <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">Meeting Minutes ({meetings.length})</h2>
-            <button onClick={exportMeetingsExcel} className="text-xs text-primary hover:underline print:hidden">Export Meetings ↓</button>
-          </div>
+          <h2 className="text-lg font-semibold text-foreground">Meeting Minutes ({meetings.length})</h2>
           {meetings.map((mtg) => (
             <article key={mtg.meeting_id} className="rounded-xl border border-border bg-card p-4 shadow-sm">
               <div className="flex items-center justify-between mb-2">
@@ -289,7 +325,6 @@ export default function CustomerPage() {
               </div>
               <p className="text-xs text-muted-foreground">Attendees: {mtg.attendees.join(", ")}</p>
               <p className="text-sm mt-2 text-foreground">{mtg.summary}</p>
-
               <div className="grid md:grid-cols-2 gap-3 mt-3">
                 {mtg.decisions.length > 0 && (
                   <div className="rounded-lg border border-border p-3 bg-muted/20">
@@ -304,14 +339,12 @@ export default function CustomerPage() {
                   </div>
                 )}
               </div>
-
               {mtg.action_items_from_meeting.length > 0 && (
                 <div className="mt-3">
-                  <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Action Items</h4>
-                  <table className="w-full text-sm">
-                    <thead><tr className="border-b text-left text-muted-foreground"><th className="py-1 pr-3">Action</th><th className="pr-3">Owner</th><th className="pr-3">Due</th><th>Status</th></tr></thead>
+                  <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Meeting Action Items</h4>
+                  <table className="w-full text-sm"><thead><tr className="border-b text-left text-muted-foreground"><th className="py-1.5 pr-3">Action</th><th className="pr-3">Owner</th><th className="pr-3">Due</th><th>Status</th></tr></thead>
                     <tbody>{mtg.action_items_from_meeting.map((a, i) => (
-                      <tr key={i} className="border-b last:border-0"><td className="py-1 pr-3">{a.description}</td><td className="pr-3 text-xs">{a.owner}</td><td className="pr-3 text-xs">{a.due_date ?? "TBD"}</td><td><StatusBadge status={a.status} /></td></tr>
+                      <tr key={i} className="border-b last:border-0"><td className="py-1.5 pr-3">{a.description}</td><td className="pr-3 text-xs">{a.owner}</td><td className="pr-3 text-xs text-muted-foreground">{a.due_date ?? "TBD"}</td><td><StatusBadge status={a.status} /></td></tr>
                     ))}</tbody>
                   </table>
                 </div>
@@ -322,39 +355,18 @@ export default function CustomerPage() {
       )}
 
       {/* Resources */}
-      {resources.length > 0 && (
+      {resources.length > 0 && mode === "operational" && (
         <section className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <h2 className="font-semibold text-foreground mb-2">Linked Resources</h2>
+          <h2 className="font-semibold mb-2">Linked Resources</h2>
           <div className="space-y-1 text-sm">{resources.map((r) => (
             <div key={r.resource_id} className="flex items-center gap-3 py-1 border-b border-border/50 last:border-0">
               <span className="px-2 py-0.5 rounded text-xs font-medium border border-border bg-muted text-muted-foreground">{r.resource_type}</span>
-              <span className="font-medium text-foreground">{r.label}</span>
+              <span className="font-medium">{r.label}</span>
               {r.notes && <span className="text-xs text-muted-foreground">— {r.notes}</span>}
             </div>
           ))}</div>
         </section>
       )}
-
-      {/* Completed Items */}
-      {completeTracker.length > 0 && (
-        <section className="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
-          <div className="px-4 py-3 border-b border-border">
-            <h2 className="font-semibold text-foreground">Completed / Deployed ({completeTracker.length})</h2>
-          </div>
-          <table className="w-full text-sm">
-            <thead className="bg-card border-b"><tr className="text-left text-muted-foreground">
-              <th className="py-2 px-3">Topic</th><th className="px-3">RM#</th><th className="px-3">Status</th><th className="px-3">Notes</th>
-            </tr></thead>
-            <tbody>{completeTracker.map((t) => (
-              <tr key={t.item_id} className="border-b"><td className="py-2 px-3">{t.topic}</td><td className="px-3 font-mono text-xs">{t.rm_reference ?? "—"}</td><td className="px-3"><StatusBadge status={t.status} /></td><td className="px-3 text-xs text-muted-foreground">{t.notes ?? "—"}</td></tr>
-            ))}</tbody>
-          </table>
-        </section>
-      )}
-
-      <footer className="text-center text-xs text-muted-foreground pt-4 border-t border-border">
-        {customer.customer_name} · CFS Projects Team · {new Date().toLocaleDateString()}
-      </footer>
     </AppShell>
   );
 }

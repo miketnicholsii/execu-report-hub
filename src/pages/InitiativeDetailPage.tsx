@@ -2,8 +2,10 @@ import { useParams, Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
-import { StatusBadge, PriorityBadge, UrgencyBadge } from "@/components/StatusBadge";
-import { getProjectDetail } from "@/lib/cfs/selectors2";
+import GanttChart from "@/components/GanttChart";
+import { StatusBadge, PriorityBadge, UrgencyBadge, HealthBadge } from "@/components/StatusBadge";
+import { EditableText, EditableSelect } from "@/components/EditableCell";
+import { getProjectDetail, customerById, seed } from "@/lib/cfs/selectors2";
 import { vagueMilestoneToLabel } from "@/lib/cfs/helpers";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { useState } from "react";
@@ -28,16 +30,24 @@ export default function InitiativeDetailPage() {
 
   const { project, trackerItems, openTracker, rmIssues, actions, milestones, blockers, highlights, resources } = data;
   const completeItems = trackerItems.filter((t) => ["Complete", "Deployed", "Shipped"].includes(t.status));
+  const customer = customerById.get(project.customer_id);
 
   const statusCounts: Record<string, number> = {};
   trackerItems.forEach((t) => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
   const statusData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
 
-  const toggleRm = (id: string) => {
-    const next = new Set(rmExpanded);
-    next.has(id) ? next.delete(id) : next.add(id);
-    setRmExpanded(next);
-  };
+  const ganttItems = [{
+    id: project.project_id,
+    label: project.project_name,
+    startDate: (project as any).start_date,
+    endDate: (project as any).target_date,
+    milestones: milestones.filter((m) => m.date_text && !m.date_text.includes("TBD")).map((m) => ({ date: m.date_text!, label: m.title })),
+    percentComplete: project.percent_complete,
+    status: project.normalizedStatus,
+    owner: project.owner,
+  }];
+
+  const toggleRm = (id: string) => { const n = new Set(rmExpanded); n.has(id) ? n.delete(id) : n.add(id); setRmExpanded(n); };
 
   const exportAll = () => downloadCsv(`initiative-${projectId}.csv`, trackerItems.map((t) => ({
     Priority: t.priority, Topic: t.topic, RM: t.rm_reference ?? "", Status: t.status,
@@ -46,7 +56,17 @@ export default function InitiativeDetailPage() {
   })));
 
   return (
-    <AppShell title={project.project_name} subtitle={`${project.customer_name} · Initiative Detail`} onExportExcel={exportAll} onExportPdf={exportPdf}>
+    <AppShell
+      title={project.project_name}
+      subtitle={`${project.customer_name} · Initiative Detail`}
+      onExportExcel={exportAll}
+      onExportPdf={exportPdf}
+      breadcrumbs={[
+        { label: "Customers", to: "/customer-summary" },
+        { label: project.customer_name, to: `/customers/${project.customer_slug}` },
+        { label: project.project_name },
+      ]}
+    >
       {/* Initiative Overview */}
       <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
         <div className="grid md:grid-cols-2 gap-6">
@@ -59,7 +79,7 @@ export default function InitiativeDetailPage() {
             <dl className="text-sm space-y-2">
               <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[100px]">Customer:</dt><dd><Link to={`/customers/${project.customer_slug}`} className="text-primary hover:underline">{project.customer_name}</Link></dd></div>
               <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[100px]">Deliverable:</dt><dd>{project.deliverable ?? "—"}</dd></div>
-              <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[100px]">Owner:</dt><dd>{project.owner}</dd></div>
+              <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[100px]">Owner:</dt><dd><EditableText entityId={projectId} field="owner" defaultValue={project.owner} /></dd></div>
               {(project as any).sponsor && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[100px]">Sponsor:</dt><dd>{(project as any).sponsor}</dd></div>}
               <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[100px]">Phase:</dt><dd>{project.phase}</dd></div>
               <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[100px]">% Complete:</dt><dd>
@@ -76,28 +96,10 @@ export default function InitiativeDetailPage() {
             </dl>
           </div>
           <div className="space-y-3">
-            <div>
-              <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Summary</h4>
-              <p className="text-sm">{project.summary}</p>
-            </div>
-            {(project as any).business_goal && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Business Goal</h4>
-                <p className="text-sm">{(project as any).business_goal}</p>
-              </div>
-            )}
-            {(project as any).technical_goal && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Technical Goal</h4>
-                <p className="text-sm">{(project as any).technical_goal}</p>
-              </div>
-            )}
-            {(project as any).deployment_notes && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Deployment Notes</h4>
-                <p className="text-sm">{(project as any).deployment_notes}</p>
-              </div>
-            )}
+            <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Summary</h4><p className="text-sm">{project.summary}</p></div>
+            {(project as any).business_goal && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Business Goal</h4><p className="text-sm">{(project as any).business_goal}</p></div>}
+            {(project as any).technical_goal && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Technical Goal</h4><p className="text-sm">{(project as any).technical_goal}</p></div>}
+            {(project as any).deployment_notes && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Deployment Notes</h4><p className="text-sm">{(project as any).deployment_notes}</p></div>}
           </div>
         </div>
         {project.dependencies.length > 0 && (
@@ -116,6 +118,9 @@ export default function InitiativeDetailPage() {
         <KpiCard label="Actions" value={actions.length} />
         <KpiCard label="Blockers" value={blockers.length} color={blockers.length > 0 ? "text-destructive" : ""} />
       </section>
+
+      {/* Gantt */}
+      {ganttItems[0].startDate && <GanttChart items={ganttItems} title="Initiative Timeline" />}
 
       {/* Status Chart */}
       {statusData.length > 0 && (
@@ -140,8 +145,7 @@ export default function InitiativeDetailPage() {
           <h2 className="font-semibold text-destructive mb-2">Blockers</h2>
           {blockers.map((b) => (
             <div key={b.blocker_id} className="flex items-start gap-2 py-1 text-sm border-b border-destructive/10 last:border-0">
-              <span className="text-destructive font-bold">!</span>
-              <span>{b.description}</span>
+              <span className="text-destructive font-bold">!</span><span>{b.description}</span>
               <span className="text-xs text-muted-foreground ml-auto">Severity: {b.severity}</span>
             </div>
           ))}
@@ -178,9 +182,11 @@ export default function InitiativeDetailPage() {
                   {t.context && <div className="text-xs text-muted-foreground mt-0.5">{t.context}</div>}
                 </td>
                 <td className="px-3 font-mono text-xs">{t.rm_reference ?? "—"}</td>
-                <td className="px-3"><StatusBadge status={t.status} /></td>
-                <td className="px-3 text-xs">{t.owner}</td>
-                <td className="px-3 text-xs max-w-[180px]">{t.next_steps ?? "—"}</td>
+                <td className="px-3">
+                  <EditableSelect entityId={t.item_id} field="status" defaultValue={t.status} options={["Open", "In Progress", "In Programming", "In-Testing", "Testing Active", "Testing Complete", "Complete", "Deployed", "On Hold"]} renderBadge={(v) => <StatusBadge status={v} />} />
+                </td>
+                <td className="px-3 text-xs"><EditableText entityId={t.item_id} field="owner" defaultValue={t.owner} /></td>
+                <td className="px-3 text-xs max-w-[180px]"><EditableText entityId={t.item_id} field="next_steps" defaultValue={t.next_steps ?? ""} /></td>
               </tr>
             ))}</tbody>
           </table>
@@ -205,7 +211,7 @@ export default function InitiativeDetailPage() {
                     <dl className="text-sm space-y-1.5">
                       <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Type:</dt><dd>{(r as any).type ?? "—"}</dd></div>
                       <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Severity:</dt><dd>{(r as any).severity ?? "—"}</dd></div>
-                      <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Owner:</dt><dd>{r.owner}</dd></div>
+                      <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Owner:</dt><dd><EditableText entityId={r.rm_issue_id} field="owner" defaultValue={r.owner} /></dd></div>
                       {(r as any).created_date && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Created:</dt><dd>{(r as any).created_date}</dd></div>}
                       {(r as any).due_date && <div className="flex gap-2"><dt className="font-medium text-muted-foreground min-w-[85px]">Due:</dt><dd>{(r as any).due_date}</dd></div>}
                     </dl>
@@ -240,10 +246,12 @@ export default function InitiativeDetailPage() {
             <tbody>{actions.map((a) => (
               <tr key={a.action_item_id} className="border-b hover:bg-muted/30 align-top">
                 <td className="py-2 px-3">{a.description}</td>
-                <td className="px-3 text-xs">{a.owner}</td>
+                <td className="px-3 text-xs"><EditableText entityId={a.action_item_id} field="owner" defaultValue={a.owner} /></td>
                 <td className="px-3 text-xs text-muted-foreground">{a.due_date ?? "TBD"}</td>
                 <td className="px-3"><UrgencyBadge urgency={a.urgency ?? "normal"} /></td>
-                <td className="px-3"><StatusBadge status={a.normalizedStatus} /></td>
+                <td className="px-3">
+                  <EditableSelect entityId={a.action_item_id} field="status" defaultValue={a.normalizedStatus} options={["Open", "In Progress", "Complete", "Done"]} renderBadge={(v) => <StatusBadge status={v} />} />
+                </td>
               </tr>
             ))}</tbody>
           </table>
