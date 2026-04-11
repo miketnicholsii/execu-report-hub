@@ -25,7 +25,7 @@ export function getPortfolioSnapshot() {
       nextDate: milestones[0]?.date_text ? vagueMilestoneToLabel(milestones[0].date_text) : "TBD",
       renewals: seed.renewals.filter((r) => r.customer_id === customer.customer_id).length,
       openActions: actions.length,
-      blockedOrTbd: blockers.length + projects.filter((p) => p.normalizedStatus === "TBD").length,
+      blockedOrTbd: blockers.length + projects.filter((p) => (p.normalizedStatus as string) === "TBD").length,
       openRisks: blockers.length,
       openRmCount: openRm.length,
       openTrackerItems: openTrackerItems.length,
