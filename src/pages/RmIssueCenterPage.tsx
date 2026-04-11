@@ -273,12 +273,7 @@ export default function RmIssueCenterPage() {
                       {r.dependencies && <div><h4 className="text-xs font-semibold uppercase text-muted-foreground mb-1">Dependencies</h4><p className="text-sm text-foreground">{r.dependencies}</p></div>}
                       {r.flags.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
-                          {r.flags.map(f => (
-                            <span key={f} className={`px-2 py-0.5 rounded text-[10px] font-medium ${
-                              f === "Stale" || f === "Overdue" || f === "Blocked" ? "bg-destructive/10 text-destructive border border-destructive/20"
-                              : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
-                            }`}>{f}</span>
-                          ))}
+                          {r.flags.map(f => <FlagBadge key={f} flag={f} />)}
                         </div>
                       )}
                       <div className="flex gap-2 pt-2">
