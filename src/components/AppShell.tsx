@@ -13,6 +13,7 @@ const NAV = [
   { to: "/customer-summary", label: "Customers", icon: Users, group: "Portfolio" },
   { to: "/tracker", label: "Issue Tracker", icon: ClipboardList, group: "Portfolio" },
   { to: "/rm-issues", label: "Redmine / RMs", icon: AlertTriangle, group: "Portfolio" },
+  { to: "/specs", label: "Specs Workspace", icon: Layers, group: "Portfolio" },
   { to: "/action-items", label: "Action Center", icon: FileText, group: "Operations" },
   { to: "/key-dates", label: "Key Dates & Installs", icon: Calendar, group: "Operations" },
   { to: "/renewals", label: "Renewals", icon: RefreshCw, group: "Operations" },
@@ -21,6 +22,7 @@ const NAV = [
   { to: "/wiki", label: "Project Wiki", icon: BookOpen, group: "Knowledge" },
   { to: "/rm-report-builder", label: "RM Report Builder", icon: Wrench, group: "Reports" },
   { to: "/reports", label: "Export Center", icon: FileDown, group: "Reports" },
+  { to: "/setup", label: "Setup Wizard", icon: Target, group: "System" },
   { to: "/settings", label: "Settings", icon: Settings, group: "System" },
 ];
 

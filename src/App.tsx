@@ -20,6 +20,8 @@ import WeeklySummaryPage from "@/pages/WeeklySummaryPage";
 import WikiPage from "@/pages/WikiPage";
 import DocumentUploadPage from "@/pages/DocumentUploadPage";
 import SettingsPage from "@/pages/SettingsPage";
+import SpecsWorkspacePage from "@/pages/SpecsWorkspacePage";
+import SetupWizardPage from "@/pages/SetupWizardPage";
 import PasswordGate from "@/components/PasswordGate";
 
 const queryClient = new QueryClient();
@@ -45,6 +47,8 @@ const App = () => (
           <Route path="/meeting-minutes" element={<MeetingMinutesPage />} />
           <Route path="/wiki" element={<WikiPage />} />
           <Route path="/documents" element={<DocumentUploadPage />} />
+          <Route path="/specs" element={<SpecsWorkspacePage />} />
+          <Route path="/setup" element={<SetupWizardPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/reports" element={<ReportCenterPage />} />
           <Route path="/customers/:customerSlug" element={<CustomerPage />} />
