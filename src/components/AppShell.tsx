@@ -13,6 +13,7 @@ const NAV = [
   { to: "/customer-summary", label: "Customers", icon: Users, group: "Portfolio" },
   { to: "/tracker", label: "Issue Tracker", icon: ClipboardList, group: "Portfolio" },
   { to: "/rm-issues", label: "Redmine / RMs", icon: AlertTriangle, group: "Portfolio" },
+  { to: "/specs", label: "Specs Workspace", icon: Layers, group: "Portfolio" },
   { to: "/action-items", label: "Action Center", icon: FileText, group: "Operations" },
   { to: "/key-dates", label: "Key Dates & Installs", icon: Calendar, group: "Operations" },
   { to: "/renewals", label: "Renewals", icon: RefreshCw, group: "Operations" },
@@ -21,6 +22,7 @@ const NAV = [
   { to: "/wiki", label: "Project Wiki", icon: BookOpen, group: "Knowledge" },
   { to: "/rm-report-builder", label: "RM Report Builder", icon: Wrench, group: "Reports" },
   { to: "/reports", label: "Export Center", icon: FileDown, group: "Reports" },
+  { to: "/setup", label: "Setup Wizard", icon: Target, group: "System" },
   { to: "/settings", label: "Settings", icon: Settings, group: "System" },
 ];
 
@@ -48,8 +50,8 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         <div className="p-3 flex items-center justify-between border-b border-border">
           {!collapsed && (
             <div>
-              <span className="font-bold text-sm text-foreground">CFS</span>
-              <span className="font-light text-sm text-muted-foreground ml-1">Command</span>
+              <span className="font-bold text-sm text-foreground">NÈKO</span>
+              <span className="font-light text-[10px] text-muted-foreground ml-1.5">by Mike Nichols</span>
             </div>
           )}
           <button onClick={() => setCollapsed(!collapsed)} className="p-1 rounded hover:bg-muted">
@@ -99,7 +101,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         </nav>
         {!collapsed && (
           <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border bg-card">
-            <p className="text-[10px] text-muted-foreground text-center">CFS Projects · v3.0</p>
+            <p className="text-[10px] text-muted-foreground text-center">NÈKO · v3.0</p>
           </div>
         )}
       </aside>
