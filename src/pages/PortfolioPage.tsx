@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import { StatusBadge, HealthBadge } from "@/components/StatusBadge";
-import { getCustomerOverviews, getTrackerRows, getRmDetailRows, getActionDetailRows, getKeyDateRows, getRenewalRows, seed } from "@/lib/cfs/selectors2";
+import { getCustomerOverviews, getTrackerRows, getRmDetailRows, getActionDetailRows, getKeyDateRows, getRenewalRows, seed, projectById, customerById } from "@/lib/cfs/selectors2";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 
 const customers = getCustomerOverviews();
