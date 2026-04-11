@@ -1,0 +1,10 @@
+project_id = "wiyfwsiinowniadzcibb"
+
+[functions.process-document]
+verify_jwt = false
+
+[functions.parse-meeting]
+verify_jwt = false
+
+[functions.ai-analyze]
+verify_jwt = false

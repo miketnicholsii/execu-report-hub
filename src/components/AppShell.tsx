@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, FileText, Calendar, RefreshCw, AlertTriangle,
   MessageSquare, ClipboardList, ChevronLeft, ChevronRight, Download,
-  Search, FileDown, Wrench, TrendingUp, Target, Layers, Settings
+  Search, FileDown, Wrench, TrendingUp, Target, Layers, Settings, BookOpen
 } from "lucide-react";
 
 const NAV = [
@@ -16,11 +16,12 @@ const NAV = [
   { to: "/key-dates", label: "Key Dates & Installs", icon: Calendar, group: "Operations" },
   { to: "/renewals", label: "Renewals", icon: RefreshCw, group: "Operations" },
   { to: "/meeting-minutes", label: "Meeting Minutes", icon: MessageSquare, group: "Operations" },
+  { to: "/wiki", label: "Project Wiki", icon: BookOpen, group: "Knowledge" },
   { to: "/rm-report-builder", label: "RM Report Builder", icon: Wrench, group: "Reports" },
   { to: "/reports", label: "Export Center", icon: FileDown, group: "Reports" },
 ];
 
-const GROUPS = ["Overview", "Portfolio", "Operations", "Reports"];
+const GROUPS = ["Overview", "Portfolio", "Operations", "Knowledge", "Reports"];
 
 interface Props {
   children: React.ReactNode;
