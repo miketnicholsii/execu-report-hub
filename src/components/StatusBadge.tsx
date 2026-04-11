@@ -24,6 +24,17 @@ const STATUS_STYLES: Record<string, string> = {
   "Post Implementation": "bg-status-on-track/10 text-status-on-track border-status-on-track/20",
   "Pending": "bg-status-caution/10 text-status-caution border-status-caution/20",
   "TBD": "bg-muted text-muted-foreground border-border",
+  "Not Started": "bg-slate-200 text-slate-700 border-slate-300",
+  "Discovery": "bg-sky-100 text-sky-700 border-sky-200",
+  "Drafting Spec": "bg-indigo-100 text-indigo-700 border-indigo-200",
+  "Spec Review": "bg-violet-100 text-violet-700 border-violet-200",
+  "Ready for Development": "bg-blue-100 text-blue-700 border-blue-200",
+  "In Development": "bg-blue-100 text-blue-700 border-blue-200",
+  "In Testing": "bg-amber-100 text-amber-700 border-amber-200",
+  "Ready to Deploy": "bg-emerald-100 text-emerald-700 border-emerald-200",
+  "Scheduled": "bg-cyan-100 text-cyan-700 border-cyan-200",
+  "Waiting on CFS": "bg-yellow-100 text-yellow-700 border-yellow-200",
+  "Monitoring": "bg-teal-100 text-teal-700 border-teal-200",
 };
 
 const PRIORITY_STYLES: Record<string, string> = {

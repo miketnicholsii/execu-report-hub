@@ -89,7 +89,7 @@ export default function SetupWizardPage() {
   };
 
   return (
-    <AppShell title="Setup Wizard" subtitle="Get NÈKO configured and ready for action">
+    <AppShell title="Setup Wizard" subtitle="Get CFS Command Center configured and ready for action">
       {/* Progress */}
       <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">

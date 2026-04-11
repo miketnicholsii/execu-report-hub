@@ -27,6 +27,9 @@ export const DERIVED_FLAGS = [
   "Missing Due Date",
   "Missing Spec",
   "Missing Last Update",
+  "Recently Updated",
+  "Stale",
+  "Overdue",
 ] as const;
 
 export type DerivedFlag = (typeof DERIVED_FLAGS)[number];
@@ -58,15 +61,22 @@ const STATUS_ALIASES: Record<string, CanonicalStatus> = {
   uat: "In Testing",
   "testing complete": "Ready to Deploy",
   "ready to deploy": "Ready to Deploy",
+  "ready for deployment": "Ready to Deploy",
+  "ready for deploy": "Ready to Deploy",
   scheduled: "Scheduled",
   "pending deployment": "Scheduled",
   blocked: "Blocked",
+  blocker: "Blocked",
+  "needs review": "Spec Review",
   "waiting on customer": "Waiting on Customer",
   "waiting on info": "Waiting on Customer",
   "quote sent": "Waiting on Customer",
   "waiting on cfs": "Waiting on CFS",
+  "waiting on internal": "Waiting on CFS",
   monitoring: "Monitoring",
   live: "Monitoring",
+  "post implementation": "Monitoring",
+  "post-implementation": "Monitoring",
   complete: "Complete",
   done: "Complete",
   deployed: "Complete",
@@ -78,7 +88,7 @@ const STATUS_ALIASES: Record<string, CanonicalStatus> = {
 const RM_PATTERN = /(?:\b(?:rm|redmine|r\.m\.?)\b\s*[-#: ]*|\b)(\d{3,6})\b/gi;
 
 export function formatRmId(idDigits: string | number): string {
-  const digits = String(idDigits).replace(/\D/g, "").slice(0, 5).padStart(5, "0");
+  const digits = String(idDigits).replace(/\D/g, "").slice(-5).padStart(5, "0");
   return `RM-${digits}`;
 }
 
@@ -108,9 +118,12 @@ export function normalizeStatusToCanonical(raw?: string | null, sourceSheet?: st
   const key = (raw ?? "").trim().toLowerCase();
   if (key && STATUS_ALIASES[key]) return STATUS_ALIASES[key];
 
+  if (/test|uat|qa/i.test(sourceSheet ?? "")) return "In Testing";
+  if (/review/i.test(sourceSheet ?? "")) return "Spec Review";
   if (/complete/i.test(sourceSheet ?? "")) return "Complete";
-  if (/deploy/i.test(sourceSheet ?? "")) return "Scheduled";
+  if (/deploy/i.test(sourceSheet ?? "")) return "Ready to Deploy";
   if (/archive/i.test(sourceSheet ?? "")) return "Monitoring";
+  if (/open|program/i.test(sourceSheet ?? "")) return "In Development";
   return "Not Started";
 }
 
@@ -146,7 +159,10 @@ export function deriveFlags(record: {
     if (!Number.isNaN(due)) {
       const daysUntilDue = Math.ceil((due - now) / 86400000);
       if (daysUntilDue <= 5) flags.add("Due Soon");
-      if (daysUntilDue < 0) flags.add("Needs Attention");
+      if (daysUntilDue < 0) {
+        flags.add("Overdue");
+        flags.add("Needs Attention");
+      }
     }
   }
 
@@ -155,6 +171,8 @@ export function deriveFlags(record: {
     if (!Number.isNaN(last)) {
       const daysSince = Math.floor((now - last) / 86400000);
       if (daysSince > 21) flags.add("Aging Item");
+      if (daysSince > 30) flags.add("Stale");
+      if (daysSince <= 3) flags.add("Recently Updated");
       if (daysSince > 14) flags.add("Needs Attention");
     }
   }
