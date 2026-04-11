@@ -88,7 +88,7 @@ function useMergedRmData() {
       if (!dbMap.has(sr.rm_reference)) {
         const days = daysSince(sr.last_update);
         const flag = agingFlag(days);
-        const flags = [...sr.derived_flags];
+        const flags: string[] = [...(sr.derived_flags as string[])];
         if (flag && !flags.includes(flag)) flags.push(flag);
 
         result.push({
