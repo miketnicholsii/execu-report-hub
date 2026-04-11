@@ -18,7 +18,7 @@ function toCsv(items: Record<string, string | number | undefined>[]) {
   const rows = items.map((item) =>
     headers
       .map((header) => {
-        const value = `${item[header] ?? ""}`.replaceAll('"', '""');
+        const value = `${item[header] ?? ""}`.split('"').join('""');
         return `"${value}"`;
       })
       .join(","),
@@ -144,7 +144,7 @@ export default function Dashboard() {
       raw_source_exceptions: sectionItems(items, "Unclassified / Needs Review"),
     };
 
-    downloadFile(`tracker-${customer.toLowerCase().replaceAll(/\s+/g, "-")}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8;");
+    downloadFile(`tracker-${customer.toLowerCase().split(/\s+/).join("-")}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8;");
   };
 
   return (

@@ -1,7 +1,7 @@
 import { ActionItem, RawSourceRow, TrackerItem } from "@/lib/cfs/model";
 
 function encode(value: unknown) {
-  return `"${String(value ?? "").replaceAll('"', '""')}"`;
+  return `"${String(value ?? "").split('"').join('""')}"`;
 }
 
 export function toCsv<T extends Record<string, unknown>>(rows: T[]): string {
