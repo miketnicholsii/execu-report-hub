@@ -14,7 +14,455 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      action_items: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          initiative_id: string | null
+          owner: string
+          priority: string
+          source: string | null
+          source_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          initiative_id?: string | null
+          owner?: string
+          priority?: string
+          source?: string | null
+          source_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          initiative_id?: string | null
+          owner?: string
+          priority?: string
+          source?: string | null
+          source_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_items_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "action_items_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "initiatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      app_settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          created_at: string
+          customer_name: string
+          health: string
+          id: string
+          notes: string | null
+          owner: string | null
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          health?: string
+          id?: string
+          notes?: string | null
+          owner?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          health?: string
+          id?: string
+          notes?: string | null
+          owner?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          ai_summary: string | null
+          created_at: string
+          customer_id: string | null
+          extracted_data: Json | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string
+          id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string
+          customer_id?: string | null
+          extracted_data?: Json | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type: string
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string
+          customer_id?: string | null
+          extracted_data?: Json | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      initiatives: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          description: string | null
+          due_date: string | null
+          health: string
+          id: string
+          next_step: string | null
+          open_question: string | null
+          owner: string | null
+          priority: string
+          rm_number: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          health?: string
+          id?: string
+          next_step?: string | null
+          open_question?: string | null
+          owner?: string | null
+          priority?: string
+          rm_number?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          health?: string
+          id?: string
+          next_step?: string | null
+          open_question?: string | null
+          owner?: string | null
+          priority?: string
+          rm_number?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "initiatives_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_action_items: {
+        Row: {
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          meeting_id: string
+          owner: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          meeting_id: string
+          owner?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          meeting_id?: string
+          owner?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_action_items_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          attendees: string[] | null
+          created_at: string
+          customer_id: string | null
+          date: string
+          decisions: string[] | null
+          discussion_notes: string[] | null
+          id: string
+          key_highlights: string[] | null
+          next_steps: string[] | null
+          open_questions: string[] | null
+          raw_text: string | null
+          rm_references: string[] | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attendees?: string[] | null
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          decisions?: string[] | null
+          discussion_notes?: string[] | null
+          id?: string
+          key_highlights?: string[] | null
+          next_steps?: string[] | null
+          open_questions?: string[] | null
+          raw_text?: string | null
+          rm_references?: string[] | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attendees?: string[] | null
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          decisions?: string[] | null
+          discussion_notes?: string[] | null
+          id?: string
+          key_highlights?: string[] | null
+          next_steps?: string[] | null
+          open_questions?: string[] | null
+          raw_text?: string | null
+          rm_references?: string[] | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rm_tickets: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          dependencies: string | null
+          due_date: string | null
+          id: string
+          initiative_id: string | null
+          last_update: string | null
+          next_steps: string | null
+          open_questions: string | null
+          owner: string | null
+          rm_number: string
+          status: string
+          summary: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          dependencies?: string | null
+          due_date?: string | null
+          id?: string
+          initiative_id?: string | null
+          last_update?: string | null
+          next_steps?: string | null
+          open_questions?: string | null
+          owner?: string | null
+          rm_number: string
+          status?: string
+          summary?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          dependencies?: string | null
+          due_date?: string | null
+          id?: string
+          initiative_id?: string | null
+          last_update?: string | null
+          next_steps?: string | null
+          open_questions?: string | null
+          owner?: string | null
+          rm_number?: string
+          status?: string
+          summary?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rm_tickets_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rm_tickets_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "initiatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_entries: {
+        Row: {
+          ai_generated: boolean
+          category: string
+          content: string | null
+          created_at: string
+          has_code: boolean
+          id: string
+          source: string | null
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_generated?: boolean
+          category?: string
+          content?: string | null
+          created_at?: string
+          has_code?: boolean
+          id?: string
+          source?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_generated?: boolean
+          category?: string
+          content?: string | null
+          created_at?: string
+          has_code?: boolean
+          id?: string
+          source?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-type AiAction = "parse-meeting" | "analyze-document" | "generate-wiki" | "explain-code" | "summarize-status";
+type AiAction = "parse-meeting" | "analyze-document" | "generate-wiki" | "explain-code" | "summarize-status" | "process-spreadsheet";
 
 interface UseAiAnalyzeOptions {
   onSuccess?: (data: any) => void;
@@ -18,9 +18,18 @@ export function useAiAnalyze(options?: UseAiAnalyzeOptions) {
     setError(null);
     setResult(null);
 
+    // Get AI settings from localStorage
+    let aiParams: Record<string, string> = {};
+    try {
+      const settings = JSON.parse(localStorage.getItem("cfs-ai-settings") || "{}");
+      if (settings.provider === "openai" && settings.openai_key) {
+        aiParams = { provider: "openai", openai_key: settings.openai_key, model: settings.model || "gpt-4o" };
+      }
+    } catch {}
+
     try {
       const { data, error: fnError } = await supabase.functions.invoke("ai-analyze", {
-        body: { action, content, context },
+        body: { action, content, context, ...aiParams },
       });
 
       if (fnError) throw new Error(fnError.message);
@@ -35,7 +44,7 @@ export function useAiAnalyze(options?: UseAiAnalyzeOptions) {
       if (msg.includes("Rate limit")) {
         toast.error("Rate limited — please wait a moment and try again.");
       } else if (msg.includes("credits")) {
-        toast.error("AI credits exhausted. Add funds in Settings > Workspace > Usage.");
+        toast.error("AI credits exhausted.");
       } else {
         toast.error(msg);
       }
