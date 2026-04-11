@@ -121,7 +121,7 @@ export default function SettingsPage() {
           </div>
           <div className="p-5 text-sm space-y-2">
             <div className="flex justify-between"><span className="text-muted-foreground">Version</span><span className="font-mono text-foreground">3.0.0</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Platform</span><span className="font-mono text-foreground">CFS Command Center</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Platform</span><span className="font-mono text-foreground">NÈKO</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Database</span><span className="font-mono text-emerald-600">Connected</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Storage</span><span className="font-mono text-emerald-600">Connected</span></div>
             <div className="flex justify-between">

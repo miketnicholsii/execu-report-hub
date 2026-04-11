@@ -62,8 +62,8 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         <div className="p-3 flex items-center justify-between border-b border-sidebar-border">
           {!collapsed && (
             <div>
-              <span className="font-bold text-sm text-sidebar-foreground">CFS Command Center</span>
-              <span className="font-light text-[10px] text-muted-foreground ml-1.5">Computerway Food Systems</span>
+            <span className="font-bold text-sm text-sidebar-foreground tracking-tight">NÈKO</span>
+              <span className="font-light text-[10px] text-muted-foreground ml-1.5">Project Intelligence</span>
             </div>
           )}
           <button onClick={() => setCollapsed(!collapsed)} className="p-1 rounded hover:bg-muted">
@@ -113,7 +113,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         </nav>
         {!collapsed && (
           <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-sidebar-border bg-sidebar">
-            <p className="text-[10px] text-muted-foreground text-center">CFS Command Center · v3.0</p>
+            <p className="text-[10px] text-muted-foreground text-center">NÈKO · Mike Nichols · v3.0</p>
           </div>
         )}
       </aside>

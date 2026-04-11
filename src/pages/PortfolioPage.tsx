@@ -203,7 +203,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <AppShell title="Portfolio Dashboard" subtitle={`CFS Command Center · ${new Date().toLocaleDateString()}`} onExportExcel={exportAll} onExportPdf={exportPdf}>
+    <AppShell title="Portfolio Dashboard" subtitle={`NÈKO · ${new Date().toLocaleDateString()}`} onExportExcel={exportAll} onExportPdf={exportPdf}>
       {/* KPIs - Two Rows */}
       <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
         <KpiCard label="Customers" value={customers.length} sub="active" />
