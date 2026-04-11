@@ -1,6 +1,6 @@
 export const REQUIRED_CUSTOMER_ROUTES = [
-  "/customers/braswell",
   "/customers/banks-cold-storage",
+  "/customers/braswell",
   "/customers/case-farms",
   "/customers/consolidated-catfish",
 ] as const;
@@ -24,6 +24,7 @@ export const REQUIRED_CUSTOMER_SECTIONS = [
 export const SHEET_MAPPING_RULES: Record<string, string> = {
   Open: "Open Issues / Active Work",
   Complete: "Completed Items",
+  Deployed: "Deployed Code Changes",
   Deployments: "Deployed Code Changes",
   "Pending Deployment": "Pending Deployments",
   Archive: "Historical Archive",
