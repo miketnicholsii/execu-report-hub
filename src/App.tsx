@@ -11,6 +11,7 @@ import ActionItemsPage from "@/pages/ActionItemsPage";
 import KeyDatesPage from "@/pages/KeyDatesPage";
 import RenewalsPage from "@/pages/RenewalsPage";
 import RmIssueCenterPage from "@/pages/RmIssueCenterPage";
+import MeetingMinutesPage from "@/pages/MeetingMinutesPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/action-items" element={<ActionItemsPage />} />
           <Route path="/key-dates" element={<KeyDatesPage />} />
           <Route path="/renewals" element={<RenewalsPage />} />
+          <Route path="/meeting-minutes" element={<MeetingMinutesPage />} />
           <Route path="/customers/:customerSlug" element={<CustomerPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

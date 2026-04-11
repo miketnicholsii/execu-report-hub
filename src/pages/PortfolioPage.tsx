@@ -36,6 +36,7 @@ export default function PortfolioPage() {
             <Link to="/action-items">Action Center</Link>
             <Link to="/key-dates">Key Dates</Link>
             <Link to="/renewals">Renewals</Link>
+            <Link to="/meeting-minutes">Meeting Minutes</Link>
           </nav>
         </header>
 

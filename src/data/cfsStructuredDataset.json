@@ -6,7 +6,7 @@
     { "customer_id": "consolidated-catfish", "customer_name": "Consolidated Catfish" },
     { "customer_id": "farbest", "customer_name": "Farbest" },
     { "customer_id": "gold-creek", "customer_name": "Gold Creek" },
-    { "customer_id": "harpleys-randolph-packing", "customer_name": "Harpley’s / Randolph Packing" },
+    { "customer_id": "harpleys-randolph-packing", "customer_name": "Harpley's / Randolph Packing" },
     { "customer_id": "marjac", "customer_name": "MarJac" },
     { "customer_id": "tip-top", "customer_name": "Tip Top" },
     { "customer_id": "us-cold-storage", "customer_name": "US Cold Storage" },
@@ -18,8 +18,12 @@
     { "site_id": "case-farms-farmerville", "customer_id": "case-farms", "site_name": "Farmerville" },
     { "site_id": "case-farms-morganton", "customer_id": "case-farms", "site_name": "Morganton" },
     { "site_id": "case-farms-winesburg", "customer_id": "case-farms", "site_name": "Winesburg" },
+    { "site_id": "case-farms-canton", "customer_id": "case-farms", "site_name": "Canton" },
+    { "site_id": "case-farms-goldsboro", "customer_id": "case-farms", "site_name": "Goldsboro" },
+    { "site_id": "case-farms-troutman", "customer_id": "case-farms", "site_name": "Troutman" },
     { "site_id": "marjac-gainesville", "customer_id": "marjac", "site_name": "Gainesville" },
-    { "site_id": "wayne-sanderson-laurel", "customer_id": "wayne-sanderson", "site_name": "Laurel" }
+    { "site_id": "wayne-sanderson-laurel", "customer_id": "wayne-sanderson", "site_name": "Laurel" },
+    { "site_id": "braswell-nashville", "customer_id": "braswell", "site_name": "Nashville" }
   ],
   "projects": [
     {
@@ -27,77 +31,70 @@
       "customer_id": "braswell",
       "site_id": null,
       "project_name": "S9 Upgrade",
-      "deliverable": "Shipping workflow validation",
-      "summary": "Shipping validation is active, with urgent label and reprint defects under test.",
+      "deliverable": "Shipping workflow validation & go-live",
+      "summary": "Active testing phase with focus on shipping, labeling, and SSCC18 functions. Multiple items in testing/complete.",
       "status": "In Progress",
-      "owner": "WJ",
-      "source_entry": "projectCards.braswell-card"
+      "owner": "WJ"
     },
     {
-      "project_id": "banks-cold-storage-inbound-asn",
+      "project_id": "banks-cold-storage-issues",
       "customer_id": "banks-cold-storage",
       "site_id": null,
-      "project_name": "Inbound ASN mismatch",
-      "deliverable": "Lot attribute hotfix",
-      "summary": "Customer release is waiting on a CFS hotfix.",
-      "status": "Waiting on CFS",
-      "owner": "MN",
-      "source_entry": "cfsRawSources.Banks Open row 2"
+      "project_name": "S9 Open Issues & Enhancements",
+      "deliverable": "Issue resolution and feature enhancements",
+      "summary": "Multiple open issues across recall reporting, status codes, Nimbus functions, and renewal charge functionality.",
+      "status": "In Progress",
+      "owner": "MN"
     },
     {
       "project_id": "case-farms-s9-upgrade-winesburg",
       "customer_id": "case-farms",
       "site_id": "case-farms-winesburg",
-      "project_name": "S9 Upgrade",
-      "deliverable": "Order Updates patch",
-      "summary": "Patch deployment timing remains pending.",
+      "project_name": "S9 Upgrade – Winesburg",
+      "deliverable": "Order Updates patch & S9 deployment",
+      "summary": "PO received. Winesburg first upgrade; Canton last. Est. 1 week server setup + 1 week testing.",
       "status": "Planning",
-      "owner": "WJ",
-      "source_entry": "projectCards.case-winesburg-s9-card"
+      "owner": "WJ"
     },
     {
       "project_id": "case-farms-s9-go-live-farmerville",
       "customer_id": "case-farms",
       "site_id": "case-farms-farmerville",
-      "project_name": "S9 Go-Live",
-      "deliverable": "Post-go-live stabilization",
-      "summary": "Site is live, with a remaining dependency on the Order Updates patch.",
+      "project_name": "S9 Go-Live – Farmerville",
+      "deliverable": "Post-go-live stabilization & open issues",
+      "summary": "Site is live with active open issues including ASN, node core failures, recall reports, and plant messenger issues.",
       "status": "Live",
-      "owner": "WJ",
-      "source_entry": "projectCards.case-farmerville-card"
+      "owner": "WJ"
     },
     {
       "project_id": "case-farms-zone-install-morganton",
       "customer_id": "case-farms",
       "site_id": "case-farms-morganton",
-      "project_name": "Zone Install",
-      "deliverable": "Morganton install",
-      "summary": "Install is approved and scheduled.",
+      "project_name": "Zone Install – Morganton",
+      "deliverable": "Morganton zone install",
+      "summary": "Quote #17609A. Install scheduled June 1, 2026.",
       "status": "In Progress",
-      "owner": "MN",
-      "source_entry": "upcomingDates.case-morganton-zone"
+      "owner": "MN"
     },
     {
       "project_id": "case-farms-zone-install-winesburg",
       "customer_id": "case-farms",
       "site_id": "case-farms-winesburg",
-      "project_name": "Zone Install",
+      "project_name": "Zone Install – Winesburg",
       "deliverable": "Travel, install, and go-live sequence",
-      "summary": "Execution dates are set, with one open VRT orientation issue.",
+      "summary": "Quote #17608A. Open issue with box orientation going into VRT.",
       "status": "In Progress",
-      "owner": "MN",
-      "source_entry": "upcomingDates.case-winesburg-zone"
+      "owner": "MN"
     },
     {
       "project_id": "consolidated-catfish-s9-post-implementation",
       "customer_id": "consolidated-catfish",
       "site_id": null,
-      "project_name": "S9 Post Implementation",
-      "deliverable": "Patch and open-deliverable scheduling",
-      "summary": "Deployment follow-up and interface reliability tasks are active.",
+      "project_name": "S9 Post-Implementation",
+      "deliverable": "Open issues, patches, and scanner hardware",
+      "summary": "Active post-implementation with multiple high-priority issues including goal counting, random logouts, Nimbus stalls, and tally scan hardware.",
       "status": "Post Implementation",
-      "owner": "WJ",
-      "source_entry": "projectCards.catfish-card"
+      "owner": "WJ"
     },
     {
       "project_id": "farbest-s9-upgrade-open-issues",
@@ -105,10 +102,9 @@
       "site_id": null,
       "project_name": "S9 Upgrade / Open Issues",
       "deliverable": "Scope and timeline definition",
-      "summary": "Upgrade scope and training planning are in discovery.",
+      "summary": "Upgrade planning in early stages. Training requested for Q6, R8, Nimbus.",
       "status": "Planning",
-      "owner": "WJ",
-      "source_entry": "projectCards.farbest-card"
+      "owner": "WJ"
     },
     {
       "project_id": "gold-creek-slc-product-setup",
@@ -116,10 +112,9 @@
       "site_id": null,
       "project_name": "SLC Product Setup / Label Design",
       "deliverable": "BarTender licensing and training",
-      "summary": "Label design and related quote activities are in progress.",
+      "summary": "BS quoting S9; Quote 17578. Stand-alone SLC station setup.",
       "status": "In Progress",
-      "owner": null,
-      "source_entry": "projectCards.gold-creek-card"
+      "owner": "BS"
     },
     {
       "project_id": "harpleys-randolph-system-upgrade",
@@ -127,10 +122,9 @@
       "site_id": null,
       "project_name": "System Upgrade",
       "deliverable": "Hardware assessment and restart timeline",
-      "summary": "Hardware quote has been sent; restart timeline remains undefined.",
+      "summary": "Quote sent for hardware assessment. Upgrade planning in early stages.",
       "status": "In Review",
-      "owner": null,
-      "source_entry": "projectCards.harpleys-card"
+      "owner": "MN"
     },
     {
       "project_id": "marjac-phase-ii-iii-roboscan",
@@ -138,10 +132,9 @@
       "site_id": "marjac-gainesville",
       "project_name": "Phase II & III – RoboScan Install & Interfaces",
       "deliverable": "Onsite testing and checklist completion",
-      "summary": "Initial onsite testing is complete; follow-up checklists remain in progress.",
+      "summary": "Initial onsite testing complete. Go-live target week of 4/6/26.",
       "status": "Testing",
-      "owner": "MN",
-      "source_entry": "projectCards.marjac-phase23-card"
+      "owner": "MN"
     },
     {
       "project_id": "marjac-s9-upgrade",
@@ -149,10 +142,9 @@
       "site_id": "marjac-gainesville",
       "project_name": "S9 Upgrade",
       "deliverable": "Upgrade scope and implementation roadmap",
-      "summary": "Timeline and requirements are still being finalized.",
+      "summary": "Timeline and requirements still being finalized.",
       "status": "Planning",
-      "owner": "MN",
-      "source_entry": "projectCards.marjac-s9-card"
+      "owner": "MN"
     },
     {
       "project_id": "tip-top-coa-data-cleanup",
@@ -160,10 +152,9 @@
       "site_id": null,
       "project_name": "COA and Data Cleanup",
       "deliverable": "Q6 COA readiness and data quality stabilization",
-      "summary": "COA questions are open while inventory and data-cleanup work continues.",
+      "summary": "COA questions open. QC meeting scheduled. Monitoring before June.",
       "status": "In Spec",
-      "owner": "MN",
-      "source_entry": "pmNotes.tip-top"
+      "owner": "WJ"
     },
     {
       "project_id": "us-cold-storage-roboscan",
@@ -171,10 +162,9 @@
       "site_id": null,
       "project_name": "RoboScan",
       "deliverable": "Implementation planning",
-      "summary": "Target timing is defined at month level only.",
+      "summary": "Target timing November 2026.",
       "status": "TBD",
-      "owner": null,
-      "source_entry": "upcomingDates.uscold-roboscan"
+      "owner": null
     },
     {
       "project_id": "vpgc-s9-upgrade",
@@ -182,10 +172,9 @@
       "site_id": null,
       "project_name": "S9 Upgrade",
       "deliverable": "PT usage assessment, quote, and interface updates",
-      "summary": "Scope dependencies and commercial artifacts are pending.",
+      "summary": "Need to identify PT usage, update quote and interface document.",
       "status": "Planning",
-      "owner": null,
-      "source_entry": "projectCards.vpgc-card"
+      "owner": null
     },
     {
       "project_id": "wayne-sanderson-m3-merger",
@@ -193,102 +182,273 @@
       "site_id": "wayne-sanderson-laurel",
       "project_name": "M3 Merger",
       "deliverable": "SIT 3 issue closure and rollout",
-      "summary": "Rollout planning continues with fixed Laurel milestones.",
+      "summary": "SIT 3 testing underway. 1st Plant Go-Live May 2026.",
       "status": "Testing",
-      "owner": null,
-      "source_entry": "projectCards.wayne-card"
+      "owner": "WJ"
     }
   ],
+  "tracker_items": [
+    { "item_id": "banks-1", "project_id": "banks-cold-storage-issues", "priority": "High", "topic": "S9 Recall Report Not Displaying Information in Available Inventory", "rm_reference": "RM-13548", "status": "Testing Complete", "context": "When running the FG Recall report, the Available Inventory section was blank.", "last_update": "3/2", "target_eta": null, "notes": "Once deployed to test server will need to get with Josh on how to test.", "next_steps": "Deploy to test server", "owner": "CFS" },
+    { "item_id": "banks-2", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "Cannot Add Status Code to Serial When No Status is Applied", "rm_reference": "RM-13522", "status": "Moved To Programming", "context": "FG Inventory report displayed 'No Status' for a product code. Unable to find serials with search box due to not having a status code applied.", "last_update": "2/16/26", "target_eta": null, "notes": "Followed up with HD. Added HD notes to RM.", "next_steps": null, "owner": "CFS" },
+    { "item_id": "banks-3", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "S9 - Reason Code Setup Screen", "rm_reference": "RM-13432", "status": "Moved To Programming", "context": null, "last_update": "2/25/26", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "banks-4", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "S9 - Status Update Comments", "rm_reference": "RM-13431", "status": "Moved To Programming", "context": null, "last_update": "2/25/26", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "banks-5", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "S9 Nimbus - Reassign NSP", "rm_reference": "RM-13370", "status": "Testing Active", "context": null, "last_update": "2/25/26", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "banks-6", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "S9 - Add Vendor Group Screen and Database", "rm_reference": "RM-13369", "status": "Testing Active", "context": null, "last_update": "2/25/26", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "banks-7", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "S9 - Add fields to FG Inventory Report", "rm_reference": "RM-13263", "status": "Moved To Programming", "context": null, "last_update": "2/25/26", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "banks-8", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "Pallet History Report", "rm_reference": "RM-13133", "status": "Testing Complete", "context": null, "last_update": null, "target_eta": null, "notes": null, "next_steps": "Deploy to test server", "owner": "CFS" },
+    { "item_id": "banks-9", "project_id": "banks-cold-storage-issues", "priority": "High", "topic": "S9 Renewal Charge Functionality and Interface DB Update", "rm_reference": "RM-12846", "status": "Testing Active", "context": null, "last_update": "3/25", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "banks-10", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "Request to Pick by Lot", "rm_reference": null, "status": "Waiting on Info", "context": "BCS will need free form field for filter. How do we handle multiple lots?", "last_update": "2/24/26", "target_eta": null, "notes": "Schedule a call to discuss", "next_steps": null, "owner": "CFS" },
+    { "item_id": "banks-11", "project_id": "banks-cold-storage-issues", "priority": "Low", "topic": "S9 - Incorporate PT8 RF Cancel / Reprint into S9", "rm_reference": "RM-13420", "status": "Testing Active", "context": null, "last_update": null, "target_eta": null, "notes": null, "next_steps": "Deploy to test server", "owner": "CFS" },
+    { "item_id": "banks-12", "project_id": "banks-cold-storage-issues", "priority": "Low", "topic": "Nimbus Break Pallet Function", "rm_reference": "RM-12230", "status": "Testing Active", "context": null, "last_update": null, "target_eta": null, "notes": null, "next_steps": "Deployment", "owner": "CFS" },
+    { "item_id": "banks-13", "project_id": "banks-cold-storage-issues", "priority": "Low", "topic": "S9 Receive by Date Function in Nimbus", "rm_reference": "RM-12223", "status": "Quote Sent", "context": null, "last_update": "2/16/26", "target_eta": null, "notes": "Quoted and followed up. No response from BCS.", "next_steps": null, "owner": "CFS" },
+    { "item_id": "banks-14", "project_id": "banks-cold-storage-issues", "priority": "Medium", "topic": "Break Pallet Weights Changing When Picked", "rm_reference": "RM-13685", "status": "Testing Active", "context": "BCS reported a pallet showed the wrong weight on the load diagram for a pallet that had cases broken onto it.", "last_update": "3/19", "target_eta": null, "notes": null, "next_steps": null, "owner": "CFS" },
+    { "item_id": "braswell-1", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "Cancel / Reprint – Unable to Correct Receiving Errors & Reprint Blox", "rm_reference": "RM-13421", "status": "In-Testing", "context": "Unable to correct receiving errors and unable to reprint blox labels.", "last_update": "3/9/2026", "target_eta": "3/24/2026", "notes": "Will be included in the release with the secondary label update.", "next_steps": "Provide ETA; complete development & deploy", "owner": "WJ" },
+    { "item_id": "braswell-2", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "Secondary Label fails to print", "rm_reference": "RM-13634", "status": "In-Testing", "context": "Secondary label functionality fails to print the label defined by the crossref.", "last_update": "3/9/2026", "target_eta": "3/24/2026", "notes": "Nimbus development completed. Printer Service portion not done.", "next_steps": "Complete printer service development", "owner": "WJ" },
+    { "item_id": "braswell-3", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "QERP - Cases Per Pallet", "rm_reference": "RM-13623", "status": "Complete", "context": "Cases per pallet not populating due to value populating NVP field instead of designated field.", "last_update": "3/11/2026", "target_eta": "3/24/2026", "notes": "3/13 EK Tested - Passed", "next_steps": null, "owner": "WJ" },
+    { "item_id": "braswell-4", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "FG vs PT Duplication / Product Linking Cleanup", "rm_reference": "RM-13579", "status": "Complete", "context": "Q-ERP populates ItemCode only when creating FGProduct for first time.", "last_update": "3/5/2026", "target_eta": "3/24/2026", "notes": "Ready to test on Braswell test server", "next_steps": null, "owner": "WJ" },
+    { "item_id": "braswell-5", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "Combine / UnCombine / Master Pallet Function", "rm_reference": "RM-13589", "status": "Moved To Programming", "context": "Combine available; UnCombine in development/testing; Master pallet function requested.", "last_update": "3/5/2026", "target_eta": "3/24/2026", "notes": "Need confirmed release date.", "next_steps": "Provide ETA for UnCombine; confirm Master pallet scope", "owner": "WJ" },
+    { "item_id": "braswell-6", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "PT Only Product Should Not Create FG Product by QERP", "rm_reference": "RM-13597", "status": "Complete", "context": "Product codes sent from Interface are created ignoring Product Type.", "last_update": "3/5/2026", "target_eta": "3/24/2026", "notes": "Ready to test on Braswell test server", "next_steps": null, "owner": "WJ" },
+    { "item_id": "braswell-7", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "SSCC18 Barcode Content Confirmation", "rm_reference": null, "status": "In Progress", "context": "Confirm SSCC barcode content for Braswell customer.", "last_update": null, "target_eta": "3/18/2026", "notes": "Await customer confirmation.", "next_steps": "Follow up", "owner": "WJ" },
+    { "item_id": "braswell-8", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "SSCC18 – Q6 Database", "rm_reference": "RM-13376", "status": "Complete", "context": "Add SSCC18 field to Q6 DB.", "last_update": "3/5/2026", "target_eta": "3/18/2026", "notes": "EK Tested - Passed", "next_steps": null, "owner": "WJ" },
+    { "item_id": "braswell-9", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "SSCC18 – Interface Database", "rm_reference": "RM-13377", "status": "Complete", "context": "Add SSCC18 & SellByDate to Interface DB.", "last_update": "3/5/2026", "target_eta": "3/18/2026", "notes": "EK Tested - Passed", "next_steps": null, "owner": "WJ" },
+    { "item_id": "braswell-10", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "SSCC18 – Plant Messenger", "rm_reference": "RM-13378", "status": "Complete", "context": "Add SSCC18 field.", "last_update": null, "target_eta": "3/18/2026", "notes": "EK Tested - Passed", "next_steps": null, "owner": "WJ" },
+    { "item_id": "braswell-11", "project_id": "braswell-s9-upgrade", "priority": "High", "topic": "SSCC18 – Q Listener", "rm_reference": "RM-13379", "status": "Complete", "context": "Add SSCC18 & SellByDate.", "last_update": null, "target_eta": "3/18/2026", "notes": "EK Tested - Passed", "next_steps": null, "owner": "WJ" },
+    { "item_id": "braswell-12", "project_id": "braswell-s9-upgrade", "priority": "Medium", "topic": "SSS (Simple Scan Station) Upgrade", "rm_reference": null, "status": "In Progress", "context": "SSS upgrade required prior to full S9 go-live.", "last_update": null, "target_eta": null, "notes": null, "next_steps": "Plan upgrade timeline", "owner": "WJ" },
+    { "item_id": "braswell-13", "project_id": "braswell-s9-upgrade", "priority": "Medium", "topic": "Trailer Receipt – Testing & Validation", "rm_reference": null, "status": "In Progress", "context": "Instructions sent; Braswell has not tested yet.", "last_update": "1/27/2026", "target_eta": null, "notes": "FG Trailer Receipt didn't display in S9 Reports", "next_steps": "Waiting on feedback from Dev team.", "owner": "WJ" },
+    { "item_id": "braswell-14", "project_id": "braswell-s9-upgrade", "priority": "Medium", "topic": "Manifest Generation – Auto Number", "rm_reference": null, "status": "On Hold", "context": "Automatically generate manifest number.", "last_update": null, "target_eta": null, "notes": "WJ to send summary + obtain dev estimate.", "next_steps": "Obtain dev estimate", "owner": "WJ" },
+    { "item_id": "braswell-15", "project_id": "braswell-s9-upgrade", "priority": "Low", "topic": "Error in Receive – Pallet # Not Provided", "rm_reference": "RM-13502", "status": "Moved To Programming", "context": "Serial count exceeded scale max; affects 'Receive another like this.'", "last_update": null, "target_eta": null, "notes": "Confirmation screen logic to be modified.", "next_steps": "Fixed in Nimbus, but will need to be a complete release", "owner": "WJ" },
+    { "item_id": "cf-1", "project_id": "case-farms-s9-go-live-farmerville", "priority": "High", "topic": "Order LPQ", "rm_reference": "RM-13661", "status": "In Programming", "context": "Order detail not updated to correct count - Case Farms Farmerville", "last_update": "4/10/26", "target_eta": null, "notes": null, "next_steps": "Reviewing database snapshots. Currently unable to replicate.", "owner": "WJ" },
+    { "item_id": "cf-2", "project_id": "case-farms-s9-go-live-farmerville", "priority": "High", "topic": "Farmerville ASN fails to load into FG properly", "rm_reference": "RM-13600", "status": "Testing Active", "context": null, "last_update": "4/10/26", "target_eta": null, "notes": null, "next_steps": "Finish development changes", "owner": "WJ" },
+    { "item_id": "cf-3", "project_id": "case-farms-s9-go-live-farmerville", "priority": "High", "topic": "Node Core Failure When Receiving PT Product", "rm_reference": "RM-13572", "status": "Testing Active", "context": "Node core failure when receiving PT product in Receive By Date.", "last_update": "4/10/26", "target_eta": null, "notes": "Deployment requires 1.5 days of downtime.", "next_steps": "Schedule downtime; deploy fix", "owner": "WJ" },
+    { "item_id": "cf-4", "project_id": "case-farms-s9-go-live-farmerville", "priority": "High", "topic": "FG Receive - ASN", "rm_reference": "RM-13688", "status": "In-Spec", "context": "Receive by date ASN flow is not tailored for ASN receiving", "last_update": "4/10/26", "target_eta": null, "notes": null, "next_steps": "Gathering use cases when receiving ASN", "owner": "WJ" },
+    { "item_id": "cf-5", "project_id": "case-farms-s9-go-live-farmerville", "priority": "Medium", "topic": "Print Customer Product on BOL", "rm_reference": null, "status": "Waiting on Case Farms", "context": "Update S9 BOL to print customer product", "last_update": "3/25/26", "target_eta": null, "notes": null, "next_steps": "Kim to add Cust Product Codes and Test", "owner": "Case Farms" },
+    { "item_id": "cf-6", "project_id": "case-farms-s9-go-live-farmerville", "priority": "Medium", "topic": "S9 Published reports failing to save", "rm_reference": "RM-13643", "status": "In-Programming", "context": null, "last_update": "4/10/26", "target_eta": null, "notes": "RM completed but correlating piece not yet deployed regarding refreshing the grid", "next_steps": "Deploy remaining piece", "owner": "CFS" },
+    { "item_id": "cf-7", "project_id": "case-farms-s9-go-live-farmerville", "priority": "Medium", "topic": "Goldsboro VRT PC Services Stopping", "rm_reference": "RM-13008", "status": "Waiting on Customer", "context": "PM2 processes stopping; serials not moving through VRT. New VM built by CF.", "last_update": "4/10/26", "target_eta": null, "notes": null, "next_steps": "Configure VM; coordinate cutover window", "owner": "Case Farms" },
+    { "item_id": "cf-8", "project_id": "case-farms-s9-go-live-farmerville", "priority": "Medium", "topic": "Add PDN Search to Serial Audit", "rm_reference": "RM-13591", "status": "In-Spec", "context": "Request to search Serial Audit by PDN source code.", "last_update": "4/10/26", "target_eta": null, "notes": "Reporting enhancement.", "next_steps": "Confirm requirements and move to dev.", "owner": "CFS" },
+    { "item_id": "cf-9", "project_id": "case-farms-s9-upgrade-winesburg", "priority": "Medium", "topic": "SD Cards for ACS for 2, 3 and 4", "rm_reference": null, "status": "Waiting on Case Farms", "context": "Upgrade to the latest ACS version: swap out SD cards", "last_update": null, "target_eta": null, "notes": "Quote for SD cards; How many cards needed.", "next_steps": null, "owner": "Case Farms" },
+    { "item_id": "cf-10", "project_id": "case-farms-zone-install-winesburg", "priority": "Low", "topic": "Winesburg Zone Project / Morganton Zone Project", "rm_reference": null, "status": "Waiting on Customer", "context": "Export from Winesburg Scale for Zone SLC, Updated Drawing, Request for Spare Parts list from CFS", "last_update": null, "target_eta": null, "notes": null, "next_steps": null, "owner": "Case Farms" },
+    { "item_id": "cc-1", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "Highest", "topic": "Recall Updates for CC", "rm_reference": null, "status": "Open", "context": "Get with DK", "last_update": null, "target_eta": null, "notes": null, "next_steps": null, "owner": "CFS" },
+    { "item_id": "cc-2", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "Highest", "topic": "Goal Completed But Shows Lower Count", "rm_reference": "RM-13647", "status": "Testing Complete", "context": "Produced 80 cases towards a goal but goal was still available on other scales.", "last_update": "3/20", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "cc-3", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "S9 – Not All Orders Showing in Work Order Planner", "rm_reference": "RM-13565", "status": "Testing Complete", "context": "Not all orders appear in Work Order Planner.", "last_update": null, "target_eta": null, "notes": "Projects tested 3/3 Passed", "next_steps": "Deploy", "owner": "CFS" },
+    { "item_id": "cc-4", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "Device Connections Not Clearing", "rm_reference": "RM-13562", "status": "Testing Complete", "context": "Device connections not clearing properly.", "last_update": null, "target_eta": null, "notes": "Testing complete.", "next_steps": "Deploy", "owner": "CFS" },
+    { "item_id": "cc-5", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "Pick List Showing Duplicate / Incorrect Information", "rm_reference": "RM-13481", "status": "Testing Complete", "context": "Pick list report displays duplicate and incorrect data.", "last_update": "2/18", "target_eta": null, "notes": "Projects tested 3/3 Passed", "next_steps": "Deploy", "owner": "CFS" },
+    { "item_id": "cc-6", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "S9 Random Log Outs", "rm_reference": "RM-13492", "status": "Moved to Programming", "context": "Users randomly logged out of S9.", "last_update": null, "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "cc-7", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "Nimbus Stalls Causing 'Initializing'", "rm_reference": "RM-13480", "status": "Moved to Programming", "context": "Nimbus stalls causing initialization screen to hang.", "last_update": "3/19", "target_eta": null, "notes": "Help Desk stated issue happened again today", "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "cc-8", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "S9 – Display 'Mixed' for Mixed Item Code Pallets", "rm_reference": "RM-13467", "status": "Testing Complete", "context": "Mixed item code pallets should display 'Mixed.'", "last_update": null, "target_eta": null, "notes": "Projects tested 2/25", "next_steps": "Deploy", "owner": "CFS" },
+    { "item_id": "cc-9", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "S9 Nimbus – Reassign Serial Creation", "rm_reference": "RM-13436", "status": "Testing Complete", "context": "Serial creation during reassign needs validation.", "last_update": null, "target_eta": null, "notes": null, "next_steps": "Deploy", "owner": "CFS" },
+    { "item_id": "cc-10", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "RF Credit Issue - Serials display 0 lbs", "rm_reference": "RM-13651", "status": "Moved to Programming", "context": "Error when attempting to credit pallet. Weight was set to 0.", "last_update": "3/9", "target_eta": null, "notes": "Reach out to Red about single case credit", "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "cc-11", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "Tally Scan Issues – Fillet Cooler", "rm_reference": null, "status": "Shipped", "context": "Scanner connectivity issues at specific cooler positions.", "last_update": "03/10", "target_eta": null, "notes": "3 Replacement scanners and 4 cases shipped. Tracking 1ZK6B1430142934646", "next_steps": "Waiting on warranty response from Cognex", "owner": "CFS" },
+    { "item_id": "cc-12", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "Medium", "topic": "BOL Update", "rm_reference": "RM-12721", "status": "In-Spec", "context": "Add warehouse number, truck run line, increase signature size. BOL to include orderlines with 0 qty picked.", "last_update": "3/17", "target_eta": null, "notes": null, "next_steps": "Quote", "owner": "CFS" },
+    { "item_id": "cc-13", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "Medium", "topic": "Long load times for PO", "rm_reference": "RM-13580", "status": "Testing Complete", "context": "PO/Manifest report increasingly takes longer to load.", "last_update": "02/11/26", "target_eta": null, "notes": null, "next_steps": "Deployment", "owner": "CFS" },
+    { "item_id": "cc-14", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "Medium", "topic": "S9 - Pick List Default Filters", "rm_reference": "RM-13625", "status": "Testing Active", "context": "Filters have to be set each time a pick list is pulled.", "last_update": "2/25/26", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "cc-15", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "Medium", "topic": "Order LPQ", "rm_reference": "RM-13668", "status": "Moved to Programming", "context": "Load count was off by 7 compared to the pick count.", "last_update": "3/11", "target_eta": null, "notes": null, "next_steps": "Testing", "owner": "CFS" },
+    { "item_id": "cc-16", "project_id": "consolidated-catfish-s9-post-implementation", "priority": "High", "topic": "ASN requirements for Costco", "rm_reference": null, "status": "Waiting on Customer", "context": null, "last_update": null, "target_eta": null, "notes": null, "next_steps": null, "owner": "CC" }
+  ],
   "milestones": [
-    { "milestone_id": "ms-braswell-golive-window", "project_id": "braswell-s9-upgrade", "title": "S9 go-live window", "date_text": "Mid to late April 2026", "date_confidence": "low", "source_phrase": "S9 Go-Live Window" },
-    { "milestone_id": "ms-marjac-phase23-golive", "project_id": "marjac-phase-ii-iii-roboscan", "title": "Phase II & III estimated go-live", "date_text": "Week of April 6, 2026", "date_confidence": "medium", "source_phrase": "Go-live target: week of Apr 6, 2026" },
-    { "milestone_id": "ms-wayne-laurel-training", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite training", "date_text": "May 11, 2026", "date_confidence": "high", "source_phrase": "Laurel onsite training begins May 11, 2026" },
-    { "milestone_id": "ms-wayne-laurel-golive", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite end / go-live", "date_text": "May 25, 2026", "date_confidence": "high", "source_phrase": "onsite end/go-live on May 25, 2026" },
-    { "milestone_id": "ms-case-morganton-install", "project_id": "case-farms-zone-install-morganton", "title": "Morganton zone install", "date_text": "June 1, 2026", "date_confidence": "high", "source_phrase": "Morganton install: June 1, 2026 (Quote #17609A)" },
-    { "milestone_id": "ms-case-winesburg-travel", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg travel", "date_text": "Apr 15, 2026", "date_confidence": "high", "source_phrase": "Travel Apr 15, 2026" },
-    { "milestone_id": "ms-case-winesburg-install", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg install", "date_text": "Apr 16, 2026", "date_confidence": "high", "source_phrase": "Install Apr 16, 2026" },
-    { "milestone_id": "ms-case-winesburg-golive", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg go-live", "date_text": "May 11, 2026", "date_confidence": "high", "source_phrase": "Go-Live May 11, 2026" },
-    { "milestone_id": "ms-uscold-roboscan", "project_id": "us-cold-storage-roboscan", "title": "RoboScan target window", "date_text": "November 2026", "date_confidence": "low", "source_phrase": "RoboScan — November 2026" },
-    { "milestone_id": "ms-aapp-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "April 13, 2026", "date_confidence": "high", "source_phrase": "All American Pet Protein renewalDate" },
-    { "milestone_id": "ms-banks-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "April 15, 2026", "date_confidence": "high", "source_phrase": "Banks Cold Storage renewalDate" },
-    { "milestone_id": "ms-wayne-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "2026-09-30", "date_confidence": "high", "source_phrase": "Renewal workflow kickoff" }
+    { "milestone_id": "ms-braswell-golive-window", "project_id": "braswell-s9-upgrade", "title": "S9 go-live window", "date_text": "Mid to late April 2026", "date_confidence": "low" },
+    { "milestone_id": "ms-marjac-phase23-golive", "project_id": "marjac-phase-ii-iii-roboscan", "title": "Phase II & III estimated go-live", "date_text": "Week of April 6, 2026", "date_confidence": "medium" },
+    { "milestone_id": "ms-wayne-laurel-training", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite training", "date_text": "May 11, 2026", "date_confidence": "high" },
+    { "milestone_id": "ms-wayne-laurel-golive", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite end / go-live", "date_text": "May 25, 2026", "date_confidence": "high" },
+    { "milestone_id": "ms-case-morganton-install", "project_id": "case-farms-zone-install-morganton", "title": "Morganton zone install", "date_text": "June 1, 2026", "date_confidence": "high" },
+    { "milestone_id": "ms-case-winesburg-install", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg install", "date_text": "Apr 16, 2026", "date_confidence": "high" },
+    { "milestone_id": "ms-case-winesburg-golive", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg go-live", "date_text": "May 11, 2026", "date_confidence": "high" },
+    { "milestone_id": "ms-uscold-roboscan", "project_id": "us-cold-storage-roboscan", "title": "RoboScan target window", "date_text": "November 2026", "date_confidence": "low" },
+    { "milestone_id": "ms-aapp-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "April 13, 2026", "date_confidence": "high" },
+    { "milestone_id": "ms-banks-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "April 15, 2026", "date_confidence": "high" },
+    { "milestone_id": "ms-wayne-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "2026-09-30", "date_confidence": "high" }
   ],
   "action_items": [
-    { "action_item_id": "ai-braswell-fg-validation", "project_id": "braswell-s9-upgrade", "description": "Continue FG product code validation and shipping workflow checks.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Continue FG product code validation and shipping workflow checks." },
-    { "action_item_id": "ai-braswell-rm13634-test", "project_id": "braswell-s9-upgrade", "description": "Validate patch in test environment.", "owner": "WJ", "due_date": "2026-04-18", "urgency": "high", "source_phrase": "next_steps: Validate patch in test environment" },
-    { "action_item_id": "ai-banks-hotfix", "project_id": "banks-cold-storage-inbound-asn", "description": "CFS to deliver hotfix.", "owner": "MN", "due_date": null, "urgency": "high", "source_phrase": "next_steps: CFS to deliver hotfix" },
-    { "action_item_id": "ai-case-winesburg-s9-deploy-window", "project_id": "case-farms-s9-upgrade-winesburg", "description": "Schedule production deployment window.", "owner": "WJ", "due_date": null, "urgency": "high", "source_phrase": "Schedule production deployment window" },
-    { "action_item_id": "ai-case-farmerville-patch", "project_id": "case-farms-s9-go-live-farmerville", "description": "Deploy the Order Updates patch and confirm stability.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Deploy patch after validation and confirm stability." },
-    { "action_item_id": "ai-case-morganton-maintenance-window", "project_id": "case-farms-zone-install-morganton", "description": "Confirm customer maintenance window.", "owner": "MN", "due_date": "2026-06-01", "urgency": "normal", "source_phrase": "Waiting on customer maintenance window" },
-    { "action_item_id": "ai-case-winesburg-vrt", "project_id": "case-farms-zone-install-winesburg", "description": "Resolve Winesburg box orientation issue before go-live.", "owner": "TBD", "due_date": "2026-05-11", "urgency": "high", "source_phrase": "Resolve Winesburg open issue: box orientation going into VRT." },
-    { "action_item_id": "ai-catfish-retry-design", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Create retry design note.", "owner": "WJ", "due_date": null, "urgency": "normal", "source_phrase": "Create retry design note" },
-    { "action_item_id": "ai-catfish-integration-followup", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Follow up with the integration team.", "owner": "WJ", "due_date": null, "urgency": "normal", "source_phrase": "Follow-up with integration team" },
-    { "action_item_id": "ai-farbest-scheduling-poll", "project_id": "farbest-s9-upgrade-open-issues", "description": "Send scheduling poll for Q6, R8, and Nimbus training.", "owner": "WJ", "due_date": "2026-05-05", "urgency": "normal", "source_phrase": "Send scheduling poll" },
-    { "action_item_id": "ai-gold-creek-provision-db", "project_id": "gold-creek-slc-product-setup", "description": "Provision Bartender_TestDB for Gold Creek.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Provision Bartender_TestDB for Gold Creek." },
-    { "action_item_id": "ai-harpleys-resume-plan", "project_id": "harpleys-randolph-system-upgrade", "description": "Determine timeline to resume PT usage.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Determine timeline to resume PT usage." },
-    { "action_item_id": "ai-marjac-phase23-checklist-refine", "project_id": "marjac-phase-ii-iii-roboscan", "description": "Refine onsite testing checklist.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Refine onsite testing checklist (WIP)." },
-    { "action_item_id": "ai-marjac-phase23-checklist-create", "project_id": "marjac-phase-ii-iii-roboscan", "description": "Create RoboScan install checklist.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Create RoboScan install checklist (WIP)." },
-    { "action_item_id": "ai-marjac-s9-roadmap", "project_id": "marjac-s9-upgrade", "description": "Confirm roadmap and implementation sequence.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Confirm roadmap and implementation sequence." },
-    { "action_item_id": "ai-tiptop-qc-meeting", "project_id": "tip-top-coa-data-cleanup", "description": "Run the scheduled QC meeting to close open COA questions.", "owner": "MN", "due_date": null, "urgency": "high", "source_phrase": "COA questions are open; QC meeting is scheduled." },
-    { "action_item_id": "ai-tiptop-data-cleanup-before-june", "project_id": "tip-top-coa-data-cleanup", "description": "Complete data cleanup and monitoring before June.", "owner": "MN", "due_date": "before June", "urgency": "high", "source_phrase": "data cleanup and monitoring needed before June" },
-    { "action_item_id": "ai-tiptop-q6-verification", "project_id": "tip-top-coa-data-cleanup", "description": "Complete Q6 COA functionality verification.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Q6 COA functionality verification is WIP." },
-    { "action_item_id": "ai-vpgc-update-quote", "project_id": "vpgc-s9-upgrade", "description": "Update quote.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Update quote." },
-    { "action_item_id": "ai-vpgc-update-interface", "project_id": "vpgc-s9-upgrade", "description": "Update interface document.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Update interface document." },
-    { "action_item_id": "ai-wayne-close-open-issues", "project_id": "wayne-sanderson-m3-merger", "description": "Review and resolve open issues prior to rollout stages.", "owner": "TBD", "due_date": null, "urgency": "high", "source_phrase": "Review and resolve open issues prior to rollout stages." }
+    { "action_item_id": "ai-braswell-fg-validation", "project_id": "braswell-s9-upgrade", "description": "Continue FG product code validation and shipping workflow checks.", "owner": "WJ", "due_date": null, "urgency": "normal" },
+    { "action_item_id": "ai-braswell-rm13634-test", "project_id": "braswell-s9-upgrade", "description": "Validate secondary label patch in test environment.", "owner": "WJ", "due_date": "2026-04-18", "urgency": "high" },
+    { "action_item_id": "ai-braswell-sscc18-confirm", "project_id": "braswell-s9-upgrade", "description": "Follow up on SSCC18 barcode content confirmation from customer.", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-braswell-uncombine-eta", "project_id": "braswell-s9-upgrade", "description": "Provide ETA for UnCombine development; confirm Master pallet scope.", "owner": "WJ", "due_date": null, "urgency": "medium" },
+    { "action_item_id": "ai-banks-recall-deploy", "project_id": "banks-cold-storage-issues", "description": "Deploy recall report fix to test server and coordinate testing with Josh.", "owner": "MN", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-banks-renewal-charge", "project_id": "banks-cold-storage-issues", "description": "Complete testing on renewal charge functionality (RM-12846).", "owner": "MN", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-banks-pick-by-lot", "project_id": "banks-cold-storage-issues", "description": "Schedule call to discuss pick-by-lot requirements with BCS.", "owner": "MN", "due_date": null, "urgency": "medium" },
+    { "action_item_id": "ai-case-winesburg-s9-deploy-window", "project_id": "case-farms-s9-upgrade-winesburg", "description": "Schedule production deployment window.", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-case-farmerville-order-lpq", "project_id": "case-farms-s9-go-live-farmerville", "description": "Review database snapshots for Order LPQ issue (RM-13661).", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-case-farmerville-asn", "project_id": "case-farms-s9-go-live-farmerville", "description": "Finish ASN development changes for Farmerville (RM-13600).", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-case-farmerville-node-core", "project_id": "case-farms-s9-go-live-farmerville", "description": "Schedule 1.5 day downtime for node core fix deployment (RM-13572).", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-case-morganton-maintenance-window", "project_id": "case-farms-zone-install-morganton", "description": "Confirm customer maintenance window.", "owner": "MN", "due_date": "2026-06-01", "urgency": "normal" },
+    { "action_item_id": "ai-case-winesburg-vrt", "project_id": "case-farms-zone-install-winesburg", "description": "Resolve Winesburg box orientation issue before go-live.", "owner": "MN", "due_date": "2026-05-11", "urgency": "high" },
+    { "action_item_id": "ai-catfish-recall", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Get with DK on recall updates for CC.", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-catfish-deploy-batch", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Deploy 6 items with Testing Complete status: Work Order Planner, Device Connections, Pick List, Mixed Display, Reassign Serial, Goal Count.", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-catfish-tally-scan", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Follow up on Cognex warranty for tally scan replacement scanners.", "owner": "WJ", "due_date": null, "urgency": "medium" },
+    { "action_item_id": "ai-catfish-costco-asn", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Get ASN requirements from CC for Costco.", "owner": "WJ", "due_date": null, "urgency": "medium" },
+    { "action_item_id": "ai-farbest-scheduling-poll", "project_id": "farbest-s9-upgrade-open-issues", "description": "Send scheduling poll for Q6, R8, and Nimbus training.", "owner": "WJ", "due_date": "2026-05-05", "urgency": "normal" },
+    { "action_item_id": "ai-gold-creek-provision-db", "project_id": "gold-creek-slc-product-setup", "description": "Provision Bartender_TestDB for Gold Creek.", "owner": "BS", "due_date": null, "urgency": "normal" },
+    { "action_item_id": "ai-harpleys-resume-plan", "project_id": "harpleys-randolph-system-upgrade", "description": "Determine timeline to resume PT usage.", "owner": "MN", "due_date": null, "urgency": "normal" },
+    { "action_item_id": "ai-marjac-phase23-checklist", "project_id": "marjac-phase-ii-iii-roboscan", "description": "Refine onsite testing checklist and create RoboScan install checklist.", "owner": "MN", "due_date": null, "urgency": "normal" },
+    { "action_item_id": "ai-tiptop-qc-meeting", "project_id": "tip-top-coa-data-cleanup", "description": "Run scheduled QC meeting to close open COA questions.", "owner": "WJ", "due_date": null, "urgency": "high" },
+    { "action_item_id": "ai-tiptop-data-cleanup-before-june", "project_id": "tip-top-coa-data-cleanup", "description": "Complete data cleanup and monitoring before June.", "owner": "WJ", "due_date": "before June", "urgency": "high" },
+    { "action_item_id": "ai-vpgc-update-quote", "project_id": "vpgc-s9-upgrade", "description": "Update quote and interface document.", "owner": "TBD", "due_date": null, "urgency": "normal" },
+    { "action_item_id": "ai-wayne-close-open-issues", "project_id": "wayne-sanderson-m3-merger", "description": "Review and resolve open issues prior to rollout stages.", "owner": "WJ", "due_date": null, "urgency": "high" }
   ],
   "rm_issues": [
-    { "rm_issue_id": "rm-braswell-13634", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13634", "description": "Secondary label fails to print; testing is active.", "status": "In Testing", "urgency": "high", "owner": "WJ", "source_phrase": "RM-13634 secondary label fails to print; Testing Active (urgent)." },
-    { "rm_issue_id": "rm-braswell-13421", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13421", "description": "Cancel/reprint testing is active.", "status": "Testing", "urgency": "normal", "owner": "WJ", "source_phrase": "RM-13421 cancel/reprint testing active." },
-    { "rm_issue_id": "rm-banks-14002", "project_id": "banks-cold-storage-inbound-asn", "rm_reference": "RM-14002", "description": "Inbound ASN mismatch is waiting on hotfix delivery.", "status": "Waiting on CFS", "urgency": "high", "owner": "MN", "source_phrase": "rm_reference: RM-14002" },
-    { "rm_issue_id": "rm-case-13987", "project_id": "case-farms-s9-upgrade-winesburg", "rm_reference": "RM-13987", "description": "Order update patch is pending production deployment scheduling.", "status": "Waiting on CFS", "urgency": "high", "owner": "WJ", "source_phrase": "rm_reference: RM-13987" },
-    { "rm_issue_id": "rm-farbest-13656", "project_id": "farbest-s9-upgrade-open-issues", "rm_reference": "RM 13656", "description": "Spec is drafted and in review.", "status": "In Review", "urgency": "normal", "owner": "WJ", "source_phrase": "Spec drafted and in review (RM 13656)." }
+    { "rm_issue_id": "rm-braswell-13634", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13634", "description": "Secondary label fails to print", "status": "In Testing", "urgency": "high", "owner": "WJ" },
+    { "rm_issue_id": "rm-braswell-13421", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13421", "description": "Cancel / Reprint flow", "status": "In Testing", "urgency": "high", "owner": "WJ" },
+    { "rm_issue_id": "rm-braswell-13589", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13589", "description": "UnCombine / Master Pallet Function", "status": "In Programming", "urgency": "high", "owner": "WJ" },
+    { "rm_issue_id": "rm-braswell-13502", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13502", "description": "Error in Receive – Pallet # Not Provided", "status": "In Programming", "urgency": "normal", "owner": "WJ" },
+    { "rm_issue_id": "rm-banks-13548", "project_id": "banks-cold-storage-issues", "rm_reference": "RM-13548", "description": "S9 Recall Report not displaying available inventory", "status": "Testing Complete", "urgency": "high", "owner": "MN" },
+    { "rm_issue_id": "rm-banks-13522", "project_id": "banks-cold-storage-issues", "rm_reference": "RM-13522", "description": "Cannot add status code to serial when no status applied", "status": "In Programming", "urgency": "normal", "owner": "MN" },
+    { "rm_issue_id": "rm-banks-12846", "project_id": "banks-cold-storage-issues", "rm_reference": "RM-12846", "description": "S9 Renewal Charge Functionality", "status": "Testing Active", "urgency": "high", "owner": "MN" },
+    { "rm_issue_id": "rm-banks-13685", "project_id": "banks-cold-storage-issues", "rm_reference": "RM-13685", "description": "Break Pallet Weights Changing When Picked", "status": "Testing Active", "urgency": "normal", "owner": "MN" },
+    { "rm_issue_id": "rm-cf-13661", "project_id": "case-farms-s9-go-live-farmerville", "rm_reference": "RM-13661", "description": "Order LPQ – Order detail not updated to correct count", "status": "In Programming", "urgency": "high", "owner": "WJ" },
+    { "rm_issue_id": "rm-cf-13600", "project_id": "case-farms-s9-go-live-farmerville", "rm_reference": "RM-13600", "description": "Farmerville ASN fails to load into FG properly", "status": "Testing Active", "urgency": "high", "owner": "WJ" },
+    { "rm_issue_id": "rm-cf-13572", "project_id": "case-farms-s9-go-live-farmerville", "rm_reference": "RM-13572", "description": "Node Core Failure – PT Receiving", "status": "Testing Active", "urgency": "high", "owner": "WJ" },
+    { "rm_issue_id": "rm-cf-13688", "project_id": "case-farms-s9-go-live-farmerville", "rm_reference": "RM-13688", "description": "FG Receive – ASN flow not tailored", "status": "In Spec", "urgency": "high", "owner": "WJ" },
+    { "rm_issue_id": "rm-cf-13643", "project_id": "case-farms-s9-go-live-farmerville", "rm_reference": "RM-13643", "description": "S9 Published reports failing to save", "status": "In Programming", "urgency": "normal", "owner": "CFS" },
+    { "rm_issue_id": "rm-cf-13008", "project_id": "case-farms-s9-go-live-farmerville", "rm_reference": "RM-13008", "description": "Goldsboro VRT PC Services Stopping", "status": "Waiting on Customer", "urgency": "normal", "owner": "Case Farms" },
+    { "rm_issue_id": "rm-cf-13591", "project_id": "case-farms-s9-go-live-farmerville", "rm_reference": "RM-13591", "description": "Add PDN Search to Serial Audit", "status": "In Spec", "urgency": "normal", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13647", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13647", "description": "Goal Completed But Shows Lower Count", "status": "Testing Complete", "urgency": "high", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13565", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13565", "description": "Not All Orders Showing in Work Order Planner", "status": "Testing Complete", "urgency": "high", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13562", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13562", "description": "Device Connections Not Clearing", "status": "Testing Complete", "urgency": "high", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13481", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13481", "description": "Pick List Showing Duplicate / Incorrect Information", "status": "Testing Complete", "urgency": "high", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13492", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13492", "description": "S9 Random Log Outs", "status": "In Programming", "urgency": "high", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13480", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13480", "description": "Nimbus Stalls Causing Initializing", "status": "In Programming", "urgency": "high", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13651", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13651", "description": "RF Credit Issue - Serials display 0 lbs", "status": "In Programming", "urgency": "high", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-12721", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-12721", "description": "BOL Update – Add warehouse number, truck run, signature size", "status": "In Spec", "urgency": "normal", "owner": "CFS" },
+    { "rm_issue_id": "rm-cc-13668", "project_id": "consolidated-catfish-s9-post-implementation", "rm_reference": "RM-13668", "description": "Order LPQ – load count off by 7", "status": "In Programming", "urgency": "normal", "owner": "CFS" },
+    { "rm_issue_id": "rm-farbest-13656", "project_id": "farbest-s9-upgrade-open-issues", "rm_reference": "RM-13656", "description": "Request not to update InvStatCode – spec drafted", "status": "In Review", "urgency": "normal", "owner": "WJ" }
   ],
   "blockers": [
-    { "blocker_id": "bl-banks-hotfix", "project_id": "banks-cold-storage-inbound-asn", "description": "Customer release is blocked pending CFS hotfix delivery.", "severity": "high", "source_phrase": "Waiting on CFS" },
-    { "blocker_id": "bl-case-morganton-window", "project_id": "case-farms-zone-install-morganton", "description": "Execution depends on a customer maintenance window.", "severity": "medium", "source_phrase": "Waiting on customer maintenance window" },
-    { "blocker_id": "bl-case-winesburg-vrt", "project_id": "case-farms-zone-install-winesburg", "description": "Box orientation issue into VRT remains unresolved.", "severity": "high", "source_phrase": "box orientation going into VRT" },
-    { "blocker_id": "bl-tiptop-open-coa-questions", "project_id": "tip-top-coa-data-cleanup", "description": "Open COA questions are pending QC resolution.", "severity": "medium", "source_phrase": "COA questions are open" }
+    { "blocker_id": "bl-case-morganton-window", "project_id": "case-farms-zone-install-morganton", "description": "Execution depends on a customer maintenance window.", "severity": "medium" },
+    { "blocker_id": "bl-case-winesburg-vrt", "project_id": "case-farms-zone-install-winesburg", "description": "Box orientation issue into VRT remains unresolved.", "severity": "high" },
+    { "blocker_id": "bl-tiptop-open-coa-questions", "project_id": "tip-top-coa-data-cleanup", "description": "Open COA questions are pending QC resolution.", "severity": "medium" },
+    { "blocker_id": "bl-cf-node-core", "project_id": "case-farms-s9-go-live-farmerville", "description": "Node core failure requires 1.5 days downtime to deploy fix.", "severity": "high" },
+    { "blocker_id": "bl-cc-nimbus-stalls", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Nimbus stalls causing Initializing – recurring issue.", "severity": "high" }
   ],
   "renewals": [
-    { "renewal_id": "ren-all-american-pet-protein-2026", "customer_id": "all-american-pet-protein", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "April 13, 2026", "date_confidence": "high", "status": "In Review", "summary": "Quote sent.", "quote_number": null, "source_entry": "renewals.all-american-pet-protein" },
-    { "renewal_id": "ren-banks-cold-storage-2026", "customer_id": "banks-cold-storage", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "April 15, 2026", "date_confidence": "high", "status": "TBD", "summary": "Needs confirmation.", "quote_number": null, "source_entry": "renewals.banks-cold-storage" },
-    { "renewal_id": "ren-wayne-sanderson-2026", "customer_id": "wayne-sanderson", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "2026-09-30", "date_confidence": "high", "status": "Planning", "summary": "Renewal workflow kickoff.", "quote_number": null, "source_entry": "cfsRawSources.PDF row 32" }
+    { "renewal_id": "ren-all-american-pet-protein-2026", "customer_id": "all-american-pet-protein", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "April 13, 2026", "date_confidence": "high", "status": "Quote Sent", "summary": "Quote sent.", "quote_number": null },
+    { "renewal_id": "ren-banks-cold-storage-2026", "customer_id": "banks-cold-storage", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "April 15, 2026", "date_confidence": "high", "status": "Pending", "summary": "Needs confirmation.", "quote_number": null },
+    { "renewal_id": "ren-wayne-sanderson-2026", "customer_id": "wayne-sanderson", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "2026-09-30", "date_confidence": "high", "status": "Planning", "summary": "Renewal workflow kickoff.", "quote_number": null }
   ],
   "linked_resources": [
     { "resource_id": "lr-case-quote-17609a", "project_id": "case-farms-zone-install-morganton", "resource_type": "quote", "label": "Quote #17609A", "href": null, "notes": "Morganton zone install." },
-    { "resource_id": "lr-case-quote-17608a", "project_id": "case-farms-zone-install-winesburg", "resource_type": "quote", "label": "Quote #17608A", "href": null, "notes": "Winesburg zone install travel/install/go-live." },
+    { "resource_id": "lr-case-quote-17608a", "project_id": "case-farms-zone-install-winesburg", "resource_type": "quote", "label": "Quote #17608A", "href": null, "notes": "Winesburg zone install." },
     { "resource_id": "lr-gold-creek-quote-17578", "project_id": "gold-creek-slc-product-setup", "resource_type": "quote", "label": "Quote 17578", "href": null, "notes": "BarTender license and training." },
-    { "resource_id": "lr-braswell-tracker", "project_id": "braswell-s9-upgrade", "resource_type": "tracker", "label": "Braswell tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-case-farms-tracker", "project_id": null, "resource_type": "tracker", "label": "Case Farms tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-consolidated-catfish-tracker", "project_id": "consolidated-catfish-s9-post-implementation", "resource_type": "tracker", "label": "Consolidated Catfish tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-farbest-tracker", "project_id": "farbest-s9-upgrade-open-issues", "resource_type": "tracker", "label": "Farbest tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-gold-creek-tracker", "project_id": "gold-creek-slc-product-setup", "resource_type": "tracker", "label": "Gold Creek tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-harpleys-randolph-tracker", "project_id": "harpleys-randolph-system-upgrade", "resource_type": "tracker", "label": "Harpley’s / Randolph tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-marjac-tracker", "project_id": "marjac-phase-ii-iii-roboscan", "resource_type": "tracker", "label": "MarJac tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-wayne-sanderson-tracker", "project_id": "wayne-sanderson-m3-merger", "resource_type": "tracker", "label": "Wayne-Sanderson tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-vpgc-tracker", "project_id": "vpgc-s9-upgrade", "resource_type": "tracker", "label": "VPGC tracker", "href": null, "notes": "Tracker file not yet in repo." },
-    { "resource_id": "lr-cpt-cfs-master-pdf", "project_id": null, "resource_type": "tracker", "label": "CPT-CFS Projects Team _ Initiatives & Status Tracker-100426-181710.pdf", "href": null, "notes": "Attached report reference not present in repository." }
+    { "resource_id": "lr-braswell-tracker", "project_id": "braswell-s9-upgrade", "resource_type": "tracker", "label": "Braswell - Open Items.xlsx", "href": null, "notes": "Customer issue tracker imported." },
+    { "resource_id": "lr-banks-tracker", "project_id": "banks-cold-storage-issues", "resource_type": "tracker", "label": "Banks Cold Storage - Issue Tracker.xlsx", "href": null, "notes": "Customer issue tracker imported." },
+    { "resource_id": "lr-case-farms-tracker", "project_id": "case-farms-s9-go-live-farmerville", "resource_type": "tracker", "label": "Case Farms - Open Items.xlsx", "href": null, "notes": "Customer issue tracker imported." },
+    { "resource_id": "lr-consolidated-catfish-tracker", "project_id": "consolidated-catfish-s9-post-implementation", "resource_type": "tracker", "label": "Consolidated Catfish - Issue Tracker.xlsx", "href": null, "notes": "Customer issue tracker imported." }
   ],
   "recent_highlights": [
     { "highlight_id": "rh-braswell-sss", "project_id": "braswell-s9-upgrade", "highlight": "Testing SSS with Tom is complete.", "date_text": null },
-    { "highlight_id": "rh-catfish-tuesday-deploy", "project_id": "consolidated-catfish-s9-post-implementation", "highlight": "Deployment completed on Tuesday.", "date_text": "Tuesday (calendar date not specified)" },
-    { "highlight_id": "rh-farbest-training-request", "project_id": "farbest-s9-upgrade-open-issues", "highlight": "Training was requested for Q6, R8, and Nimbus.", "date_text": null },
+    { "highlight_id": "rh-braswell-sscc18-testing", "project_id": "braswell-s9-upgrade", "highlight": "SSCC18 Q6, Interface, Plant Messenger, Q Listener – all passed EK testing.", "date_text": "3/11/2026" },
+    { "highlight_id": "rh-braswell-qerp-passed", "project_id": "braswell-s9-upgrade", "highlight": "QERP Cases Per Pallet fix tested and passed.", "date_text": "3/13/2026" },
+    { "highlight_id": "rh-banks-recall-ready", "project_id": "banks-cold-storage-issues", "highlight": "Recall report fix ready to deploy to test server.", "date_text": null },
+    { "highlight_id": "rh-banks-pallet-history-ready", "project_id": "banks-cold-storage-issues", "highlight": "Pallet History Report testing complete – ready to deploy.", "date_text": null },
+    { "highlight_id": "rh-catfish-tuesday-deploy", "project_id": "consolidated-catfish-s9-post-implementation", "highlight": "Multiple items passed testing and ready for deployment batch.", "date_text": null },
+    { "highlight_id": "rh-catfish-scanners-shipped", "project_id": "consolidated-catfish-s9-post-implementation", "highlight": "3 replacement scanners and 4 cases shipped for tally scan issues.", "date_text": "3/27/2026" },
+    { "highlight_id": "rh-farbest-training-request", "project_id": "farbest-s9-upgrade-open-issues", "highlight": "Training requested for Q6, R8, and Nimbus.", "date_text": null },
     { "highlight_id": "rh-marjac-onsite-complete", "project_id": "marjac-phase-ii-iii-roboscan", "highlight": "Initial onsite testing is complete.", "date_text": "week of Mar 9, 2026" },
-    { "highlight_id": "rh-tiptop-inventory-sync", "project_id": "tip-top-coa-data-cleanup", "highlight": "Inventory sync is confirmed.", "date_text": null },
-    { "highlight_id": "rh-tiptop-enviromap-inspec", "project_id": "tip-top-coa-data-cleanup", "highlight": "Data transfer to EnviroMap is marked In-Spec.", "date_text": null },
-    { "highlight_id": "rh-tiptop-manual-coa-inspec", "project_id": "tip-top-coa-data-cleanup", "highlight": "Manual COA statement removal is marked In-Spec.", "date_text": null },
-    { "highlight_id": "rh-tiptop-trailer-report-inspec", "project_id": "tip-top-coa-data-cleanup", "highlight": "CFS Internal MN S9 Trailer Report is marked In-Spec.", "date_text": null },
-    { "highlight_id": "rh-wayne-laurel-published-dates", "project_id": "wayne-sanderson-m3-merger", "highlight": "Laurel training and go-live dates are published.", "date_text": "May 11, 2026 and May 25, 2026" }
+    { "highlight_id": "rh-wayne-laurel-published-dates", "project_id": "wayne-sanderson-m3-merger", "highlight": "Laurel training and go-live dates are published.", "date_text": "May 11, 2026 and May 25, 2026" },
+    { "highlight_id": "rh-harpleys-quote-sent", "project_id": "harpleys-randolph-system-upgrade", "highlight": "Quote sent for hardware assessment.", "date_text": null }
+  ],
+  "meeting_minutes": [
+    {
+      "meeting_id": "mtg-braswell-20260309",
+      "customer_id": "braswell",
+      "project_id": "braswell-s9-upgrade",
+      "title": "Braswell Deliverables Review",
+      "date": "2026-03-09",
+      "attendees": ["WJ", "EK", "Tom (Braswell)"],
+      "summary": "Reviewed all open items. Cancel/Reprint issue found during testing that could impact timing. SSCC18 work progressing. SSS testing with Tom complete.",
+      "decisions": [
+        "Secondary label fix will be included with cancel/reprint release",
+        "SSCC18 work to proceed in parallel",
+        "SSS upgrade required before full go-live"
+      ],
+      "discussion_notes": [
+        "Cancel/reprint issue discovered that may impact secondary label timing",
+        "All SSCC18 database items ready for testing",
+        "Manifest auto-number on hold pending dev estimate"
+      ],
+      "action_items_from_meeting": [
+        { "description": "Complete Printer Service development for secondary label", "owner": "CFS Dev", "due_date": "3/24/2026", "status": "In Progress" },
+        { "description": "EK to test SSCC18 changes on test server", "owner": "EK", "due_date": "3/11/2026", "status": "Complete" },
+        { "description": "WJ to send manifest auto-number summary and get dev estimate", "owner": "WJ", "due_date": null, "status": "Open" }
+      ]
+    },
+    {
+      "meeting_id": "mtg-casefarms-20260410",
+      "customer_id": "case-farms",
+      "project_id": "case-farms-s9-go-live-farmerville",
+      "title": "Case Farms Status Review",
+      "date": "2026-04-10",
+      "attendees": ["WJ", "Kim (Case Farms)", "MN"],
+      "summary": "Reviewed active Farmerville issues including ASN, Node Core, and Order LPQ. Zone install timelines confirmed for Winesburg and Morganton.",
+      "decisions": [
+        "Node core fix deployment requires 1.5 days downtime – scheduling needed",
+        "Winesburg zone install on track for Apr 16",
+        "Morganton zone install confirmed for Jun 1"
+      ],
+      "discussion_notes": [
+        "Order LPQ issue cannot be replicated yet – reviewing database snapshots",
+        "ASN receiving flow needs to be tailored for Farmerville use cases",
+        "Published reports RM completed but grid refresh piece pending",
+        "VRT services at Goldsboro waiting on customer for VM coordination"
+      ],
+      "action_items_from_meeting": [
+        { "description": "Schedule 1.5 day downtime for RM-13572 fix", "owner": "WJ", "due_date": null, "status": "Open" },
+        { "description": "Gather ASN receiving use cases from Farmerville", "owner": "WJ", "due_date": null, "status": "In Progress" },
+        { "description": "Kim to add Customer Product Codes and test BOL", "owner": "Kim", "due_date": null, "status": "Waiting" },
+        { "description": "Resolve box orientation issue for Winesburg VRT", "owner": "MN", "due_date": "2026-05-11", "status": "Open" }
+      ]
+    },
+    {
+      "meeting_id": "mtg-catfish-20260319",
+      "customer_id": "consolidated-catfish",
+      "project_id": "consolidated-catfish-s9-post-implementation",
+      "title": "Consolidated Catfish Weekly Status",
+      "date": "2026-03-19",
+      "attendees": ["WJ", "BB", "Red (CC)", "Lee (CC)"],
+      "summary": "Reviewed deployment-ready items, Nimbus stalls issue recurrence, and tally scan hardware situation. Multiple items ready for deployment batch.",
+      "decisions": [
+        "Batch deployment of 6 testing-complete items to be scheduled",
+        "Nimbus stalls issue to be escalated – happened again today",
+        "Replacement scanners to be shipped with protective covers"
+      ],
+      "discussion_notes": [
+        "Help Desk confirmed Nimbus stalls (RM-13480) happened again on 3/19",
+        "Tony sent back affected cameras for tally scan. Tracking: 1ZK6B1430142934646",
+        "FG Production and Scanned Production reports taking 50+ seconds to load",
+        "Pick List default filter enhancement in testing"
+      ],
+      "action_items_from_meeting": [
+        { "description": "Schedule batch deployment for testing-complete items", "owner": "WJ", "due_date": null, "status": "Open" },
+        { "description": "Escalate Nimbus stalls issue to programming", "owner": "WJ", "due_date": null, "status": "Done" },
+        { "description": "Ship protective covers for replacement scanners", "owner": "CFS", "due_date": null, "status": "In Progress" },
+        { "description": "Create RM for slow report loading if confirmed", "owner": "WJ", "due_date": null, "status": "Open" }
+      ]
+    },
+    {
+      "meeting_id": "mtg-banks-20260325",
+      "customer_id": "banks-cold-storage",
+      "project_id": "banks-cold-storage-issues",
+      "title": "Banks Cold Storage Review",
+      "date": "2026-03-25",
+      "attendees": ["MN", "Josh (BCS)"],
+      "summary": "Reviewed recall report fix, renewal charge testing progress, and open enhancement requests.",
+      "decisions": [
+        "Recall report fix to be deployed to test server for Josh to validate",
+        "Renewal charge functionality testing to continue",
+        "Pick by lot discussion to be scheduled separately"
+      ],
+      "discussion_notes": [
+        "Recall report fix and Pallet History report both ready for test deployment",
+        "No response from BCS on Receive by Date Nimbus quote",
+        "Break pallet weight issue actively being tested"
+      ],
+      "action_items_from_meeting": [
+        { "description": "Deploy recall report and pallet history to test server", "owner": "MN", "due_date": null, "status": "Open" },
+        { "description": "Follow up with BCS on Receive by Date quote", "owner": "MN", "due_date": null, "status": "Open" },
+        { "description": "Schedule pick-by-lot requirements discussion", "owner": "MN", "due_date": null, "status": "Open" }
+      ]
+    }
   ],
   "needs_review": [
     { "needs_review_id": "nr-marjac-name-variant", "entity_type": "customer", "entity_id": "marjac", "reason": "Source alternates between 'MarJac Gainesville' and 'MarJac'.", "date_confidence": null },
-    { "needs_review_id": "nr-harpleys-randolph-name-order", "entity_type": "customer", "entity_id": "harpleys-randolph-packing", "reason": "Source alternates name order: 'Harpley’s / Randolph Packing' vs 'Randolph Packing / Harpley’s'.", "date_confidence": null },
-    { "needs_review_id": "nr-case-section-conflict", "entity_type": "project", "entity_id": "case-farms-s9-upgrade-winesburg", "reason": "Raw source row shows 'Waiting on CFS' while project card section status is 'Planning'.", "date_confidence": null },
-    { "needs_review_id": "nr-tiptop-possible-duplicate", "entity_type": "project", "entity_id": "tip-top-coa-data-cleanup", "reason": "PDF row note says possible duplicate with another tracker row.", "date_confidence": null },
-    { "needs_review_id": "nr-catfish-relative-date", "entity_type": "recent_highlight", "entity_id": "rh-catfish-tuesday-deploy", "reason": "Relative date ('Tuesday') is not mapped to a calendar date in this source entry.", "date_confidence": "low" },
-    { "needs_review_id": "nr-uscold-month-only-date", "entity_type": "milestone", "entity_id": "ms-uscold-roboscan", "reason": "Date provided only at month granularity.", "date_confidence": "low" },
-    { "needs_review_id": "nr-braswell-window-vague", "entity_type": "milestone", "entity_id": "ms-braswell-golive-window", "reason": "Go-live date is intentionally vague ('Mid to late April 2026').", "date_confidence": "low" },
-    { "needs_review_id": "nr-vpgc-quote-tbd", "entity_type": "project", "entity_id": "vpgc-s9-upgrade", "reason": "Quote number remains unspecified ('Quote #TBD').", "date_confidence": null },
-    { "needs_review_id": "nr-wayne-owner-missing", "entity_type": "project", "entity_id": "wayne-sanderson-m3-merger", "reason": "Project owner is not named in the source notes.", "date_confidence": null }
+    { "needs_review_id": "nr-harpleys-randolph-name-order", "entity_type": "customer", "entity_id": "harpleys-randolph-packing", "reason": "Source alternates name order.", "date_confidence": null }
   ]
 }
