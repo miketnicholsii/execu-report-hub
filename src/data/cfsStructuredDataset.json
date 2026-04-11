@@ -6,7 +6,7 @@
     { "customer_id": "consolidated-catfish", "customer_name": "Consolidated Catfish" },
     { "customer_id": "farbest", "customer_name": "Farbest" },
     { "customer_id": "gold-creek", "customer_name": "Gold Creek" },
-    { "customer_id": "harpleys-randolph-packing", "customer_name": "Harpley's / Randolph Packing" },
+    { "customer_id": "harpleys-randolph-packing", "customer_name": "Harpley’s / Randolph Packing" },
     { "customer_id": "marjac", "customer_name": "MarJac" },
     { "customer_id": "tip-top", "customer_name": "Tip Top" },
     { "customer_id": "us-cold-storage", "customer_name": "US Cold Storage" },
@@ -27,237 +27,268 @@
       "customer_id": "braswell",
       "site_id": null,
       "project_name": "S9 Upgrade",
-      "status": "IN_PROGRESS",
-      "summary": "Shipping-focused validation is in progress.",
-      "recent_highlights": [
-        "Testing in SSS with Tom is complete.",
-        "RM-13634 secondary label printing issue is in active testing.",
-        "RM-13421 cancel/reprint testing is active."
-      ]
+      "deliverable": "Shipping workflow validation",
+      "summary": "Shipping validation is active, with urgent label and reprint defects under test.",
+      "status": "In Progress",
+      "owner": "WJ",
+      "source_entry": "projectCards.braswell-card"
+    },
+    {
+      "project_id": "banks-cold-storage-inbound-asn",
+      "customer_id": "banks-cold-storage",
+      "site_id": null,
+      "project_name": "Inbound ASN mismatch",
+      "deliverable": "Lot attribute hotfix",
+      "summary": "Customer release is waiting on a CFS hotfix.",
+      "status": "Waiting on CFS",
+      "owner": "MN",
+      "source_entry": "cfsRawSources.Banks Open row 2"
     },
     {
       "project_id": "case-farms-s9-upgrade-winesburg",
       "customer_id": "case-farms",
       "site_id": "case-farms-winesburg",
       "project_name": "S9 Upgrade",
-      "status": "PLANNING",
-      "summary": "Server update timing and patch sequencing are pending.",
-      "recent_highlights": []
+      "deliverable": "Order Updates patch",
+      "summary": "Patch deployment timing remains pending.",
+      "status": "Planning",
+      "owner": "WJ",
+      "source_entry": "projectCards.case-winesburg-s9-card"
     },
     {
       "project_id": "case-farms-s9-go-live-farmerville",
       "customer_id": "case-farms",
       "site_id": "case-farms-farmerville",
       "project_name": "S9 Go-Live",
-      "status": "LIVE",
-      "summary": "Site is live and awaiting an Order Updates patch.",
-      "recent_highlights": []
+      "deliverable": "Post-go-live stabilization",
+      "summary": "Site is live, with a remaining dependency on the Order Updates patch.",
+      "status": "Live",
+      "owner": "WJ",
+      "source_entry": "projectCards.case-farmerville-card"
     },
     {
-      "project_id": "case-farms-zone-install",
+      "project_id": "case-farms-zone-install-morganton",
       "customer_id": "case-farms",
-      "site_id": null,
+      "site_id": "case-farms-morganton",
       "project_name": "Zone Install",
-      "status": "IN_PROGRESS",
-      "summary": "Approved Zone Install workstreams are scheduled.",
-      "recent_highlights": [
-        "Morganton install is scheduled for June 1, 2026 (Quote #17609A).",
-        "Winesburg travel/install/go-live is scheduled for Apr 15 / Apr 16 / May 11, 2026 (Quote #17608A)."
-      ]
+      "deliverable": "Morganton install",
+      "summary": "Install is approved and scheduled.",
+      "status": "In Progress",
+      "owner": "MN",
+      "source_entry": "upcomingDates.case-morganton-zone"
+    },
+    {
+      "project_id": "case-farms-zone-install-winesburg",
+      "customer_id": "case-farms",
+      "site_id": "case-farms-winesburg",
+      "project_name": "Zone Install",
+      "deliverable": "Travel, install, and go-live sequence",
+      "summary": "Execution dates are set, with one open VRT orientation issue.",
+      "status": "In Progress",
+      "owner": "MN",
+      "source_entry": "upcomingDates.case-winesburg-zone"
     },
     {
       "project_id": "consolidated-catfish-s9-post-implementation",
       "customer_id": "consolidated-catfish",
       "site_id": null,
       "project_name": "S9 Post Implementation",
-      "status": "POST_IMPLEMENTATION",
-      "summary": "Open deliverables, patches, and updates are being scheduled.",
-      "recent_highlights": [
-        "A deployment was completed on Tuesday."
-      ]
+      "deliverable": "Patch and open-deliverable scheduling",
+      "summary": "Deployment follow-up and interface reliability tasks are active.",
+      "status": "Post Implementation",
+      "owner": "WJ",
+      "source_entry": "projectCards.catfish-card"
     },
     {
       "project_id": "farbest-s9-upgrade-open-issues",
       "customer_id": "farbest",
       "site_id": null,
       "project_name": "S9 Upgrade / Open Issues",
-      "status": "PLANNING",
-      "summary": "Timeline and scope discovery is active.",
-      "recent_highlights": [
-        "Training was requested for Q6, R8, and Nimbus.",
-        "Spec drafted and in review (RM 13656).",
-        "No update to InvStatCode was requested."
-      ]
+      "deliverable": "Scope and timeline definition",
+      "summary": "Upgrade scope and training planning are in discovery.",
+      "status": "Planning",
+      "owner": "WJ",
+      "source_entry": "projectCards.farbest-card"
     },
     {
-      "project_id": "gold-creek-slc-label-design",
+      "project_id": "gold-creek-slc-product-setup",
       "customer_id": "gold-creek",
       "site_id": null,
-      "project_name": "Stand-alone SLC Product Setup and Label Design",
-      "status": "IN_PROGRESS",
-      "summary": "BarTender scope and S9 quoting are in progress.",
-      "recent_highlights": [
-        "Quote 17578 covers BarTender license and training."
-      ]
+      "project_name": "SLC Product Setup / Label Design",
+      "deliverable": "BarTender licensing and training",
+      "summary": "Label design and related quote activities are in progress.",
+      "status": "In Progress",
+      "owner": null,
+      "source_entry": "projectCards.gold-creek-card"
     },
     {
       "project_id": "harpleys-randolph-system-upgrade",
       "customer_id": "harpleys-randolph-packing",
       "site_id": null,
       "project_name": "System Upgrade",
-      "status": "IN_REVIEW",
-      "summary": "Hardware assessment quote has been sent.",
-      "recent_highlights": []
+      "deliverable": "Hardware assessment and restart timeline",
+      "summary": "Hardware quote has been sent; restart timeline remains undefined.",
+      "status": "In Review",
+      "owner": null,
+      "source_entry": "projectCards.harpleys-card"
     },
     {
       "project_id": "marjac-phase-ii-iii-roboscan",
       "customer_id": "marjac",
       "site_id": "marjac-gainesville",
       "project_name": "Phase II & III – RoboScan Install & Interfaces",
-      "status": "TESTING",
-      "summary": "Initial onsite testing is complete and checklist refinement is in progress.",
-      "recent_highlights": [
-        "Initial onsite testing (week of Mar 9, 2026) is complete.",
-        "Go-live target remains week of Apr 6, 2026."
-      ]
+      "deliverable": "Onsite testing and checklist completion",
+      "summary": "Initial onsite testing is complete; follow-up checklists remain in progress.",
+      "status": "Testing",
+      "owner": "MN",
+      "source_entry": "projectCards.marjac-phase23-card"
     },
     {
       "project_id": "marjac-s9-upgrade",
       "customer_id": "marjac",
       "site_id": "marjac-gainesville",
       "project_name": "S9 Upgrade",
-      "status": "PLANNING",
-      "summary": "Upgrade timeline and custom scope are under review.",
-      "recent_highlights": []
+      "deliverable": "Upgrade scope and implementation roadmap",
+      "summary": "Timeline and requirements are still being finalized.",
+      "status": "Planning",
+      "owner": "MN",
+      "source_entry": "projectCards.marjac-s9-card"
     },
     {
-      "project_id": "wayne-sanderson-m3-merger",
-      "customer_id": "wayne-sanderson",
-      "site_id": null,
-      "project_name": "M3 Merger",
-      "status": "TESTING",
-      "summary": "Plant rollout planning and issue closure are in progress.",
-      "recent_highlights": [
-        "Laurel onsite training begins May 11, 2026.",
-        "Laurel onsite end/go-live is May 25, 2026.",
-        "First plant go-live is scheduled for May 2026."
-      ]
-    },
-    {
-      "project_id": "vpgc-s9-upgrade",
-      "customer_id": "vpgc",
-      "site_id": null,
-      "project_name": "S9 Upgrade",
-      "status": "PLANNING",
-      "summary": "PT usage assessment and quote/interface updates are required.",
-      "recent_highlights": []
-    },
-    {
-      "project_id": "tip-top-data-cleanup-and-coa",
+      "project_id": "tip-top-coa-data-cleanup",
       "customer_id": "tip-top",
       "site_id": null,
-      "project_name": "Data Cleanup and COA",
-      "status": "TBD",
-      "summary": "COA and data quality workstreams are active.",
-      "recent_highlights": [
-        "Inventory sync is confirmed.",
-        "Data transfer to EnviroMap is marked In-Spec.",
-        "Manual COA statement removal is marked In-Spec.",
-        "CFS Internal MN S9 Trailer Report is marked In-Spec."
-      ]
+      "project_name": "COA and Data Cleanup",
+      "deliverable": "Q6 COA readiness and data quality stabilization",
+      "summary": "COA questions are open while inventory and data-cleanup work continues.",
+      "status": "In Spec",
+      "owner": "MN",
+      "source_entry": "pmNotes.tip-top"
     },
     {
       "project_id": "us-cold-storage-roboscan",
       "customer_id": "us-cold-storage",
       "site_id": null,
       "project_name": "RoboScan",
+      "deliverable": "Implementation planning",
+      "summary": "Target timing is defined at month level only.",
       "status": "TBD",
-      "summary": "Go-live month is identified and exact date needs confirmation.",
-      "recent_highlights": []
+      "owner": null,
+      "source_entry": "upcomingDates.uscold-roboscan"
+    },
+    {
+      "project_id": "vpgc-s9-upgrade",
+      "customer_id": "vpgc",
+      "site_id": null,
+      "project_name": "S9 Upgrade",
+      "deliverable": "PT usage assessment, quote, and interface updates",
+      "summary": "Scope dependencies and commercial artifacts are pending.",
+      "status": "Planning",
+      "owner": null,
+      "source_entry": "projectCards.vpgc-card"
+    },
+    {
+      "project_id": "wayne-sanderson-m3-merger",
+      "customer_id": "wayne-sanderson",
+      "site_id": "wayne-sanderson-laurel",
+      "project_name": "M3 Merger",
+      "deliverable": "SIT 3 issue closure and rollout",
+      "summary": "Rollout planning continues with fixed Laurel milestones.",
+      "status": "Testing",
+      "owner": null,
+      "source_entry": "projectCards.wayne-card"
     }
   ],
   "milestones": [
-    { "milestone_id": "m1", "project_id": "marjac-phase-ii-iii-roboscan", "title": "Phase II & III estimated go-live", "date": "Week of April 6, 2026", "confidence": "medium" },
-    { "milestone_id": "m2", "project_id": "braswell-s9-upgrade", "title": "S9 go-live window", "date": "Mid to late April 2026", "confidence": "low" },
-    { "milestone_id": "m3", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite training start", "date": "May 11, 2026", "confidence": "high" },
-    { "milestone_id": "m4", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite end / go-live", "date": "May 25, 2026", "confidence": "high" },
-    { "milestone_id": "m5", "project_id": "case-farms-zone-install", "title": "Morganton Zone Install", "date": "June 1, 2026", "confidence": "high" },
-    { "milestone_id": "m6", "project_id": "case-farms-zone-install", "title": "Winesburg travel", "date": "Apr 15, 2026", "confidence": "high" },
-    { "milestone_id": "m7", "project_id": "case-farms-zone-install", "title": "Winesburg install", "date": "Apr 16, 2026", "confidence": "high" },
-    { "milestone_id": "m8", "project_id": "case-farms-zone-install", "title": "Winesburg go-live", "date": "May 11, 2026", "confidence": "high" },
-    { "milestone_id": "m9", "project_id": "us-cold-storage-roboscan", "title": "RoboScan target month", "date": "November 2026", "confidence": "low" },
-    { "milestone_id": "m10", "project_id": "all-american-pet-protein-renewal", "title": "Maintenance renewal date", "date": "April 13, 2026", "confidence": "high" },
-    { "milestone_id": "m11", "project_id": "banks-cold-storage-renewal", "title": "Maintenance renewal date", "date": "April 15, 2026", "confidence": "high" }
+    { "milestone_id": "ms-braswell-golive-window", "project_id": "braswell-s9-upgrade", "title": "S9 go-live window", "date_text": "Mid to late April 2026", "date_confidence": "low", "source_phrase": "S9 Go-Live Window" },
+    { "milestone_id": "ms-marjac-phase23-golive", "project_id": "marjac-phase-ii-iii-roboscan", "title": "Phase II & III estimated go-live", "date_text": "Week of April 6, 2026", "date_confidence": "medium", "source_phrase": "Go-live target: week of Apr 6, 2026" },
+    { "milestone_id": "ms-wayne-laurel-training", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite training", "date_text": "May 11, 2026", "date_confidence": "high", "source_phrase": "Laurel onsite training begins May 11, 2026" },
+    { "milestone_id": "ms-wayne-laurel-golive", "project_id": "wayne-sanderson-m3-merger", "title": "Laurel onsite end / go-live", "date_text": "May 25, 2026", "date_confidence": "high", "source_phrase": "onsite end/go-live on May 25, 2026" },
+    { "milestone_id": "ms-case-morganton-install", "project_id": "case-farms-zone-install-morganton", "title": "Morganton zone install", "date_text": "June 1, 2026", "date_confidence": "high", "source_phrase": "Morganton install: June 1, 2026 (Quote #17609A)" },
+    { "milestone_id": "ms-case-winesburg-travel", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg travel", "date_text": "Apr 15, 2026", "date_confidence": "high", "source_phrase": "Travel Apr 15, 2026" },
+    { "milestone_id": "ms-case-winesburg-install", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg install", "date_text": "Apr 16, 2026", "date_confidence": "high", "source_phrase": "Install Apr 16, 2026" },
+    { "milestone_id": "ms-case-winesburg-golive", "project_id": "case-farms-zone-install-winesburg", "title": "Winesburg go-live", "date_text": "May 11, 2026", "date_confidence": "high", "source_phrase": "Go-Live May 11, 2026" },
+    { "milestone_id": "ms-uscold-roboscan", "project_id": "us-cold-storage-roboscan", "title": "RoboScan target window", "date_text": "November 2026", "date_confidence": "low", "source_phrase": "RoboScan — November 2026" },
+    { "milestone_id": "ms-aapp-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "April 13, 2026", "date_confidence": "high", "source_phrase": "All American Pet Protein renewalDate" },
+    { "milestone_id": "ms-banks-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "April 15, 2026", "date_confidence": "high", "source_phrase": "Banks Cold Storage renewalDate" },
+    { "milestone_id": "ms-wayne-renewal", "project_id": null, "title": "Software maintenance renewal", "date_text": "2026-09-30", "date_confidence": "high", "source_phrase": "Renewal workflow kickoff" }
   ],
   "action_items": [
-    { "action_item_id": "a1", "project_id": "braswell-s9-upgrade", "description": "Continue FG product code validation and shipping workflow checks.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a2", "project_id": "case-farms-s9-upgrade-winesburg", "description": "Confirm deployment window and validate post-patch Order Updates behavior.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a3", "project_id": "case-farms-s9-go-live-farmerville", "description": "Deploy Order Updates patch after validation and confirm stability.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a4", "project_id": "case-farms-zone-install", "description": "Resolve Winesburg box orientation issue going into VRT.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a5", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Prioritize remaining open deliverables and schedule next deployment bundle.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a6", "project_id": "farbest-s9-upgrade-open-issues", "description": "Determine timeline and requirements with customer stakeholders.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a7", "project_id": "gold-creek-slc-label-design", "description": "Provision Bartender_TestDB for Gold Creek.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a8", "project_id": "harpleys-randolph-system-upgrade", "description": "Determine timeline to resume PT usage.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a9", "project_id": "marjac-phase-ii-iii-roboscan", "description": "Refine onsite testing checklist.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a10", "project_id": "marjac-phase-ii-iii-roboscan", "description": "Create RoboScan install checklist.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a11", "project_id": "marjac-s9-upgrade", "description": "Confirm roadmap and implementation sequence.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a12", "project_id": "wayne-sanderson-m3-merger", "description": "Review and resolve open issues prior to rollout stages.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a13", "project_id": "vpgc-s9-upgrade", "description": "Update quote.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a14", "project_id": "vpgc-s9-upgrade", "description": "Update interface document.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a15", "project_id": "tip-top-data-cleanup-and-coa", "description": "Verify Q6 COA functionality.", "owner": "TBD", "status": "OPEN", "due_date": null },
-    { "action_item_id": "a16", "project_id": "tip-top-data-cleanup-and-coa", "description": "Complete data cleanup and monitoring before June.", "owner": "TBD", "status": "OPEN", "due_date": "before June" },
-    { "action_item_id": "a17", "project_id": "tip-top-data-cleanup-and-coa", "description": "Address open COA questions in the scheduled QC meeting.", "owner": "TBD", "status": "OPEN", "due_date": null }
+    { "action_item_id": "ai-braswell-fg-validation", "project_id": "braswell-s9-upgrade", "description": "Continue FG product code validation and shipping workflow checks.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Continue FG product code validation and shipping workflow checks." },
+    { "action_item_id": "ai-braswell-rm13634-test", "project_id": "braswell-s9-upgrade", "description": "Validate patch in test environment.", "owner": "WJ", "due_date": "2026-04-18", "urgency": "high", "source_phrase": "next_steps: Validate patch in test environment" },
+    { "action_item_id": "ai-banks-hotfix", "project_id": "banks-cold-storage-inbound-asn", "description": "CFS to deliver hotfix.", "owner": "MN", "due_date": null, "urgency": "high", "source_phrase": "next_steps: CFS to deliver hotfix" },
+    { "action_item_id": "ai-case-winesburg-s9-deploy-window", "project_id": "case-farms-s9-upgrade-winesburg", "description": "Schedule production deployment window.", "owner": "WJ", "due_date": null, "urgency": "high", "source_phrase": "Schedule production deployment window" },
+    { "action_item_id": "ai-case-farmerville-patch", "project_id": "case-farms-s9-go-live-farmerville", "description": "Deploy the Order Updates patch and confirm stability.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Deploy patch after validation and confirm stability." },
+    { "action_item_id": "ai-case-morganton-maintenance-window", "project_id": "case-farms-zone-install-morganton", "description": "Confirm customer maintenance window.", "owner": "MN", "due_date": "2026-06-01", "urgency": "normal", "source_phrase": "Waiting on customer maintenance window" },
+    { "action_item_id": "ai-case-winesburg-vrt", "project_id": "case-farms-zone-install-winesburg", "description": "Resolve Winesburg box orientation issue before go-live.", "owner": "TBD", "due_date": "2026-05-11", "urgency": "high", "source_phrase": "Resolve Winesburg open issue: box orientation going into VRT." },
+    { "action_item_id": "ai-catfish-retry-design", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Create retry design note.", "owner": "WJ", "due_date": null, "urgency": "normal", "source_phrase": "Create retry design note" },
+    { "action_item_id": "ai-catfish-integration-followup", "project_id": "consolidated-catfish-s9-post-implementation", "description": "Follow up with the integration team.", "owner": "WJ", "due_date": null, "urgency": "normal", "source_phrase": "Follow-up with integration team" },
+    { "action_item_id": "ai-farbest-scheduling-poll", "project_id": "farbest-s9-upgrade-open-issues", "description": "Send scheduling poll for Q6, R8, and Nimbus training.", "owner": "WJ", "due_date": "2026-05-05", "urgency": "normal", "source_phrase": "Send scheduling poll" },
+    { "action_item_id": "ai-gold-creek-provision-db", "project_id": "gold-creek-slc-product-setup", "description": "Provision Bartender_TestDB for Gold Creek.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Provision Bartender_TestDB for Gold Creek." },
+    { "action_item_id": "ai-harpleys-resume-plan", "project_id": "harpleys-randolph-system-upgrade", "description": "Determine timeline to resume PT usage.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Determine timeline to resume PT usage." },
+    { "action_item_id": "ai-marjac-phase23-checklist-refine", "project_id": "marjac-phase-ii-iii-roboscan", "description": "Refine onsite testing checklist.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Refine onsite testing checklist (WIP)." },
+    { "action_item_id": "ai-marjac-phase23-checklist-create", "project_id": "marjac-phase-ii-iii-roboscan", "description": "Create RoboScan install checklist.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Create RoboScan install checklist (WIP)." },
+    { "action_item_id": "ai-marjac-s9-roadmap", "project_id": "marjac-s9-upgrade", "description": "Confirm roadmap and implementation sequence.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Confirm roadmap and implementation sequence." },
+    { "action_item_id": "ai-tiptop-qc-meeting", "project_id": "tip-top-coa-data-cleanup", "description": "Run the scheduled QC meeting to close open COA questions.", "owner": "MN", "due_date": null, "urgency": "high", "source_phrase": "COA questions are open; QC meeting is scheduled." },
+    { "action_item_id": "ai-tiptop-data-cleanup-before-june", "project_id": "tip-top-coa-data-cleanup", "description": "Complete data cleanup and monitoring before June.", "owner": "MN", "due_date": "before June", "urgency": "high", "source_phrase": "data cleanup and monitoring needed before June" },
+    { "action_item_id": "ai-tiptop-q6-verification", "project_id": "tip-top-coa-data-cleanup", "description": "Complete Q6 COA functionality verification.", "owner": "MN", "due_date": null, "urgency": "normal", "source_phrase": "Q6 COA functionality verification is WIP." },
+    { "action_item_id": "ai-vpgc-update-quote", "project_id": "vpgc-s9-upgrade", "description": "Update quote.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Update quote." },
+    { "action_item_id": "ai-vpgc-update-interface", "project_id": "vpgc-s9-upgrade", "description": "Update interface document.", "owner": "TBD", "due_date": null, "urgency": "normal", "source_phrase": "Update interface document." },
+    { "action_item_id": "ai-wayne-close-open-issues", "project_id": "wayne-sanderson-m3-merger", "description": "Review and resolve open issues prior to rollout stages.", "owner": "TBD", "due_date": null, "urgency": "high", "source_phrase": "Review and resolve open issues prior to rollout stages." }
   ],
-  "risks": [
-    { "risk_id": "r1", "project_id": "braswell-s9-upgrade", "description": "RM-13634 secondary label printing defect may delay go-live.", "status": "OPEN" },
-    { "risk_id": "r2", "project_id": "case-farms-s9-upgrade-winesburg", "description": "Order Updates deployment depends on CFS patch timing.", "status": "OPEN" },
-    { "risk_id": "r3", "project_id": "case-farms-zone-install", "description": "Winesburg VRT box orientation issue remains unresolved.", "status": "OPEN" },
-    { "risk_id": "r4", "project_id": "us-cold-storage-roboscan", "description": "Exact November 2026 date is unconfirmed.", "status": "OPEN" },
-    { "risk_id": "r5", "project_id": "banks-cold-storage-renewal", "description": "Renewal confirmation is still needed.", "status": "OPEN" },
-    { "risk_id": "r6", "project_id": "tip-top-data-cleanup-and-coa", "description": "COA questions remain open.", "status": "OPEN" }
+  "rm_issues": [
+    { "rm_issue_id": "rm-braswell-13634", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13634", "description": "Secondary label fails to print; testing is active.", "status": "In Testing", "urgency": "high", "owner": "WJ", "source_phrase": "RM-13634 secondary label fails to print; Testing Active (urgent)." },
+    { "rm_issue_id": "rm-braswell-13421", "project_id": "braswell-s9-upgrade", "rm_reference": "RM-13421", "description": "Cancel/reprint testing is active.", "status": "Testing", "urgency": "normal", "owner": "WJ", "source_phrase": "RM-13421 cancel/reprint testing active." },
+    { "rm_issue_id": "rm-banks-14002", "project_id": "banks-cold-storage-inbound-asn", "rm_reference": "RM-14002", "description": "Inbound ASN mismatch is waiting on hotfix delivery.", "status": "Waiting on CFS", "urgency": "high", "owner": "MN", "source_phrase": "rm_reference: RM-14002" },
+    { "rm_issue_id": "rm-case-13987", "project_id": "case-farms-s9-upgrade-winesburg", "rm_reference": "RM-13987", "description": "Order update patch is pending production deployment scheduling.", "status": "Waiting on CFS", "urgency": "high", "owner": "WJ", "source_phrase": "rm_reference: RM-13987" },
+    { "rm_issue_id": "rm-farbest-13656", "project_id": "farbest-s9-upgrade-open-issues", "rm_reference": "RM 13656", "description": "Spec is drafted and in review.", "status": "In Review", "urgency": "normal", "owner": "WJ", "source_phrase": "Spec drafted and in review (RM 13656)." }
+  ],
+  "blockers": [
+    { "blocker_id": "bl-banks-hotfix", "project_id": "banks-cold-storage-inbound-asn", "description": "Customer release is blocked pending CFS hotfix delivery.", "severity": "high", "source_phrase": "Waiting on CFS" },
+    { "blocker_id": "bl-case-morganton-window", "project_id": "case-farms-zone-install-morganton", "description": "Execution depends on a customer maintenance window.", "severity": "medium", "source_phrase": "Waiting on customer maintenance window" },
+    { "blocker_id": "bl-case-winesburg-vrt", "project_id": "case-farms-zone-install-winesburg", "description": "Box orientation issue into VRT remains unresolved.", "severity": "high", "source_phrase": "box orientation going into VRT" },
+    { "blocker_id": "bl-tiptop-open-coa-questions", "project_id": "tip-top-coa-data-cleanup", "description": "Open COA questions are pending QC resolution.", "severity": "medium", "source_phrase": "COA questions are open" }
   ],
   "renewals": [
-    {
-      "renewal_id": "all-american-pet-protein-renewal",
-      "customer_id": "all-american-pet-protein",
-      "renewal_date": "April 13, 2026",
-      "status": "IN_REVIEW",
-      "summary": "Quote sent.",
-      "quote_number": null,
-      "rm_reference": null
-    },
-    {
-      "renewal_id": "banks-cold-storage-renewal",
-      "customer_id": "banks-cold-storage",
-      "renewal_date": "April 15, 2026",
-      "status": "TBD",
-      "summary": "Needs confirmation.",
-      "quote_number": null,
-      "rm_reference": null
-    }
+    { "renewal_id": "ren-all-american-pet-protein-2026", "customer_id": "all-american-pet-protein", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "April 13, 2026", "date_confidence": "high", "status": "In Review", "summary": "Quote sent.", "quote_number": null, "source_entry": "renewals.all-american-pet-protein" },
+    { "renewal_id": "ren-banks-cold-storage-2026", "customer_id": "banks-cold-storage", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "April 15, 2026", "date_confidence": "high", "status": "TBD", "summary": "Needs confirmation.", "quote_number": null, "source_entry": "renewals.banks-cold-storage" },
+    { "renewal_id": "ren-wayne-sanderson-2026", "customer_id": "wayne-sanderson", "project_id": null, "renewal_type": "Software Maintenance Renewal", "renewal_date": "2026-09-30", "date_confidence": "high", "status": "Planning", "summary": "Renewal workflow kickoff.", "quote_number": null, "source_entry": "cfsRawSources.PDF row 32" }
   ],
   "linked_resources": [
-    { "resource_id": "lr1", "label": "Braswell tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr2", "label": "Case Farms tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr3", "label": "Consolidated Catfish tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr4", "label": "Farbest tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr5", "label": "Gold Creek tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr6", "label": "Harpley’s / Randolph tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr7", "label": "MarJac tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr8", "label": "Wayne-Sanderson tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr9", "label": "VPGC tracker", "href": null, "availability": "pending", "note": "Tracker file not yet in repo." },
-    { "resource_id": "lr10", "label": "Braswell - Customer Ready Tracker.xlsx", "href": null, "availability": "pending", "note": "File not present in repository." },
-    { "resource_id": "lr11", "label": "Banks Cold Storage - Customer Ready Tracker.xlsx", "href": null, "availability": "pending", "note": "File not present in repository." },
-    { "resource_id": "lr12", "label": "Case Farms - Customer Ready Tracker.xlsx", "href": null, "availability": "pending", "note": "File not present in repository." },
-    { "resource_id": "lr13", "label": "Consolidated Catfish - Customer Ready Tracker.xlsx", "href": null, "availability": "pending", "note": "File not present in repository." },
-    { "resource_id": "lr14", "label": "CPT-CFS Projects Team _ Initiatives & Status Tracker-100426-181710.pdf", "href": null, "availability": "pending", "note": "Attached report reference not present in repository." }
+    { "resource_id": "lr-case-quote-17609a", "project_id": "case-farms-zone-install-morganton", "resource_type": "quote", "label": "Quote #17609A", "href": null, "notes": "Morganton zone install." },
+    { "resource_id": "lr-case-quote-17608a", "project_id": "case-farms-zone-install-winesburg", "resource_type": "quote", "label": "Quote #17608A", "href": null, "notes": "Winesburg zone install travel/install/go-live." },
+    { "resource_id": "lr-gold-creek-quote-17578", "project_id": "gold-creek-slc-product-setup", "resource_type": "quote", "label": "Quote 17578", "href": null, "notes": "BarTender license and training." },
+    { "resource_id": "lr-braswell-tracker", "project_id": "braswell-s9-upgrade", "resource_type": "tracker", "label": "Braswell tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-case-farms-tracker", "project_id": null, "resource_type": "tracker", "label": "Case Farms tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-consolidated-catfish-tracker", "project_id": "consolidated-catfish-s9-post-implementation", "resource_type": "tracker", "label": "Consolidated Catfish tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-farbest-tracker", "project_id": "farbest-s9-upgrade-open-issues", "resource_type": "tracker", "label": "Farbest tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-gold-creek-tracker", "project_id": "gold-creek-slc-product-setup", "resource_type": "tracker", "label": "Gold Creek tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-harpleys-randolph-tracker", "project_id": "harpleys-randolph-system-upgrade", "resource_type": "tracker", "label": "Harpley’s / Randolph tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-marjac-tracker", "project_id": "marjac-phase-ii-iii-roboscan", "resource_type": "tracker", "label": "MarJac tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-wayne-sanderson-tracker", "project_id": "wayne-sanderson-m3-merger", "resource_type": "tracker", "label": "Wayne-Sanderson tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-vpgc-tracker", "project_id": "vpgc-s9-upgrade", "resource_type": "tracker", "label": "VPGC tracker", "href": null, "notes": "Tracker file not yet in repo." },
+    { "resource_id": "lr-cpt-cfs-master-pdf", "project_id": null, "resource_type": "tracker", "label": "CPT-CFS Projects Team _ Initiatives & Status Tracker-100426-181710.pdf", "href": null, "notes": "Attached report reference not present in repository." }
+  ],
+  "recent_highlights": [
+    { "highlight_id": "rh-braswell-sss", "project_id": "braswell-s9-upgrade", "highlight": "Testing SSS with Tom is complete.", "date_text": null },
+    { "highlight_id": "rh-catfish-tuesday-deploy", "project_id": "consolidated-catfish-s9-post-implementation", "highlight": "Deployment completed on Tuesday.", "date_text": "Tuesday (calendar date not specified)" },
+    { "highlight_id": "rh-farbest-training-request", "project_id": "farbest-s9-upgrade-open-issues", "highlight": "Training was requested for Q6, R8, and Nimbus.", "date_text": null },
+    { "highlight_id": "rh-marjac-onsite-complete", "project_id": "marjac-phase-ii-iii-roboscan", "highlight": "Initial onsite testing is complete.", "date_text": "week of Mar 9, 2026" },
+    { "highlight_id": "rh-tiptop-inventory-sync", "project_id": "tip-top-coa-data-cleanup", "highlight": "Inventory sync is confirmed.", "date_text": null },
+    { "highlight_id": "rh-tiptop-enviromap-inspec", "project_id": "tip-top-coa-data-cleanup", "highlight": "Data transfer to EnviroMap is marked In-Spec.", "date_text": null },
+    { "highlight_id": "rh-tiptop-manual-coa-inspec", "project_id": "tip-top-coa-data-cleanup", "highlight": "Manual COA statement removal is marked In-Spec.", "date_text": null },
+    { "highlight_id": "rh-tiptop-trailer-report-inspec", "project_id": "tip-top-coa-data-cleanup", "highlight": "CFS Internal MN S9 Trailer Report is marked In-Spec.", "date_text": null },
+    { "highlight_id": "rh-wayne-laurel-published-dates", "project_id": "wayne-sanderson-m3-merger", "highlight": "Laurel training and go-live dates are published.", "date_text": "May 11, 2026 and May 25, 2026" }
   ],
   "needs_review": [
-    { "item_id": "nr1", "entity_type": "milestone", "entity_id": "m2", "reason": "Date is vague: 'Mid to late April 2026'.", "confidence": "low" },
-    { "item_id": "nr2", "entity_type": "milestone", "entity_id": "m1", "reason": "Date is a week-level range: 'Week of April 6, 2026'.", "confidence": "medium" },
-    { "item_id": "nr3", "entity_type": "milestone", "entity_id": "m9", "reason": "Date is month-level only: 'November 2026'.", "confidence": "low" },
-    { "item_id": "nr4", "entity_type": "project", "entity_id": "consolidated-catfish-s9-post-implementation", "reason": "Recent deployment date references 'Tuesday' without calendar date.", "confidence": "low" },
-    { "item_id": "nr5", "entity_type": "project", "entity_id": "tip-top-data-cleanup-and-coa", "reason": "No explicit tracker status was provided in source notes.", "confidence": "low" },
-    { "item_id": "nr6", "entity_type": "action_item", "entity_id": "a16", "reason": "Due date is vague: 'before June'.", "confidence": "low" }
+    { "needs_review_id": "nr-marjac-name-variant", "entity_type": "customer", "entity_id": "marjac", "reason": "Source alternates between 'MarJac Gainesville' and 'MarJac'.", "date_confidence": null },
+    { "needs_review_id": "nr-harpleys-randolph-name-order", "entity_type": "customer", "entity_id": "harpleys-randolph-packing", "reason": "Source alternates name order: 'Harpley’s / Randolph Packing' vs 'Randolph Packing / Harpley’s'.", "date_confidence": null },
+    { "needs_review_id": "nr-case-section-conflict", "entity_type": "project", "entity_id": "case-farms-s9-upgrade-winesburg", "reason": "Raw source row shows 'Waiting on CFS' while project card section status is 'Planning'.", "date_confidence": null },
+    { "needs_review_id": "nr-tiptop-possible-duplicate", "entity_type": "project", "entity_id": "tip-top-coa-data-cleanup", "reason": "PDF row note says possible duplicate with another tracker row.", "date_confidence": null },
+    { "needs_review_id": "nr-catfish-relative-date", "entity_type": "recent_highlight", "entity_id": "rh-catfish-tuesday-deploy", "reason": "Relative date ('Tuesday') is not mapped to a calendar date in this source entry.", "date_confidence": "low" },
+    { "needs_review_id": "nr-uscold-month-only-date", "entity_type": "milestone", "entity_id": "ms-uscold-roboscan", "reason": "Date provided only at month granularity.", "date_confidence": "low" },
+    { "needs_review_id": "nr-braswell-window-vague", "entity_type": "milestone", "entity_id": "ms-braswell-golive-window", "reason": "Go-live date is intentionally vague ('Mid to late April 2026').", "date_confidence": "low" },
+    { "needs_review_id": "nr-vpgc-quote-tbd", "entity_type": "project", "entity_id": "vpgc-s9-upgrade", "reason": "Quote number remains unspecified ('Quote #TBD').", "date_confidence": null },
+    { "needs_review_id": "nr-wayne-owner-missing", "entity_type": "project", "entity_id": "wayne-sanderson-m3-merger", "reason": "Project owner is not named in the source notes.", "date_confidence": null }
   ]
 }
