@@ -26,45 +26,6 @@
     --input: 220 15% 90%;
     --ring: 220 70% 45%;
     --radius: 0.5rem;
-
-    /* Status colors */
-    --status-on-track: 142 60% 40%;
-    --status-on-track-bg: 142 60% 95%;
-    --status-caution: 38 92% 50%;
-    --status-caution-bg: 38 92% 95%;
-    --status-at-risk: 0 72% 51%;
-    --status-at-risk-bg: 0 72% 96%;
-    --status-blocked: 0 0% 45%;
-    --status-blocked-bg: 0 0% 94%;
-    --status-info: 210 70% 50%;
-    --status-info-bg: 210 70% 96%;
-
-    /* Phase colors */
-    --phase-planning: 260 50% 55%;
-    --phase-planning-bg: 260 50% 96%;
-    --phase-research: 200 60% 50%;
-    --phase-research-bg: 200 60% 96%;
-    --phase-development: 220 70% 50%;
-    --phase-development-bg: 220 70% 96%;
-    --phase-testing: 38 92% 50%;
-    --phase-testing-bg: 38 92% 96%;
-    --phase-golive: 142 60% 40%;
-    --phase-golive-bg: 142 60% 95%;
-    --phase-live: 142 70% 35%;
-    --phase-live-bg: 142 70% 94%;
-    --phase-post: 220 15% 50%;
-    --phase-post-bg: 220 15% 95%;
-    --phase-onhold: 0 0% 55%;
-    --phase-onhold-bg: 0 0% 94%;
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 25% 20%;
-    --sidebar-primary: 220 70% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 95%;
-    --sidebar-accent-foreground: 220 25% 15%;
-    --sidebar-border: 220 15% 90%;
-    --sidebar-ring: 220 70% 45%;
   }
 }
 
@@ -78,44 +39,41 @@
   }
 }
 
-/* Print styles */
 @media print {
   body {
     background: white !important;
     font-size: 10pt;
+    color: #0f172a;
   }
-  .no-print {
-    display: none !important;
+
+  main::before {
+    content: "CFS Internal Portfolio Report";
+    display: block;
+    font-size: 9pt;
+    color: #475569;
+    margin-bottom: 8px;
   }
+
   .print-break-before {
     page-break-before: always;
   }
-  .print-avoid-break {
+
+  .print-avoid-break,
+  table tr,
+  h1,
+  h2,
+  h3 {
     page-break-inside: avoid;
     break-inside: avoid;
-  }
-  .no-print-detail {
-    display: none !important;
-  }
-  .print-compact-table th,
-  .print-compact-table td {
-    padding-top: 0.2rem !important;
-    padding-bottom: 0.2rem !important;
-  }
-  @page {
-    margin: 1.5cm;
-    size: portrait;
-  }
-}
-
-@media print {
-  .print-break {
-    page-break-after: always;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
+  }
+
+  thead {
+    display: table-header-group;
   }
 
   th, td {
@@ -124,7 +82,8 @@
     vertical-align: top;
   }
 
-  [data-print-target="true"] {
-    display: block;
+  @page {
+    margin: 1.5cm;
+    size: portrait;
   }
 }

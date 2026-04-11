@@ -12,20 +12,25 @@ export type NormalizedStatus =
 
 const STATUS_MAP: Record<string, NormalizedStatus> = {
   PLANNING: "Planning",
+  "IN PROGRESS": "In Progress",
   IN_PROGRESS: "In Progress",
   TESTING: "Testing",
+  "IN REVIEW": "In Review",
   IN_REVIEW: "In Review",
   LIVE: "Live",
+  "POST IMPLEMENTATION": "Post-Implementation",
   POST_IMPLEMENTATION: "Post-Implementation",
   BLOCKED: "Blocked",
   OPEN: "Open",
   COMPLETE: "Complete",
+  COMPLETED: "Complete",
   TBD: "TBD",
 };
 
 export function normalizeStatus(input: string | null | undefined): NormalizedStatus {
   if (!input) return "TBD";
-  return STATUS_MAP[input] ?? STATUS_MAP[input.toUpperCase()] ?? "TBD";
+  const key = input.trim().toUpperCase();
+  return STATUS_MAP[key] ?? STATUS_MAP[key.replace(/\s+/g, "_")] ?? "TBD";
 }
 
 export function formatDateDisplay(input: string | null | undefined): string {
