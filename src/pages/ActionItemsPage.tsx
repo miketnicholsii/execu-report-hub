@@ -3,6 +3,7 @@ import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import { StatusBadge, PriorityBadge, FlagBadge } from "@/components/StatusBadge";
 import SortableTable, { Column } from "@/components/SortableTable";
+import CopyButton, { rowsToTsv } from "@/components/CopyButton";
 import { useUnifiedData, UnifiedActionItem } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { Link } from "react-router-dom";

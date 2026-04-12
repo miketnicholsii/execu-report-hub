@@ -110,6 +110,7 @@ export default function RmDetailPage() {
         { label: ticket.customer_name, to: `/customers/${ticket.customer_slug}` },
         { label: ticket.rm_number },
       ]}
+      actions={<CopyButton content={copyContent} label="Copy Detail" />}
     >
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* Main Content */}
