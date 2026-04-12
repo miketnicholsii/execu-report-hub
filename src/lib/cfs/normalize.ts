@@ -23,6 +23,19 @@ function classifyStandardizedStatus(bucket: TrackerItem["status_bucket"], source
   return bucket;
 }
 
+function buildOperationalActionText(item: TrackerItem) {
+  const candidate = item.next_steps?.trim() || "";
+  const normalizedCandidate = candidate.toLowerCase();
+  const isVague = /^(follow[\s-]?up|check with team|review issue|retest|monitor)$/i.test(candidate);
+
+  if (candidate && !isVague) return candidate;
+
+  const verb = item.status_bucket === "Waiting on Customer" ? "Confirm" : item.status_bucket === "Waiting on CFS" ? "Deliver" : "Validate";
+  const subject = item.deliverable ?? item.topic ?? item.project_name ?? "tracker item";
+  const ownerCue = item.owner ? `with ${item.owner}` : "with assigned owner";
+  return `${verb} ${subject} ${ownerCue} and record outcome in tracker.`;
+}
+
 export function normalizeRows(rows: RawSourceRow[]): TrackerItem[] {
   return rows.map((row) => {
     const raw = row.raw_record;
@@ -109,7 +122,7 @@ export function extractActionItems(items: TrackerItem[]): ActionItem[] {
         project_name: item.project_name,
         linked_tracker_item_id: item.id,
         linked_rm_reference: item.rm_reference,
-        action_text: item.next_steps,
+        action_text: buildOperationalActionText(item),
         owner: item.owner,
         owner_type: item.owner_type,
         due_date: item.target_eta ?? item.milestone_date,
@@ -128,7 +141,7 @@ export function extractActionItems(items: TrackerItem[]): ActionItem[] {
         project_name: item.project_name,
         linked_tracker_item_id: item.id,
         linked_rm_reference: item.rm_reference,
-        action_text: `Follow-up needed: ${item.deliverable ?? item.topic ?? item.project_name ?? "Needs review"}`,
+        action_text: buildOperationalActionText(item),
         owner: item.owner,
         owner_type: item.owner_type,
         due_date: item.target_eta ?? item.milestone_date,

@@ -40,5 +40,7 @@ describe("cfs standards", () => {
 
   it("normalizes customer names without changing words", () => {
     expect(normalizeCustomerName("  Banks    Cold   Storage  ")).toBe("Banks Cold Storage");
+    expect(normalizeCustomerName("Braswell")).toBe("Braswell Eggs");
+    expect(normalizeCustomerName("braswell egg")).toBe("Braswell Eggs");
   });
 });
