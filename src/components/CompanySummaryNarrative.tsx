@@ -4,6 +4,7 @@
  */
 import { useMemo } from "react";
 import { FileText } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
 
 interface NarrativeProps {
   kpis: {
@@ -107,16 +108,24 @@ export default function CompanySummaryNarrative({
     return lines;
   }, [kpis, topCustomersByOpenRms, topCustomersByStale, waitingOnCustomerCount, waitingOnCfsCount, inDevelopmentCount, inTestingCount, completeCount, recentlyUpdatedCount]);
 
+  const plainText = useMemo(() =>
+    narrative.map(line => line.replace(/\*\*(.*?)\*\*/g, "$1")).join("\n\n"),
+    [narrative]
+  );
+
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <div className="flex items-center gap-2.5 mb-4">
-        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-          <FileText className="h-4 w-4 text-primary" />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <FileText className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">Executive Summary</h2>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Source-grounded portfolio narrative · {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-sm font-semibold text-foreground">Executive Summary</h2>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Source-grounded portfolio narrative · {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
-        </div>
+        <CopyButton content={plainText} label="Copy Summary" />
       </div>
       <div className="space-y-2.5 text-sm text-foreground leading-relaxed">
         {narrative.map((line, i) => (
