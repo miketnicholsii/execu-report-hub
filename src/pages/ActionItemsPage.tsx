@@ -30,7 +30,7 @@ const SAVED_VIEWS: SavedView[] = [
     const now = new Date();
     const in7 = new Date(now.getTime() + 7 * 86400000);
     return d >= now && d <= in7;
-  }), color: "text-amber-500" },
+  }), color: "text-status-caution" },
   { id: "high", label: "High Priority", filter: items => items.filter(i => i.priority === "High" && !CLOSED.includes(i.status)), color: "text-destructive" },
   { id: "waiting", label: "Waiting on Customer", filter: items => items.filter(i => i.status === "Waiting on Customer") },
   { id: "completed", label: "Completed", filter: items => items.filter(i => CLOSED.includes(i.status)) },

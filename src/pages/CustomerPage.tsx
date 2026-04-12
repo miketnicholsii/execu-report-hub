@@ -195,7 +195,7 @@ export default function CustomerPage() {
           <AlertTriangle className="h-4 w-4" /> RM Tickets ({rmTickets.length})
         </h2>
         {rmTickets.map(t => (
-          <div key={t.id} className={`rounded-xl border bg-card shadow-sm overflow-hidden ${t.flags.includes("Stale") ? "border-destructive/30" : t.flags.includes("Aging") ? "border-amber-500/30" : "border-border"}`}>
+          <div key={t.id} className={`rounded-xl border bg-card shadow-sm overflow-hidden ${t.flags.includes("Stale") ? "border-destructive/30" : t.flags.includes("Aging") ? "border-status-caution/30" : "border-border"}`}>
             <div className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => toggleRm(t.id)}>
               <Link to={`/rm/${t.rm_number}`} onClick={e => e.stopPropagation()} className="font-mono text-sm font-semibold text-primary hover:underline">{t.rm_number}</Link>
               <span className="text-sm font-medium text-foreground flex-1">{t.title || "Untitled"}</span>

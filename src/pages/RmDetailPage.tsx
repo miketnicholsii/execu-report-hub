@@ -76,7 +76,7 @@ export default function RmDetailPage() {
     ticket.flags.includes("Aging") ? "Medium" : "Normal";
 
   const attentionColor = attentionLevel === "Critical" ? "text-destructive" :
-    attentionLevel === "High" ? "text-amber-500" :
+    attentionLevel === "High" ? "text-status-caution" :
     attentionLevel === "Medium" ? "text-status-caution" : "text-muted-foreground";
 
   const exportExcel = () => downloadCsv(`${ticket.rm_number}-detail.csv`, [{
@@ -221,7 +221,7 @@ export default function RmDetailPage() {
               <RailCard
                 label="Days Since Update"
                 value={ticket.days_since_update}
-                color={ticket.days_since_update > 30 ? "text-destructive" : ticket.days_since_update > 14 ? "text-amber-500" : ""}
+                color={ticket.days_since_update > 30 ? "text-destructive" : ticket.days_since_update > 14 ? "text-status-caution" : ""}
                 icon={Clock}
               />
             )}
