@@ -182,7 +182,9 @@ export default function ActionItemsPage() {
   ];
 
   return (
-    <AppShell title="Action Center" subtitle={`${kpis.totalActions} total actions — ${kpis.openActions} open`} onExportExcel={exportExcel} onExportPdf={exportPdf}>
+    <AppShell title="Action Center" subtitle={`${kpis.totalActions} total actions — ${kpis.openActions} open`} onExportExcel={exportExcel} onExportPdf={exportPdf}
+      actions={<CopyButton content={() => rowsToTsv(rows.map(r => ({ Title: r.title, Customer: r.customer_name, Owner: r.owner, Due: r.due_date || "TBD", Priority: r.priority, Status: r.status })))} label="Copy List" />}
+    >
       <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <KpiCard label="TOTAL" value={kpis.totalActions} />
         <KpiCard label="OPEN" value={kpis.openActions} color="text-status-caution" />
