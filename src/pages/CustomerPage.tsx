@@ -5,6 +5,7 @@ import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import GanttChart from "@/components/GanttChart";
 import { StatusBadge, PriorityBadge, HealthBadge, FlagBadge } from "@/components/StatusBadge";
+import CopyButton from "@/components/CopyButton";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { vagueMilestoneToLabel } from "@/lib/cfs/helpers";
@@ -73,6 +74,13 @@ export default function CustomerPage() {
     "Last Update": r.last_update || "", "Due Date": r.due_date || "",
     "Next Steps": r.next_steps, Flags: r.flags.join("; "),
   })));
+
+  const customerSummaryText = () => [
+    `${customer.customer_name} — Health: ${customer.health}`,
+    `Initiatives: ${initiatives.length} | Open RMs: ${openRms.length} | Open Actions: ${openActions.length}`,
+    blockedRms.length ? `Blocked: ${blockedRms.length}` : "",
+    staleRms.length ? `Stale: ${staleRms.length}` : "",
+  ].filter(Boolean).join("\n");
 
   return (
     <AppShell
