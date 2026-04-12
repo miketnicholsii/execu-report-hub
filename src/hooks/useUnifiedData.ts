@@ -1,6 +1,6 @@
 /**
  * useUnifiedData — single source of truth merging static seed data + Supabase DB.
- * All pages should consume from this hook so counts cascade consistently.
+ * Includes canonical entity normalization and data-quality signals.
  */
 import { useMemo } from "react";
 import { useSupabaseCustomers } from "./useSupabaseCustomers";
@@ -18,8 +18,15 @@ import {
   getCustomerDeepData,
   seed,
 } from "@/lib/cfs/selectors2";
+import {
+  actionConfidence,
+  canonicalCustomerName,
+  customerAliasesForCanonical,
+  extractRmReferencesFromText,
+  fingerprintAction,
+  normalizeInitiativeTitle,
+} from "@/lib/canonicalization";
 
-/* ── Helpers ── */
 function daysSince(dateStr: string | null | undefined): number | null {
   if (!dateStr) return null;
   const d = new Date(dateStr);
@@ -35,7 +42,6 @@ function agingFlag(days: number | null): string | null {
   return null;
 }
 
-/* ── Unified RM Ticket Type ── */
 export interface UnifiedRmTicket {
   id: string;
   rm_number: string;
@@ -55,7 +61,6 @@ export interface UnifiedRmTicket {
   overdue: boolean;
   flags: string[];
   source: "db" | "static";
-  // extra detail fields from static
   spec_status?: string | null;
   code_status?: string | null;
   testing_status?: string | null;
@@ -77,13 +82,21 @@ export interface UnifiedActionItem {
   id: string;
   title: string;
   description: string;
+  reason: string;
+  sourceContext: string;
   owner: string;
   due_date: string | null;
   status: string;
   priority: string;
-  source: string;
+  source: "db" | "meeting" | "file" | "static" | "manual";
+  linkedRmNumbers: string[];
+  linkedInitiative: string | null;
+  confidence: number;
+  created_at?: string;
+  updated_at?: string;
   customer_name: string;
   customer_slug: string;
+  customer_aliases: string[];
   customer_id: string | null;
   from_db: boolean;
 }
@@ -91,12 +104,12 @@ export interface UnifiedActionItem {
 export interface UnifiedCustomer {
   id: string;
   customer_name: string;
+  aliases: string[];
   slug: string;
   health: string;
   status: string;
   owner: string | null;
   notes: string | null;
-  // aggregated counts
   initiativeCount: number;
   totalRmTickets: number;
   openRmTickets: number;
@@ -104,7 +117,6 @@ export interface UnifiedCustomer {
   totalActionItems: number;
   openActionItems: number;
   blockerCount: number;
-  // computed fields
   riskLevel: "High" | "Medium" | "Low";
   source: "db" | "static" | "both";
 }
@@ -112,6 +124,7 @@ export interface UnifiedCustomer {
 export interface UnifiedInitiative {
   id: string;
   title: string;
+  normalized_title: string;
   customer_id: string | null;
   customer_name: string;
   customer_slug: string;
@@ -147,7 +160,6 @@ export function useUnifiedData() {
   const { actionItems: dbActions, addActionItem, updateActionItem, deleteActionItem, bulkAdd: bulkAddActions, isLoading: actionsLoading } = useSupabaseActionItems();
   const { meetings: dbMeetings, meetingActions, addMeeting, deleteMeeting, isLoading: meetingsLoading } = useSupabaseMeetings();
 
-  // Static data
   const staticCustomerOverviews = useMemo(() => { try { return getCustomerOverviews(); } catch { return []; } }, []);
   const staticRmRows = useMemo(() => { try { return getRmDetailRows(); } catch { return []; } }, []);
   const staticActionRows = useMemo(() => { try { return getActionDetailRows(); } catch { return []; } }, []);
@@ -155,13 +167,13 @@ export function useUnifiedData() {
   const renewals = useMemo(() => { try { return getRenewalRows(); } catch { return []; } }, []);
   const staticTrackerRows = useMemo(() => { try { return getTrackerRows(); } catch { return []; } }, []);
 
-  /* ── Unified RM Tickets ── */
   const rmTickets: UnifiedRmTicket[] = useMemo(() => {
     const dbCustMap = new Map(dbCustomers.map(c => [c.id, c]));
     const dbRmSet = new Set(dbTickets.map(t => t.rm_number));
 
     const fromDb: UnifiedRmTicket[] = dbTickets.map(t => {
       const cust = t.customer_id ? dbCustMap.get(t.customer_id) : null;
+      const customer_name = canonicalCustomerName(cust?.customer_name || "Unknown");
       const days = daysSince(t.last_update);
       const flag = agingFlag(days);
       const overdue = t.due_date ? new Date(t.due_date) < new Date() && !CLOSED_STATUSES.includes(t.status) : false;
@@ -175,8 +187,8 @@ export function useUnifiedData() {
         id: t.id,
         rm_number: t.rm_number,
         title: t.title || "",
-        customer_name: cust?.customer_name || "Unknown",
-        customer_slug: cust?.slug || "",
+        customer_name,
+        customer_slug: customer_name === "Unknown" ? "" : customer_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
         customer_id: t.customer_id,
         status: t.status,
         owner: t.owner || "Unassigned",
@@ -196,6 +208,7 @@ export function useUnifiedData() {
     const fromStatic: UnifiedRmTicket[] = staticRmRows
       .filter(sr => !dbRmSet.has(sr.rm_reference))
       .map(sr => {
+        const customer_name = canonicalCustomerName(sr.customer_name);
         const days = daysSince(sr.last_update);
         const flag = agingFlag(days);
         const flags: string[] = [...(sr.derived_flags as string[])];
@@ -205,8 +218,8 @@ export function useUnifiedData() {
           id: sr.rm_issue_id,
           rm_number: sr.rm_reference,
           title: sr.description,
-          customer_name: sr.customer_name,
-          customer_slug: sr.customer_slug,
+          customer_name,
+          customer_slug: customer_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
           customer_id: null,
           status: sr.canonical_status,
           owner: sr.owner,
@@ -241,81 +254,114 @@ export function useUnifiedData() {
     return [...fromDb, ...fromStatic];
   }, [dbTickets, dbCustomers, staticRmRows]);
 
-  /* ── Unified Action Items ── */
   const actionItems: UnifiedActionItem[] = useMemo(() => {
     const dbCustMap = new Map(dbCustomers.map(c => [c.id, c]));
 
-    const fromDb: UnifiedActionItem[] = dbActions.map(a => ({
-      id: a.id,
-      title: a.title,
-      description: a.description || "",
-      owner: a.owner,
-      due_date: a.due_date,
-      status: a.status,
-      priority: a.priority,
-      source: a.source || "manual",
-      customer_name: a.customer_id ? dbCustMap.get(a.customer_id)?.customer_name || "Unknown" : "Unknown",
-      customer_slug: a.customer_id ? dbCustMap.get(a.customer_id)?.slug || "" : "",
-      customer_id: a.customer_id,
-      from_db: true,
-    }));
+    const fromDb: UnifiedActionItem[] = dbActions.map(a => {
+      const customer_name = canonicalCustomerName(a.customer_id ? dbCustMap.get(a.customer_id)?.customer_name || "Unknown" : "Unknown");
+      const owner = a.owner || "Unassigned";
+      const linkedRmNumbers = extractRmReferencesFromText(a.title, a.description, a.source_id);
+      return {
+        id: a.id,
+        title: a.title,
+        description: a.description || "",
+        reason: a.source ? `Persisted ${a.source} action requiring execution tracking.` : "Manual action entered by an operator.",
+        sourceContext: a.description || a.title,
+        owner,
+        due_date: a.due_date,
+        status: a.status,
+        priority: a.priority,
+        source: "db",
+        linkedRmNumbers,
+        linkedInitiative: null,
+        confidence: actionConfidence("db", Boolean(a.due_date), owner !== "Unassigned", linkedRmNumbers.length),
+        created_at: a.created_at,
+        updated_at: a.updated_at,
+        customer_name,
+        customer_slug: customer_name === "Unknown" ? "" : customer_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+        customer_aliases: customerAliasesForCanonical(customer_name),
+        customer_id: a.customer_id,
+        from_db: true,
+      };
+    });
 
-    const dbTitles = new Set(fromDb.map(d => d.title));
+    const dbFingerprints = new Set(fromDb.map(item => fingerprintAction(item.title, item.customer_name, item.owner)));
     const fromStatic: UnifiedActionItem[] = staticActionRows
-      .filter(s => !dbTitles.has(s.description))
-      .map(s => ({
-        id: s.action_item_id,
-        title: s.description,
-        description: s.description,
-        owner: s.owner,
-        due_date: s.due_date || null,
-        status: s.normalizedStatus,
-        priority: s.urgency === "high" ? "High" : s.urgency === "medium" ? "Medium" : "Low",
-        source: "static",
-        customer_name: s.customer_name,
-        customer_slug: s.customer_slug,
-        customer_id: null,
-        from_db: false,
-      }));
+      .filter(s => !dbFingerprints.has(fingerprintAction(s.description, s.customer_name, s.owner ?? "Unassigned")))
+      .map(s => {
+        const customer_name = canonicalCustomerName(s.customer_name);
+        const owner = s.owner || "Unassigned";
+        const linkedRmNumbers = extractRmReferencesFromText(s.description, s.notes, s.context, s.linked_rm_reference);
+        return {
+          id: s.action_item_id,
+          title: s.description,
+          description: s.description,
+          reason: s.trigger_reason || "Inferred from tracker context and follow-up language.",
+          sourceContext: [s.context, s.notes, s.source_file, s.source_sheet].filter(Boolean).join(" · "),
+          owner,
+          due_date: s.due_date || null,
+          status: s.normalizedStatus,
+          priority: s.urgency === "high" ? "High" : s.urgency === "medium" ? "Medium" : "Low",
+          source: "static",
+          linkedRmNumbers,
+          linkedInitiative: normalizeInitiativeTitle(s.project_name),
+          confidence: actionConfidence("file", Boolean(s.due_date), owner !== "Unassigned", linkedRmNumbers.length),
+          customer_name,
+          customer_slug: customer_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+          customer_aliases: customerAliasesForCanonical(customer_name),
+          customer_id: null,
+          from_db: false,
+        };
+      });
 
-    return [...fromDb, ...fromStatic];
+    const deduped = new Map<string, UnifiedActionItem>();
+    [...fromDb, ...fromStatic].forEach((item) => {
+      const fp = fingerprintAction(item.title, item.customer_name, item.owner);
+      if (!deduped.has(fp) || (item.from_db && !deduped.get(fp)?.from_db)) deduped.set(fp, item);
+    });
+
+    return Array.from(deduped.values());
   }, [dbActions, dbCustomers, staticActionRows]);
 
-  /* ── Unified Initiatives ── */
   const initiatives: UnifiedInitiative[] = useMemo(() => {
     const dbCustMap = new Map(dbCustomers.map(c => [c.id, c]));
 
-    const fromDb: UnifiedInitiative[] = dbInitiatives.map(i => ({
-      id: i.id,
-      title: i.title,
-      customer_id: i.customer_id,
-      customer_name: i.customer_id ? dbCustMap.get(i.customer_id)?.customer_name || "Unknown" : "Unknown",
-      customer_slug: i.customer_id ? dbCustMap.get(i.customer_id)?.slug || "" : "",
-      rm_number: i.rm_number,
-      status: i.status,
-      health: i.health,
-      priority: i.priority,
-      owner: i.owner,
-      due_date: i.due_date,
-      description: i.description,
-      next_step: i.next_step,
-      open_question: i.open_question,
-      source: "db" as const,
-    }));
+    const fromDb: UnifiedInitiative[] = dbInitiatives.map(i => {
+      const customer_name = canonicalCustomerName(i.customer_id ? dbCustMap.get(i.customer_id)?.customer_name || "Unknown" : "Unknown");
+      return {
+        id: i.id,
+        title: i.title,
+        normalized_title: normalizeInitiativeTitle(i.title),
+        customer_id: i.customer_id,
+        customer_name,
+        customer_slug: customer_name === "Unknown" ? "" : customer_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+        rm_number: i.rm_number,
+        status: i.status,
+        health: i.health,
+        priority: i.priority,
+        owner: i.owner,
+        due_date: i.due_date,
+        description: i.description,
+        next_step: i.next_step,
+        open_question: i.open_question,
+        source: "db" as const,
+      };
+    });
 
-    // Add static projects not already in DB
-    const dbTitles = new Set(fromDb.map(d => d.title.toLowerCase()));
+    const dbTitles = new Set(fromDb.map(d => d.normalized_title.toLowerCase()));
     const staticProjects = seed.projects || [];
     const fromStatic: UnifiedInitiative[] = staticProjects
-      .filter(p => !dbTitles.has(p.project_name.toLowerCase()))
+      .filter(p => !dbTitles.has(normalizeInitiativeTitle(p.project_name).toLowerCase()))
       .map(p => {
         const cust = seed.customers.find(c => c.customer_id === p.customer_id);
+        const customer_name = canonicalCustomerName(cust?.customer_name || "Unknown");
         return {
           id: p.project_id,
           title: p.project_name,
+          normalized_title: normalizeInitiativeTitle(p.project_name),
           customer_id: null,
-          customer_name: cust?.customer_name || "Unknown",
-          customer_slug: cust?.slug || "",
+          customer_name,
+          customer_slug: customer_name === "Unknown" ? "" : customer_name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
           rm_number: null,
           status: p.normalizedStatus,
           health: "Healthy",
@@ -332,33 +378,21 @@ export function useUnifiedData() {
     return [...fromDb, ...fromStatic];
   }, [dbInitiatives, dbCustomers]);
 
-  /* ── Unified Customers ── */
   const customers: UnifiedCustomer[] = useMemo(() => {
-    // Build lookup for DB customers by name (lowercase)
-    const dbByName = new Map(dbCustomers.map(c => [c.customer_name.toLowerCase(), c]));
-    const staticByName = new Map(staticCustomerOverviews.map(c => [c.customer_name.toLowerCase(), c]));
+    const dbByName = new Map(dbCustomers.map(c => [canonicalCustomerName(c.customer_name).toLowerCase(), c]));
+    const staticByName = new Map(staticCustomerOverviews.map(c => [canonicalCustomerName(c.customer_name).toLowerCase(), c]));
     const allNames = new Set([...dbByName.keys(), ...staticByName.keys()]);
 
     return Array.from(allNames).map(nameKey => {
       const db = dbByName.get(nameKey);
       const st = staticByName.get(nameKey);
-      const name = db?.customer_name || st?.customer_name || nameKey;
-      const slug = db?.slug || st?.slug || nameKey.replace(/\s+/g, "-").toLowerCase();
+      const canonicalName = canonicalCustomerName(db?.customer_name || st?.customer_name || nameKey);
+      const slug = db?.slug || st?.slug || canonicalName.replace(/\s+/g, "-").toLowerCase();
       const id = db?.id || st?.customer_id || slug;
 
-      // Count from unified data
-      const custRms = rmTickets.filter(r =>
-        r.customer_name.toLowerCase() === nameKey ||
-        (r.customer_id && db && r.customer_id === db.id)
-      );
-      const custActions = actionItems.filter(a =>
-        a.customer_name.toLowerCase() === nameKey ||
-        (a.customer_id && db && a.customer_id === db.id)
-      );
-      const custInitiatives = initiatives.filter(i =>
-        i.customer_name.toLowerCase() === nameKey ||
-        (i.customer_id && db && i.customer_id === db.id)
-      );
+      const custRms = rmTickets.filter(r => canonicalCustomerName(r.customer_name).toLowerCase() === nameKey || (r.customer_id && db && r.customer_id === db.id));
+      const custActions = actionItems.filter(a => canonicalCustomerName(a.customer_name).toLowerCase() === nameKey || (a.customer_id && db && a.customer_id === db.id));
+      const custInitiatives = initiatives.filter(i => canonicalCustomerName(i.customer_name).toLowerCase() === nameKey || (i.customer_id && db && i.customer_id === db.id));
       const openRms = custRms.filter(r => !CLOSED_STATUSES.includes(r.status));
       const staleRms = custRms.filter(r => r.flags.includes("Stale") || r.flags.includes("Aging"));
       const blockers = custRms.filter(r => r.flags.includes("Blocked"));
@@ -369,7 +403,8 @@ export function useUnifiedData() {
 
       return {
         id,
-        customer_name: name,
+        customer_name: canonicalName,
+        aliases: customerAliasesForCanonical(canonicalName),
         slug,
         health,
         status: db?.status || "Active",
@@ -388,7 +423,6 @@ export function useUnifiedData() {
     }).sort((a, b) => a.customer_name.localeCompare(b.customer_name));
   }, [dbCustomers, staticCustomerOverviews, rmTickets, actionItems, initiatives]);
 
-  /* ── Aggregated KPIs ── */
   const kpis = useMemo(() => {
     const totalCustomers = customers.length;
     const totalInitiatives = initiatives.length;
@@ -420,7 +454,7 @@ export function useUnifiedData() {
     const in14Days = now + 14 * 86400000;
 
     const missingRmOwners = openRm.filter(r => !r.owner || r.owner === "Unassigned").length;
-    const missingActionOwners = openActions.filter(a => !a.owner || a.owner.trim().length === 0).length;
+    const missingActionOwners = openActions.filter(a => !a.owner || a.owner.trim().length === 0 || a.owner === "Unassigned").length;
     const staleOpenRm = openRm.filter(r => (r.days_since_update ?? 0) > 21).length;
     const overdueOpenActions = openActions.filter(a => {
       const due = Date.parse(a.due_date ?? "");
@@ -433,13 +467,7 @@ export function useUnifiedData() {
       return Number.isFinite(due) && due >= now && due <= in14Days;
     }).length;
 
-    const penalty =
-      missingRmOwners * 4 +
-      missingActionOwners * 3 +
-      staleOpenRm * 2 +
-      overdueOpenActions * 2 +
-      orphanedRmCustomers * 3 +
-      orphanedActionCustomers * 3;
+    const penalty = missingRmOwners * 4 + missingActionOwners * 3 + staleOpenRm * 2 + overdueOpenActions * 2 + orphanedRmCustomers * 3 + orphanedActionCustomers * 3;
     const score = Math.max(0, Math.min(100, 100 - penalty));
 
     return {
@@ -454,36 +482,21 @@ export function useUnifiedData() {
     };
   }, [rmTickets, actionItems]);
 
-  /* ── Get data for a specific customer ── */
   function getCustomerData(slug: string) {
     const cust = customers.find(c => c.slug === slug);
     if (!cust) return null;
-    const nameKey = cust.customer_name.toLowerCase();
+    const nameKey = canonicalCustomerName(cust.customer_name).toLowerCase();
 
-    const custRms = rmTickets.filter(r =>
-      r.customer_name.toLowerCase() === nameKey ||
-      (r.customer_id && r.customer_id === cust.id)
-    );
-    const custActions = actionItems.filter(a =>
-      a.customer_name.toLowerCase() === nameKey ||
-      (a.customer_id && a.customer_id === cust.id)
-    );
-    const custInitiatives = initiatives.filter(i =>
-      i.customer_name.toLowerCase() === nameKey ||
-      (i.customer_id && i.customer_id === cust.id)
-    );
+    const custRms = rmTickets.filter(r => canonicalCustomerName(r.customer_name).toLowerCase() === nameKey || (r.customer_id && r.customer_id === cust.id));
+    const custActions = actionItems.filter(a => canonicalCustomerName(a.customer_name).toLowerCase() === nameKey || (a.customer_id && a.customer_id === cust.id));
+    const custInitiatives = initiatives.filter(i => canonicalCustomerName(i.customer_name).toLowerCase() === nameKey || (i.customer_id && i.customer_id === cust.id));
     const custMeetings = dbMeetings.filter(m => {
-      const dbCust = dbCustomers.find(c => c.customer_name.toLowerCase() === nameKey);
+      const dbCust = dbCustomers.find(c => canonicalCustomerName(c.customer_name).toLowerCase() === nameKey);
       return dbCust && m.customer_id === dbCust.id;
     });
-    const custMeetingActions = meetingActions.filter(a =>
-      custMeetings.some(m => m.id === a.meeting_id)
-    );
+    const custMeetingActions = meetingActions.filter(a => custMeetings.some(m => m.id === a.meeting_id));
 
-    // Also get static deep data
     const staticDeep = getCustomerDeepData(slug);
-
-    // Merge static meetings
     const staticMeetings = staticDeep?.meetings || [];
 
     return {
@@ -499,7 +512,6 @@ export function useUnifiedData() {
   }
 
   return {
-    // Unified data
     customers,
     initiatives,
     rmTickets,
@@ -509,20 +521,15 @@ export function useUnifiedData() {
     keyDates,
     renewals,
     staticTrackerRows,
-    // DB meetings
     meetings: dbMeetings,
     meetingActions,
-    // Drill-down
     getCustomerData,
-    // Mutations
     addCustomer, updateCustomer,
     addInitiative, updateInitiative,
     addTicket, updateTicket, deleteTicket, bulkUpsert,
     addActionItem, updateActionItem, deleteActionItem, bulkAddActions,
     addMeeting, deleteMeeting,
-    // Loading
     isLoading: rmLoading || actionsLoading || meetingsLoading,
-    // Static seed reference
     seed,
   };
 }

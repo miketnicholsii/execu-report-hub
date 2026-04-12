@@ -46,7 +46,7 @@ export default function CustomerSummaryPage() {
   };
 
   const exportExcel = () => {
-    downloadCsv("neko-customer-summary.csv", rows.map(c => ({
+    downloadCsv("cfs-customer-summary.csv", rows.map(c => ({
       Customer: c.customer_name, Health: c.health, Status: c.status,
       "Open RMs": c.openRmTickets, "Total RMs": c.totalRmTickets,
       "Stale RMs": c.staleRmTickets, "Open Actions": c.openActionItems,
@@ -114,6 +114,9 @@ export default function CustomerSummaryPage() {
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary flex-shrink-0 transition-colors" />
             </div>
+            {c.aliases.length > 1 && (
+              <p className="text-[10px] text-muted-foreground mb-2 truncate">Aliases: {c.aliases.filter(a => a !== c.customer_name).join(", ")}</p>
+            )}
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-3 gap-2 mb-3">
