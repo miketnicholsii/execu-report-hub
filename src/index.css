@@ -2,92 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 220 24% 97%;
-    --foreground: 224 38% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 38% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 38% 11%;
-    --primary: 223 76% 52%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 28% 94%;
-    --secondary-foreground: 224 28% 20%;
-    --muted: 220 24% 95%;
-    --muted-foreground: 220 14% 40%;
-    --accent: 220 24% 93%;
-    --accent-foreground: 224 30% 16%;
-    --destructive: 0 72% 51%;
+    /* ── NĒKO Warm Premium Palette ── */
+    --background: 30 25% 97%;
+    --foreground: 20 25% 12%;
+    --card: 30 20% 99%;
+    --card-foreground: 20 25% 12%;
+    --popover: 30 20% 99%;
+    --popover-foreground: 20 25% 12%;
+    --primary: 340 32% 45%;
+    --primary-foreground: 30 20% 98%;
+    --secondary: 30 18% 93%;
+    --secondary-foreground: 20 20% 25%;
+    --muted: 30 15% 94%;
+    --muted-foreground: 20 10% 46%;
+    --accent: 30 18% 91%;
+    --accent-foreground: 20 22% 18%;
+    --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 18% 88%;
-    --input: 220 18% 88%;
-    --ring: 223 76% 52%;
-    --radius: 0.75rem;
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
+    --ring: 340 32% 45%;
+    --radius: 0.625rem;
 
-    --status-on-track: 142 60% 40%;
-    --status-on-track-bg: 142 60% 95%;
-    --status-caution: 38 92% 50%;
-    --status-caution-bg: 38 92% 95%;
-    --status-at-risk: 0 72% 51%;
-    --status-at-risk-bg: 0 72% 95%;
-    --status-blocked: 0 72% 45%;
-    --status-blocked-bg: 0 72% 95%;
-    --status-info: 220 70% 50%;
-    --status-info-bg: 220 70% 95%;
+    /* ── Status Colors ── */
+    --status-on-track: 155 50% 38%;
+    --status-on-track-bg: 155 40% 95%;
+    --status-caution: 35 80% 48%;
+    --status-caution-bg: 35 70% 95%;
+    --status-at-risk: 12 60% 50%;
+    --status-at-risk-bg: 12 50% 95%;
+    --status-blocked: 0 55% 48%;
+    --status-blocked-bg: 0 45% 95%;
+    --status-info: 280 35% 50%;
+    --status-info-bg: 280 30% 95%;
 
-    --sidebar-background: 220 25% 99%;
-    --sidebar-foreground: 224 38% 11%;
-    --sidebar-primary: 223 76% 52%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 24% 92%;
-    --sidebar-accent-foreground: 224 30% 16%;
-    --sidebar-border: 220 18% 88%;
-    --sidebar-ring: 223 76% 52%;
+    /* ── Extended Palette ── */
+    --rose-accent: 340 32% 45%;
+    --plum-accent: 280 28% 42%;
+    --clay-accent: 18 45% 52%;
+    --sand-accent: 38 35% 65%;
+    --teal-accent: 175 35% 42%;
+
+    /* ── Sidebar ── */
+    --sidebar-background: 30 18% 98%;
+    --sidebar-foreground: 20 25% 12%;
+    --sidebar-primary: 340 32% 45%;
+    --sidebar-primary-foreground: 30 20% 98%;
+    --sidebar-accent: 30 18% 93%;
+    --sidebar-accent-foreground: 20 22% 18%;
+    --sidebar-border: 30 15% 90%;
+    --sidebar-ring: 340 32% 45%;
   }
 
   .dark {
-    --background: 224 28% 6%;
-    --foreground: 220 28% 95%;
-    --card: 224 23% 9%;
-    --card-foreground: 220 24% 94%;
-    --popover: 224 24% 8%;
-    --popover-foreground: 220 24% 94%;
-    --primary: 218 88% 62%;
-    --primary-foreground: 224 40% 4%;
-    --secondary: 223 17% 15%;
-    --secondary-foreground: 220 20% 92%;
-    --muted: 223 17% 13%;
-    --muted-foreground: 219 14% 55%;
-    --accent: 223 17% 17%;
-    --accent-foreground: 220 24% 94%;
-    --destructive: 0 76% 62%;
+    --background: 20 18% 7%;
+    --foreground: 30 15% 92%;
+    --card: 20 15% 10%;
+    --card-foreground: 30 12% 90%;
+    --popover: 20 16% 9%;
+    --popover-foreground: 30 12% 90%;
+    --primary: 340 40% 60%;
+    --primary-foreground: 20 20% 6%;
+    --secondary: 20 12% 15%;
+    --secondary-foreground: 30 12% 88%;
+    --muted: 20 12% 13%;
+    --muted-foreground: 25 10% 50%;
+    --accent: 20 12% 17%;
+    --accent-foreground: 30 15% 90%;
+    --destructive: 0 62% 58%;
     --destructive-foreground: 0 0% 100%;
-    --border: 223 16% 18%;
-    --input: 223 16% 18%;
-    --ring: 218 88% 62%;
+    --border: 20 12% 18%;
+    --input: 20 12% 18%;
+    --ring: 340 40% 60%;
 
-    --status-on-track: 142 64% 47%;
-    --status-on-track-bg: 142 50% 12%;
-    --status-caution: 43 96% 58%;
-    --status-caution-bg: 43 62% 12%;
-    --status-at-risk: 0 84% 67%;
-    --status-at-risk-bg: 0 50% 12%;
-    --status-blocked: 0 84% 63%;
-    --status-blocked-bg: 0 45% 10%;
-    --status-info: 214 85% 68%;
-    --status-info-bg: 214 50% 14%;
+    --status-on-track: 155 55% 48%;
+    --status-on-track-bg: 155 40% 12%;
+    --status-caution: 38 85% 55%;
+    --status-caution-bg: 38 50% 12%;
+    --status-at-risk: 12 70% 58%;
+    --status-at-risk-bg: 12 45% 12%;
+    --status-blocked: 0 65% 58%;
+    --status-blocked-bg: 0 40% 10%;
+    --status-info: 280 45% 62%;
+    --status-info-bg: 280 30% 14%;
 
-    --sidebar-background: 224 24% 7%;
-    --sidebar-foreground: 220 26% 95%;
-    --sidebar-primary: 218 88% 62%;
-    --sidebar-primary-foreground: 224 40% 4%;
-    --sidebar-accent: 223 17% 14%;
-    --sidebar-accent-foreground: 220 24% 94%;
-    --sidebar-border: 223 16% 16%;
-    --sidebar-ring: 218 88% 62%;
+    --rose-accent: 340 40% 60%;
+    --plum-accent: 280 35% 58%;
+    --clay-accent: 18 55% 58%;
+    --sand-accent: 38 35% 55%;
+    --teal-accent: 175 40% 50%;
+
+    --sidebar-background: 20 15% 8%;
+    --sidebar-foreground: 30 12% 92%;
+    --sidebar-primary: 340 40% 60%;
+    --sidebar-primary-foreground: 20 20% 6%;
+    --sidebar-accent: 20 12% 14%;
+    --sidebar-accent-foreground: 30 12% 90%;
+    --sidebar-border: 20 12% 16%;
+    --sidebar-ring: 340 40% 60%;
   }
 }
 
@@ -100,17 +116,14 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
-  .dark body {
-    background-image:
-      radial-gradient(ellipse at 10% 0%, hsl(var(--primary) / 0.06), transparent 50%),
-      radial-gradient(ellipse at 90% 5%, hsl(var(--status-info) / 0.04), transparent 40%);
-    background-attachment: fixed;
-  }
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-lg;
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-sm;
+  }
+  .heading-display {
+    font-family: 'Playfair Display', Georgia, serif;
   }
 }
 
@@ -122,32 +135,41 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.3s ease-out forwards;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.35); }
+::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.3); }
 
 @media print {
   body {
     background: white !important;
     font-size: 10pt;
-    color: #0f172a;
+    color: #2d1f1a;
   }
 
   main::before {
     content: "NÈKO — CFS Project Intelligence";
     display: block;
     font-size: 9pt;
-    color: #475569;
+    color: #6b5c53;
     margin-bottom: 8px;
   }
 
@@ -174,7 +196,7 @@
   }
 
   th, td {
-    border: 1px solid #d1d5db;
+    border: 1px solid #d4c8be;
     padding: 0.35rem;
     vertical-align: top;
   }
