@@ -90,13 +90,16 @@ export default function CustomerPage() {
       onExportPdf={exportPdf}
       breadcrumbs={[{ label: "Customers", to: "/customer-summary" }, { label: customer.customer_name }]}
       actions={
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-background p-0.5">
-          <button onClick={() => setMode("executive")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "executive" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-            <Eye className="h-3 w-3" /> Executive
-          </button>
-          <button onClick={() => setMode("operational")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "operational" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-            <Layers className="h-3 w-3" /> Operational
-          </button>
+        <div className="flex items-center gap-2">
+          <CopyButton content={customerSummaryText} label="Copy Summary" />
+          <div className="flex items-center gap-1 rounded-md border border-border bg-background p-0.5">
+            <button onClick={() => setMode("executive")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "executive" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              <Eye className="h-3 w-3" /> Executive
+            </button>
+            <button onClick={() => setMode("operational")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "operational" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              <Layers className="h-3 w-3" /> Operational
+            </button>
+          </div>
         </div>
       }
     >
