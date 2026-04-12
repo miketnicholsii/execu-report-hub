@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useMemo } from "react";
 import AppShell from "@/components/AppShell";
 import { StatusBadge, PriorityBadge, FlagBadge } from "@/components/StatusBadge";
+import CopyButton from "@/components/CopyButton";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import {
@@ -75,7 +76,7 @@ export default function RmDetailPage() {
     ticket.flags.includes("Aging") ? "Medium" : "Normal";
 
   const attentionColor = attentionLevel === "Critical" ? "text-destructive" :
-    attentionLevel === "High" ? "text-amber-500" :
+    attentionLevel === "High" ? "text-status-caution" :
     attentionLevel === "Medium" ? "text-status-caution" : "text-muted-foreground";
 
   const exportExcel = () => downloadCsv(`${ticket.rm_number}-detail.csv`, [{
@@ -85,6 +86,18 @@ export default function RmDetailPage() {
     "Next Steps": ticket.next_steps, "Open Questions": ticket.open_questions,
     Dependencies: ticket.dependencies, Flags: ticket.flags.join("; "),
   }]);
+
+  const copyContent = () => [
+    `${ticket.rm_number} — ${ticket.title || "Untitled"}`,
+    `Customer: ${ticket.customer_name}`,
+    `Status: ${ticket.status}  |  Owner: ${ticket.owner}`,
+    `Last Update: ${ticket.last_update || "—"}  |  Due: ${ticket.due_date || "—"}`,
+    ticket.summary ? `\nSummary:\n${ticket.summary}` : "",
+    ticket.next_steps ? `\nNext Steps:\n${ticket.next_steps}` : "",
+    ticket.open_questions ? `\nOpen Questions:\n${ticket.open_questions}` : "",
+    ticket.dependencies ? `\nDependencies:\n${ticket.dependencies}` : "",
+    ticket.flags.length ? `\nFlags: ${ticket.flags.join(", ")}` : "",
+  ].filter(Boolean).join("\n");
 
   return (
     <AppShell
@@ -97,6 +110,7 @@ export default function RmDetailPage() {
         { label: ticket.customer_name, to: `/customers/${ticket.customer_slug}` },
         { label: ticket.rm_number },
       ]}
+      actions={<CopyButton content={copyContent} label="Copy Detail" />}
     >
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* Main Content */}
@@ -207,7 +221,7 @@ export default function RmDetailPage() {
               <RailCard
                 label="Days Since Update"
                 value={ticket.days_since_update}
-                color={ticket.days_since_update > 30 ? "text-destructive" : ticket.days_since_update > 14 ? "text-amber-500" : ""}
+                color={ticket.days_since_update > 30 ? "text-destructive" : ticket.days_since_update > 14 ? "text-status-caution" : ""}
                 icon={Clock}
               />
             )}
@@ -226,8 +240,8 @@ export default function RmDetailPage() {
 
           {/* Missing Data */}
           {(ticket.flags.includes("Missing Owner") || !ticket.due_date || !ticket.last_update) && (
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 shadow-sm">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-2">Missing Data</h3>
+            <div className="rounded-xl border border-status-caution/30 bg-status-caution/5 p-4 shadow-sm">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-status-caution mb-2">Missing Data</h3>
               <ul className="space-y-1.5 text-xs text-foreground">
                 {ticket.flags.includes("Missing Owner") && <li className="flex items-center gap-1.5">⚠ No owner assigned</li>}
                 {!ticket.due_date && <li className="flex items-center gap-1.5">⚠ No due date set</li>}

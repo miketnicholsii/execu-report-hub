@@ -5,6 +5,7 @@ import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import GanttChart from "@/components/GanttChart";
 import { StatusBadge, PriorityBadge, HealthBadge, FlagBadge } from "@/components/StatusBadge";
+import CopyButton from "@/components/CopyButton";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { vagueMilestoneToLabel } from "@/lib/cfs/helpers";
@@ -74,6 +75,13 @@ export default function CustomerPage() {
     "Next Steps": r.next_steps, Flags: r.flags.join("; "),
   })));
 
+  const customerSummaryText = () => [
+    `${customer.customer_name} — Health: ${customer.health}`,
+    `Initiatives: ${initiatives.length} | Open RMs: ${openRms.length} | Open Actions: ${openActions.length}`,
+    blockedRms.length ? `Blocked: ${blockedRms.length}` : "",
+    staleRms.length ? `Stale: ${staleRms.length}` : "",
+  ].filter(Boolean).join("\n");
+
   return (
     <AppShell
       title={customer.customer_name}
@@ -82,13 +90,16 @@ export default function CustomerPage() {
       onExportPdf={exportPdf}
       breadcrumbs={[{ label: "Customers", to: "/customer-summary" }, { label: customer.customer_name }]}
       actions={
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-background p-0.5">
-          <button onClick={() => setMode("executive")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "executive" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-            <Eye className="h-3 w-3" /> Executive
-          </button>
-          <button onClick={() => setMode("operational")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "operational" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-            <Layers className="h-3 w-3" /> Operational
-          </button>
+        <div className="flex items-center gap-2">
+          <CopyButton content={customerSummaryText} label="Copy Summary" />
+          <div className="flex items-center gap-1 rounded-md border border-border bg-background p-0.5">
+            <button onClick={() => setMode("executive")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "executive" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              <Eye className="h-3 w-3" /> Executive
+            </button>
+            <button onClick={() => setMode("operational")} className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${mode === "operational" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              <Layers className="h-3 w-3" /> Operational
+            </button>
+          </div>
         </div>
       }
     >
@@ -184,7 +195,7 @@ export default function CustomerPage() {
           <AlertTriangle className="h-4 w-4" /> RM Tickets ({rmTickets.length})
         </h2>
         {rmTickets.map(t => (
-          <div key={t.id} className={`rounded-xl border bg-card shadow-sm overflow-hidden ${t.flags.includes("Stale") ? "border-destructive/30" : t.flags.includes("Aging") ? "border-amber-500/30" : "border-border"}`}>
+          <div key={t.id} className={`rounded-xl border bg-card shadow-sm overflow-hidden ${t.flags.includes("Stale") ? "border-destructive/30" : t.flags.includes("Aging") ? "border-status-caution/30" : "border-border"}`}>
             <div className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => toggleRm(t.id)}>
               <Link to={`/rm/${t.rm_number}`} onClick={e => e.stopPropagation()} className="font-mono text-sm font-semibold text-primary hover:underline">{t.rm_number}</Link>
               <span className="text-sm font-medium text-foreground flex-1">{t.title || "Untitled"}</span>

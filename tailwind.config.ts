@@ -42,11 +42,6 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
-          rose: "hsl(var(--rose-accent))",
-          plum: "hsl(var(--plum-accent))",
-          clay: "hsl(var(--clay-accent))",
-          sand: "hsl(var(--sand-accent))",
-          teal: "hsl(var(--teal-accent))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -78,6 +73,15 @@ export default {
           info: "hsl(var(--status-info))",
           "info-bg": "hsl(var(--status-info-bg))",
         },
+        forest: {
+          DEFAULT: "hsl(var(--forest))",
+          muted: "hsl(var(--forest-muted))",
+        },
+        orange: {
+          accent: "hsl(var(--orange-accent))",
+        },
+        beige: "hsl(var(--beige))",
+        sand: "hsl(var(--sand))",
       },
       borderRadius: {
         lg: "var(--radius)",

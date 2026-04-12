@@ -3,6 +3,7 @@ import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import { StatusBadge, PriorityBadge, FlagBadge } from "@/components/StatusBadge";
 import SortableTable, { Column } from "@/components/SortableTable";
+import CopyButton, { rowsToTsv } from "@/components/CopyButton";
 import { useUnifiedData, UnifiedActionItem } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import { Link } from "react-router-dom";
@@ -29,7 +30,7 @@ const SAVED_VIEWS: SavedView[] = [
     const now = new Date();
     const in7 = new Date(now.getTime() + 7 * 86400000);
     return d >= now && d <= in7;
-  }), color: "text-amber-500" },
+  }), color: "text-status-caution" },
   { id: "high", label: "High Priority", filter: items => items.filter(i => i.priority === "High" && !CLOSED.includes(i.status)), color: "text-destructive" },
   { id: "waiting", label: "Waiting on Customer", filter: items => items.filter(i => i.status === "Waiting on Customer") },
   { id: "completed", label: "Completed", filter: items => items.filter(i => CLOSED.includes(i.status)) },
@@ -181,7 +182,9 @@ export default function ActionItemsPage() {
   ];
 
   return (
-    <AppShell title="Action Center" subtitle={`${kpis.totalActions} total actions — ${kpis.openActions} open`} onExportExcel={exportExcel} onExportPdf={exportPdf}>
+    <AppShell title="Action Center" subtitle={`${kpis.totalActions} total actions — ${kpis.openActions} open`} onExportExcel={exportExcel} onExportPdf={exportPdf}
+      actions={<CopyButton content={() => rowsToTsv(rows.map(r => ({ Title: r.title, Customer: r.customer_name, Owner: r.owner, Due: r.due_date || "TBD", Priority: r.priority, Status: r.status })))} label="Copy List" />}
+    >
       <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <KpiCard label="TOTAL" value={kpis.totalActions} />
         <KpiCard label="OPEN" value={kpis.openActions} color="text-status-caution" />

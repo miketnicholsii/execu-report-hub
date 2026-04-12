@@ -225,7 +225,7 @@ export default function RmIssueCenterPage() {
         {rows.map(r => {
           const isEditing = editingId === r.id;
           return (
-            <div key={r.id} className={`rounded-xl border bg-card shadow-sm overflow-hidden ${r.flags.includes("Stale") ? "border-destructive/30" : r.flags.includes("Aging") ? "border-amber-500/30" : "border-border"}`}>
+            <div key={r.id} className={`rounded-xl border bg-card shadow-sm overflow-hidden ${r.flags.includes("Stale") ? "border-destructive/30" : r.flags.includes("Aging") ? "border-status-caution/30" : "border-border"}`}>
               <div className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => toggle(r.id)}>
                 <Link to={`/rm/${r.rm_number}`} onClick={e => e.stopPropagation()} className="font-mono text-sm font-semibold text-primary hover:underline">{r.rm_number}</Link>
                 <span className="text-sm font-medium text-foreground flex-1 truncate">{r.title || "—"}</span>

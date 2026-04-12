@@ -16,13 +16,13 @@ import {
 } from "lucide-react";
 
 const CHART_COLORS = [
-  "hsl(340,32%,45%)", "hsl(155,50%,38%)", "hsl(35,80%,48%)",
-  "hsl(0,55%,48%)", "hsl(280,35%,50%)", "hsl(175,35%,42%)",
-  "hsl(18,45%,52%)", "hsl(38,35%,65%)",
+  "hsl(140,14%,22%)", "hsl(155,45%,35%)", "hsl(18,86%,46%)",
+  "hsl(0,55%,45%)", "hsl(200,45%,40%)", "hsl(175,30%,38%)",
+  "hsl(35,75%,45%)", "hsl(130,5%,39%)",
 ];
 const HEALTH_COLORS: Record<string, string> = {
-  Healthy: "hsl(155,50%,38%)", "On Track": "hsl(155,50%,38%)",
-  Caution: "hsl(35,80%,48%)", "At Risk": "hsl(12,60%,50%)",
+  Healthy: "hsl(155,45%,35%)", "On Track": "hsl(155,45%,35%)",
+  Caution: "hsl(35,75%,45%)", "At Risk": "hsl(18,86%,46%)",
 };
 const STATUS_COLORS: Record<string, string> = {
   "Not Started": "hsl(20,10%,55%)", Discovery: "hsl(280,35%,50%)",
