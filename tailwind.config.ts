@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['Playfair Display', 'Georgia', 'serif'],
+        mono: ['JetBrains Mono', 'SF Mono', 'Cascadia Code', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -72,16 +73,30 @@ export default {
           "blocked-bg": "hsl(var(--status-blocked-bg))",
           info: "hsl(var(--status-info))",
           "info-bg": "hsl(var(--status-info-bg))",
+          waiting: "hsl(var(--status-waiting))",
+          "waiting-bg": "hsl(var(--status-waiting-bg))",
         },
         forest: {
           DEFAULT: "hsl(var(--forest))",
+          light: "hsl(var(--forest-light))",
           muted: "hsl(var(--forest-muted))",
         },
         orange: {
           accent: "hsl(var(--orange-accent))",
+          light: "hsl(var(--orange-light))",
         },
-        beige: "hsl(var(--beige))",
+        beige: {
+          DEFAULT: "hsl(var(--beige))",
+          warm: "hsl(var(--beige-warm))",
+        },
         sand: "hsl(var(--sand))",
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
