@@ -48,7 +48,9 @@ export default function TrackerPage() {
   })));
 
   return (
-    <AppShell title="Issue Tracker" subtitle="All tracked items across customers" onExportExcel={exportExcel} onExportPdf={exportPdf}>
+    <AppShell title="Issue Tracker" subtitle="All tracked items across customers" onExportExcel={exportExcel} onExportPdf={exportPdf}
+      actions={<CopyButton content={() => rowsToTsv(rows.map(r => ({ Customer: r.customer_name, Priority: r.priority, Topic: r.topic, RM: r.rm_reference ?? "", Status: r.status, Owner: r.owner })))} label="Copy Table" />}
+    >
       {/* KPIs */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KpiCard label="Showing" value={rows.length} sub={`of ${allRows.length} total`} />
