@@ -24,6 +24,7 @@ import DocumentUploadPage from "@/pages/DocumentUploadPage";
 import SettingsPage from "@/pages/SettingsPage";
 import SpecsWorkspacePage from "@/pages/SpecsWorkspacePage";
 import SetupWizardPage from "@/pages/SetupWizardPage";
+import RmDetailPage from "@/pages/RmDetailPage";
 import PasswordGate from "@/components/PasswordGate";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/reports" element={<ReportCenterPage />} />
           <Route path="/customers/:customerSlug" element={<CustomerPage />} />
+          <Route path="/rm/:rmNumber" element={<RmDetailPage />} />
           <Route path="/customer-drilldown/:customerId" element={<CustomerPage />} />
           <Route path="/initiatives/:projectId" element={<InitiativeDetailPage />} />
           <Route path="*" element={<NotFound />} />
