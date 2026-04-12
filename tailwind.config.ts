@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -41,6 +42,11 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          rose: "hsl(var(--rose-accent))",
+          plum: "hsl(var(--plum-accent))",
+          clay: "hsl(var(--clay-accent))",
+          sand: "hsl(var(--sand-accent))",
+          teal: "hsl(var(--teal-accent))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
