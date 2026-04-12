@@ -87,6 +87,18 @@ export default function RmDetailPage() {
     Dependencies: ticket.dependencies, Flags: ticket.flags.join("; "),
   }]);
 
+  const copyContent = () => [
+    `${ticket.rm_number} — ${ticket.title || "Untitled"}`,
+    `Customer: ${ticket.customer_name}`,
+    `Status: ${ticket.status}  |  Owner: ${ticket.owner}`,
+    `Last Update: ${ticket.last_update || "—"}  |  Due: ${ticket.due_date || "—"}`,
+    ticket.summary ? `\nSummary:\n${ticket.summary}` : "",
+    ticket.next_steps ? `\nNext Steps:\n${ticket.next_steps}` : "",
+    ticket.open_questions ? `\nOpen Questions:\n${ticket.open_questions}` : "",
+    ticket.dependencies ? `\nDependencies:\n${ticket.dependencies}` : "",
+    ticket.flags.length ? `\nFlags: ${ticket.flags.join(", ")}` : "",
+  ].filter(Boolean).join("\n");
+
   return (
     <AppShell
       title={ticket.rm_number}
