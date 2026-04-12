@@ -86,6 +86,12 @@ const STATUS_ALIASES: Record<string, CanonicalStatus> = {
 };
 
 const RM_PATTERN = /(?:\b(?:rm|redmine|r\.m\.?)\b\s*[-#: ]*|\b)(\d{3,6})\b/gi;
+const CUSTOMER_ALIASES: Record<string, string> = {
+  braswell: "Braswell Eggs",
+  "braswell egg": "Braswell Eggs",
+  "braswell eggs": "Braswell Eggs",
+  "braswell farms": "Braswell Eggs",
+};
 
 export function formatRmId(idDigits: string | number): string {
   const digits = String(idDigits).replace(/\D/g, "").slice(-5).padStart(5, "0");
@@ -129,7 +135,9 @@ export function normalizeStatusToCanonical(raw?: string | null, sourceSheet?: st
 
 export function normalizeCustomerName(raw?: string | null): string {
   if (!raw) return "Needs Review";
-  return raw.trim().replace(/\s+/g, " ");
+  const cleaned = raw.trim().replace(/\s+/g, " ");
+  const aliasKey = cleaned.toLowerCase();
+  return CUSTOMER_ALIASES[aliasKey] ?? cleaned;
 }
 
 export function normalizeDate(raw?: string | null): string | null {
