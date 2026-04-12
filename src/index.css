@@ -6,104 +6,106 @@
 
 @layer base {
   :root {
-    /* ── NĒKO Warm Premium Palette ── */
-    --background: 30 25% 97%;
-    --foreground: 20 25% 12%;
-    --card: 30 20% 99%;
-    --card-foreground: 20 25% 12%;
-    --popover: 30 20% 99%;
-    --popover-foreground: 20 25% 12%;
-    --primary: 340 32% 45%;
-    --primary-foreground: 30 20% 98%;
-    --secondary: 30 18% 93%;
-    --secondary-foreground: 20 20% 25%;
-    --muted: 30 15% 94%;
-    --muted-foreground: 20 10% 46%;
-    --accent: 30 18% 91%;
-    --accent-foreground: 20 22% 18%;
-    --destructive: 0 55% 48%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 30 15% 88%;
-    --input: 30 15% 88%;
-    --ring: 340 32% 45%;
-    --radius: 0.625rem;
+    /* ── CFS Command Center – Forest / Orange / Beige ── */
+    --background: 40 15% 93%;          /* #ECEBE7 soft neutral */
+    --foreground: 140 12% 18%;         /* near #304033 deep forest */
+    --card: 30 20% 96%;               /* warm off-white card */
+    --card-foreground: 140 12% 18%;
+    --popover: 30 20% 96%;
+    --popover-foreground: 140 12% 18%;
+    --primary: 140 14% 22%;            /* #304033 deep forest green */
+    --primary-foreground: 40 15% 95%;
+    --secondary: 130 5% 39%;           /* #58625A muted green-gray */
+    --secondary-foreground: 40 15% 95%;
+    --muted: 30 12% 90%;              /* warm beige-gray */
+    --muted-foreground: 130 5% 39%;    /* #58625A */
+    --accent: 22 30% 87%;             /* #E4CEC0 warm beige */
+    --accent-foreground: 140 12% 18%;
+    --destructive: 18 86% 46%;        /* #E45209 strong orange for alerts */
+    --destructive-foreground: 40 15% 98%;
+    --border: 30 10% 84%;
+    --input: 30 10% 84%;
+    --ring: 140 14% 22%;
+    --radius: 0.5rem;
 
     /* ── Status Colors ── */
-    --status-on-track: 155 50% 38%;
-    --status-on-track-bg: 155 40% 95%;
-    --status-caution: 35 80% 48%;
-    --status-caution-bg: 35 70% 95%;
-    --status-at-risk: 12 60% 50%;
-    --status-at-risk-bg: 12 50% 95%;
-    --status-blocked: 0 55% 48%;
-    --status-blocked-bg: 0 45% 95%;
-    --status-info: 280 35% 50%;
-    --status-info-bg: 280 30% 95%;
+    --status-on-track: 155 45% 35%;
+    --status-on-track-bg: 155 30% 94%;
+    --status-caution: 35 75% 45%;
+    --status-caution-bg: 35 60% 94%;
+    --status-at-risk: 18 86% 46%;      /* orange */
+    --status-at-risk-bg: 18 70% 95%;
+    --status-blocked: 0 55% 45%;
+    --status-blocked-bg: 0 40% 95%;
+    --status-info: 200 45% 40%;
+    --status-info-bg: 200 35% 94%;
 
     /* ── Extended Palette ── */
-    --rose-accent: 340 32% 45%;
-    --plum-accent: 280 28% 42%;
-    --clay-accent: 18 45% 52%;
-    --sand-accent: 38 35% 65%;
-    --teal-accent: 175 35% 42%;
+    --forest: 140 14% 22%;
+    --forest-muted: 130 5% 39%;
+    --orange-accent: 18 86% 46%;
+    --beige: 22 30% 87%;
+    --sand: 38 30% 60%;
+    --teal-accent: 175 30% 38%;
 
     /* ── Sidebar ── */
-    --sidebar-background: 30 18% 98%;
-    --sidebar-foreground: 20 25% 12%;
-    --sidebar-primary: 340 32% 45%;
-    --sidebar-primary-foreground: 30 20% 98%;
-    --sidebar-accent: 30 18% 93%;
-    --sidebar-accent-foreground: 20 22% 18%;
-    --sidebar-border: 30 15% 90%;
-    --sidebar-ring: 340 32% 45%;
+    --sidebar-background: 140 14% 20%;   /* deep forest */
+    --sidebar-foreground: 40 15% 90%;
+    --sidebar-primary: 18 86% 46%;       /* orange active */
+    --sidebar-primary-foreground: 40 15% 98%;
+    --sidebar-accent: 140 12% 26%;
+    --sidebar-accent-foreground: 40 15% 90%;
+    --sidebar-border: 140 10% 24%;
+    --sidebar-ring: 18 86% 46%;
   }
 
   .dark {
-    --background: 20 18% 7%;
-    --foreground: 30 15% 92%;
-    --card: 20 15% 10%;
-    --card-foreground: 30 12% 90%;
-    --popover: 20 16% 9%;
-    --popover-foreground: 30 12% 90%;
-    --primary: 340 40% 60%;
-    --primary-foreground: 20 20% 6%;
-    --secondary: 20 12% 15%;
-    --secondary-foreground: 30 12% 88%;
-    --muted: 20 12% 13%;
-    --muted-foreground: 25 10% 50%;
-    --accent: 20 12% 17%;
-    --accent-foreground: 30 15% 90%;
-    --destructive: 0 62% 58%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 20 12% 18%;
-    --input: 20 12% 18%;
-    --ring: 340 40% 60%;
+    --background: 140 12% 7%;
+    --foreground: 40 12% 90%;
+    --card: 140 10% 10%;
+    --card-foreground: 40 10% 88%;
+    --popover: 140 10% 9%;
+    --popover-foreground: 40 10% 88%;
+    --primary: 155 40% 50%;
+    --primary-foreground: 140 14% 8%;
+    --secondary: 130 8% 20%;
+    --secondary-foreground: 40 10% 85%;
+    --muted: 140 8% 14%;
+    --muted-foreground: 130 5% 50%;
+    --accent: 22 20% 20%;
+    --accent-foreground: 40 12% 88%;
+    --destructive: 18 80% 55%;
+    --destructive-foreground: 40 15% 98%;
+    --border: 140 8% 18%;
+    --input: 140 8% 18%;
+    --ring: 155 40% 50%;
 
-    --status-on-track: 155 55% 48%;
-    --status-on-track-bg: 155 40% 12%;
-    --status-caution: 38 85% 55%;
-    --status-caution-bg: 38 50% 12%;
-    --status-at-risk: 12 70% 58%;
-    --status-at-risk-bg: 12 45% 12%;
-    --status-blocked: 0 65% 58%;
-    --status-blocked-bg: 0 40% 10%;
-    --status-info: 280 45% 62%;
-    --status-info-bg: 280 30% 14%;
+    --status-on-track: 155 50% 45%;
+    --status-on-track-bg: 155 35% 12%;
+    --status-caution: 38 80% 50%;
+    --status-caution-bg: 38 45% 12%;
+    --status-at-risk: 18 75% 55%;
+    --status-at-risk-bg: 18 45% 12%;
+    --status-blocked: 0 60% 55%;
+    --status-blocked-bg: 0 38% 10%;
+    --status-info: 200 50% 55%;
+    --status-info-bg: 200 35% 14%;
 
-    --rose-accent: 340 40% 60%;
-    --plum-accent: 280 35% 58%;
-    --clay-accent: 18 55% 58%;
-    --sand-accent: 38 35% 55%;
-    --teal-accent: 175 40% 50%;
+    --forest: 155 40% 50%;
+    --forest-muted: 130 8% 50%;
+    --orange-accent: 18 80% 55%;
+    --beige: 22 15% 20%;
+    --sand: 38 30% 45%;
+    --teal-accent: 175 35% 45%;
 
-    --sidebar-background: 20 15% 8%;
-    --sidebar-foreground: 30 12% 92%;
-    --sidebar-primary: 340 40% 60%;
-    --sidebar-primary-foreground: 20 20% 6%;
-    --sidebar-accent: 20 12% 14%;
-    --sidebar-accent-foreground: 30 12% 90%;
-    --sidebar-border: 20 12% 16%;
-    --sidebar-ring: 340 40% 60%;
+    --sidebar-background: 140 12% 8%;
+    --sidebar-foreground: 40 10% 90%;
+    --sidebar-primary: 18 80% 55%;
+    --sidebar-primary-foreground: 140 14% 8%;
+    --sidebar-accent: 140 10% 14%;
+    --sidebar-accent-foreground: 40 10% 88%;
+    --sidebar-border: 140 8% 16%;
+    --sidebar-ring: 18 80% 55%;
   }
 }
 
@@ -162,14 +164,14 @@
   body {
     background: white !important;
     font-size: 10pt;
-    color: #2d1f1a;
+    color: #304033;
   }
 
   main::before {
     content: "NÈKO — CFS Project Intelligence";
     display: block;
     font-size: 9pt;
-    color: #6b5c53;
+    color: #58625A;
     margin-bottom: 8px;
   }
 
