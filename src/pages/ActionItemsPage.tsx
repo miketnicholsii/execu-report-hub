@@ -24,6 +24,8 @@ interface SavedView {
 const SAVED_VIEWS: SavedView[] = [
   { id: "all", label: "All Open", filter: items => items.filter(i => !CLOSED.includes(i.status)) },
   { id: "overdue", label: "Overdue", filter: items => items.filter(i => i.due_date && new Date(i.due_date) < new Date() && !CLOSED.includes(i.status)), color: "text-destructive" },
+  { id: "unassigned", label: "Unassigned", filter: items => items.filter(i => !i.owner || i.owner === "Unassigned"), color: "text-status-caution" },
+  { id: "blocked", label: "Blocked", filter: items => items.filter(i => /blocked|waiting/i.test(i.status)), color: "text-destructive" },
   { id: "due-soon", label: "Due Soon", filter: items => items.filter(i => {
     if (!i.due_date || CLOSED.includes(i.status)) return false;
     const d = new Date(i.due_date);
@@ -32,7 +34,9 @@ const SAVED_VIEWS: SavedView[] = [
     return d >= now && d <= in7;
   }), color: "text-status-caution" },
   { id: "high", label: "High Priority", filter: items => items.filter(i => i.priority === "High" && !CLOSED.includes(i.status)), color: "text-destructive" },
-  { id: "waiting", label: "Waiting on Customer", filter: items => items.filter(i => i.status === "Waiting on Customer") },
+  { id: "meeting-ai", label: "AI Suggested", filter: items => items.filter(i => i.source !== "db" && i.confidence < 0.9) },
+  { id: "meeting-sourced", label: "From Meetings", filter: items => items.filter(i => i.source === "meeting") },
+  { id: "file-sourced", label: "From Files", filter: items => items.filter(i => i.source === "file" || i.source === "static") },
   { id: "completed", label: "Completed", filter: items => items.filter(i => CLOSED.includes(i.status)) },
 ];
 
@@ -118,7 +122,7 @@ export default function ActionItemsPage() {
     { name: "Low", value: rows.filter(r => r.priority === "Low").length, fill: "hsl(220,15%,60%)" },
   ].filter(d => d.value > 0);
 
-  const exportExcel = () => downloadCsv("neko-action-items.csv", rows.map(r => ({
+  const exportExcel = () => downloadCsv("cfs-action-items.csv", rows.map(r => ({
     Title: r.title, Customer: r.customer_name, Owner: r.owner, Due: r.due_date || "TBD",
     Priority: r.priority, Status: r.status, Source: r.source,
   })));
@@ -142,6 +146,8 @@ export default function ActionItemsPage() {
       render: (r) => (
         <div className="max-w-[350px]">
           <span className={`text-foreground text-sm ${CLOSED.includes(r.status) ? "line-through opacity-60" : ""}`}>{r.title}</span>
+          {!!r.linkedRmNumbers.length && <p className="text-[10px] text-muted-foreground mt-0.5">{r.linkedRmNumbers.join(", ")}</p>}
+          {r.reason && <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{r.reason}</p>}
           {r.due_date && new Date(r.due_date) < new Date() && !CLOSED.includes(r.status) && (
             <FlagBadge flag="Overdue" />
           )}
@@ -179,10 +185,15 @@ export default function ActionItemsPage() {
       sortFn: (a, b) => a.status.localeCompare(b.status),
       render: (r) => <StatusBadge status={r.status} />,
     },
+    {
+      key: "confidence", label: "Confidence", sortable: true,
+      sortFn: (a, b) => b.confidence - a.confidence,
+      render: (r) => <span className="text-xs text-muted-foreground">{Math.round(r.confidence * 100)}%</span>,
+    },
   ];
 
   return (
-    <AppShell title="Action Center" subtitle={`${kpis.totalActions} total actions — ${kpis.openActions} open`} onExportExcel={exportExcel} onExportPdf={exportPdf}
+    <AppShell title="Action Items" subtitle={`${kpis.totalActions} total actions — ${kpis.openActions} open`} onExportExcel={exportExcel} onExportPdf={exportPdf}
       actions={<CopyButton content={() => rowsToTsv(rows.map(r => ({ Title: r.title, Customer: r.customer_name, Owner: r.owner, Due: r.due_date || "TBD", Priority: r.priority, Status: r.status })))} label="Copy List" />}
     >
       <section className="grid grid-cols-2 md:grid-cols-5 gap-3">

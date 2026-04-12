@@ -142,9 +142,9 @@ export default function ExecutiveDashboardPage() {
 
   return (
     <AppShell
-      title="Command Center"
-      subtitle={`NÈKO · ${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}`}
-      onExportExcel={() => downloadCsv("neko-executive-summary.csv", customers.map(c => ({
+      title="Overview"
+      subtitle={`CFS Executive Project Command Center · ${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}`}
+      onExportExcel={() => downloadCsv("cfs-executive-summary.csv", customers.map(c => ({
         Customer: c.customer_name, Health: c.health, Initiatives: c.initiativeCount,
         "Open RMs": c.openRmTickets, "Total RMs": c.totalRmTickets,
         "Open Actions": c.openActionItems, Blockers: c.blockerCount, Risk: c.riskLevel,

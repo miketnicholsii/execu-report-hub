@@ -1,28 +1,29 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
-  LayoutDashboard, Users, FileText, Calendar, RefreshCw, AlertTriangle,
+  LayoutDashboard, Users, Calendar, RefreshCw,
   MessageSquare, ClipboardList, ChevronLeft, ChevronRight, Download,
   Search, FileDown, Wrench, Target, Layers, Settings, BookOpen,
   Upload, MoonStar, SunMedium, Activity, Zap
 } from "lucide-react";
 
 const NAV = [
-  { to: "/", label: "Command Center", icon: LayoutDashboard, group: "Command" },
-  { to: "/portfolio", label: "Portfolio", icon: Target, group: "Command" },
+  { to: "/", label: "Overview", icon: LayoutDashboard, group: "Command" },
   { to: "/customer-summary", label: "Customers", icon: Users, group: "Intelligence" },
-  { to: "/tracker", label: "Issue Tracker", icon: ClipboardList, group: "Intelligence" },
-  { to: "/rm-issues", label: "RM Intelligence", icon: Zap, group: "Intelligence" },
-  { to: "/specs", label: "Specs & Deliverables", icon: Layers, group: "Intelligence" },
-  { to: "/action-items", label: "Action Center", icon: Activity, group: "Operations" },
+  { to: "/portfolio", label: "Projects / Initiatives", icon: Target, group: "Intelligence" },
+  { to: "/rm-issues", label: "RMs", icon: Zap, group: "Intelligence" },
+  { to: "/tracker", label: "Timeline", icon: ClipboardList, group: "Operations" },
+  { to: "/specs", label: "Search / Ask AI", icon: Layers, group: "Knowledge" },
+  { to: "/action-items", label: "Action Items", icon: Activity, group: "Operations" },
   { to: "/key-dates", label: "Key Dates", icon: Calendar, group: "Operations" },
   { to: "/renewals", label: "Renewals", icon: RefreshCw, group: "Operations" },
-  { to: "/meeting-minutes", label: "Meetings", icon: MessageSquare, group: "Operations" },
-  { to: "/documents", label: "Documents", icon: Upload, group: "Knowledge" },
-  { to: "/wiki", label: "Wiki", icon: BookOpen, group: "Knowledge" },
+  { to: "/meeting-minutes", label: "Meetings / Notes", icon: MessageSquare, group: "Operations" },
+  { to: "/documents", label: "Upload Center", icon: Upload, group: "Knowledge" },
+  { to: "/wiki", label: "Documents / Knowledge", icon: BookOpen, group: "Knowledge" },
   { to: "/rm-report-builder", label: "Report Builder", icon: Wrench, group: "Reports" },
-  { to: "/reports", label: "Export Center", icon: FileDown, group: "Reports" },
-  { to: "/settings", label: "Settings", icon: Settings, group: "System" },
+  { to: "/reports", label: "Reports / Exports", icon: FileDown, group: "Reports" },
+  { to: "/settings", label: "Admin / Data Quality", icon: Settings, group: "System" },
+  
 ];
 
 const GROUPS = ["Command", "Intelligence", "Operations", "Knowledge", "Reports", "System"];
@@ -65,7 +66,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
                 <span className="text-sidebar-primary-foreground text-xs font-black">N</span>
               </div>
               <div>
-                <span className="heading-display font-semibold text-[15px] text-sidebar-foreground tracking-tight">NÈKO</span>
+                <span className="heading-display font-semibold text-[15px] text-sidebar-foreground tracking-tight">CFS</span>
                 <span className="text-[8px] uppercase tracking-[0.18em] text-sidebar-foreground/40 font-medium block -mt-0.5">Command</span>
               </div>
             </div>
@@ -119,7 +120,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         </nav>
         {!collapsed && (
           <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-sidebar-border bg-sidebar">
-            <p className="text-[8px] text-sidebar-foreground/25 text-center uppercase tracking-[0.18em]">NÈKO · Mike Nichols · v4.1</p>
+            <p className="text-[8px] text-sidebar-foreground/25 text-center uppercase tracking-[0.18em]">CFS · Mike Nichols · v4.1</p>
           </div>
         )}
       </aside>
@@ -129,7 +130,7 @@ export default function AppShell({ children, title, subtitle, onExportExcel, onE
         <header className="sticky top-0 z-10 bg-card/95 backdrop-blur-md border-b border-border px-6 py-3 print:static print:border-0">
           {breadcrumbs && breadcrumbs.length > 0 && (
             <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-1 print:hidden">
-              <Link to="/" className="hover:text-foreground transition-colors">Command Center</Link>
+              <Link to="/" className="hover:text-foreground transition-colors">Overview</Link>
               {breadcrumbs.map((bc, i) => (
                 <span key={i} className="flex items-center gap-1.5">
                   <span className="text-muted-foreground/30">/</span>
