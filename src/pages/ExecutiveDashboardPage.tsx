@@ -7,12 +7,12 @@ import {
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import CompanySummaryNarrative from "@/components/CompanySummaryNarrative";
-import { StatusBadge, HealthBadge, PriorityBadge } from "@/components/StatusBadge";
+import { HealthBadge, PriorityBadge } from "@/components/StatusBadge";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import {
   AlertTriangle, Clock, ChevronRight, Activity, Users, TrendingUp,
-  Layers, Target, FileText, Calendar,
+  Target, FileText, Calendar,
 } from "lucide-react";
 
 const CHART_COLORS = [
@@ -39,7 +39,7 @@ const STATUS_COLORS: Record<string, string> = {
 const CLOSED = ["Complete", "Deployed", "Closed", "Live", "Shipped", "Done"];
 
 export default function ExecutiveDashboardPage() {
-  const { customers, rmTickets, actionItems, initiatives, kpis, keyDates, renewals } = useUnifiedData();
+  const { customers, rmTickets, actionItems, kpis, keyDates, dataQuality } = useUnifiedData();
 
   /* ── Health donut ── */
   const healthData = useMemo(() => {
@@ -108,6 +108,7 @@ export default function ExecutiveDashboardPage() {
   const upcoming = useMemo(() =>
     keyDates
       .filter(d => { const ms = Date.parse(d.date ?? ""); return Number.isFinite(ms) && ms >= now && ms <= now + 30 * 86400000; })
+      .sort((a, b) => Date.parse(a.date ?? "") - Date.parse(b.date ?? ""))
       .slice(0, 6),
     [keyDates]
   );
@@ -152,6 +153,61 @@ export default function ExecutiveDashboardPage() {
         <KpiCard label="Renewals" value={kpis.totalRenewals} icon={<TrendingUp className="h-3.5 w-3.5" />} sub="tracked" />
         <KpiCard label="Key Dates" value={kpis.totalKeyDates} icon={<Calendar className="h-3.5 w-3.5" />} sub="upcoming" />
         <KpiCard label="Meetings" value={kpis.totalMeetings} sub="recorded" />
+      </section>
+
+      <section className="grid lg:grid-cols-3 gap-4">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:col-span-2">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">Data Quality Score</h3>
+              <p className="text-xs text-muted-foreground">Operational hygiene for customer execution data</p>
+            </div>
+            <div className={`text-2xl font-bold ${dataQuality.score >= 85 ? "text-status-on-track" : dataQuality.score >= 70 ? "text-status-caution" : "text-destructive"}`}>
+              {dataQuality.score}/100
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-2 mt-4">
+            <div className="rounded-lg border border-border/60 p-3 bg-muted/20">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Missing Owners</p>
+              <p className="text-lg font-semibold">{dataQuality.missingRmOwners + dataQuality.missingActionOwners}</p>
+            </div>
+            <div className="rounded-lg border border-border/60 p-3 bg-muted/20">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Stale / Overdue</p>
+              <p className="text-lg font-semibold">{dataQuality.staleOpenRm + dataQuality.overdueOpenActions}</p>
+            </div>
+            <div className="rounded-lg border border-border/60 p-3 bg-muted/20">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Upcoming Due (14d)</p>
+              <p className="text-lg font-semibold">{dataQuality.upcomingDueIn14Days}</p>
+            </div>
+          </div>
+          <ul className="mt-4 text-xs text-muted-foreground space-y-1.5">
+            <li>• {dataQuality.missingRmOwners} open RMs without clear owner assignment.</li>
+            <li>• {dataQuality.missingActionOwners} open action items missing an owner.</li>
+            <li>• {dataQuality.orphanedRmCustomers + dataQuality.orphanedActionCustomers} open records with unknown customer linkages.</li>
+          </ul>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">Next 30 Days</h3>
+              <p className="text-xs text-muted-foreground">Critical dates approaching</p>
+            </div>
+            <Link to="/key-dates" className="text-xs text-primary hover:underline flex items-center gap-0.5">
+              View all <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {upcoming.length === 0 && <p className="text-sm text-muted-foreground py-4 text-center">No upcoming key dates</p>}
+            {upcoming.map((d, idx) => (
+              <div key={`${d.id}-${idx}`} className="rounded-lg border border-border/60 p-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-medium text-foreground truncate">{d.customer}</p>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1">{d.displayDate} · {d.milestone || "Milestone"}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Executive Narrative Summary */}

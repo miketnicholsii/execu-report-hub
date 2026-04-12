@@ -127,6 +127,17 @@ export interface UnifiedInitiative {
   source: "db" | "static";
 }
 
+export interface UnifiedDataQuality {
+  score: number;
+  missingRmOwners: number;
+  missingActionOwners: number;
+  staleOpenRm: number;
+  overdueOpenActions: number;
+  orphanedRmCustomers: number;
+  orphanedActionCustomers: number;
+  upcomingDueIn14Days: number;
+}
+
 const CLOSED_STATUSES = ["Complete", "Deployed", "Closed", "Live", "Shipped"];
 
 export function useUnifiedData() {
@@ -402,6 +413,47 @@ export function useUnifiedData() {
     };
   }, [customers, initiatives, rmTickets, actionItems, dbMeetings, keyDates, renewals]);
 
+  const dataQuality: UnifiedDataQuality = useMemo(() => {
+    const openRm = rmTickets.filter(r => !CLOSED_STATUSES.includes(r.status));
+    const openActions = actionItems.filter(a => !["Complete", "Done"].includes(a.status));
+    const now = Date.now();
+    const in14Days = now + 14 * 86400000;
+
+    const missingRmOwners = openRm.filter(r => !r.owner || r.owner === "Unassigned").length;
+    const missingActionOwners = openActions.filter(a => !a.owner || a.owner.trim().length === 0).length;
+    const staleOpenRm = openRm.filter(r => (r.days_since_update ?? 0) > 21).length;
+    const overdueOpenActions = openActions.filter(a => {
+      const due = Date.parse(a.due_date ?? "");
+      return Number.isFinite(due) && due < now;
+    }).length;
+    const orphanedRmCustomers = openRm.filter(r => r.customer_name === "Unknown").length;
+    const orphanedActionCustomers = openActions.filter(a => a.customer_name === "Unknown").length;
+    const upcomingDueIn14Days = openActions.filter(a => {
+      const due = Date.parse(a.due_date ?? "");
+      return Number.isFinite(due) && due >= now && due <= in14Days;
+    }).length;
+
+    const penalty =
+      missingRmOwners * 4 +
+      missingActionOwners * 3 +
+      staleOpenRm * 2 +
+      overdueOpenActions * 2 +
+      orphanedRmCustomers * 3 +
+      orphanedActionCustomers * 3;
+    const score = Math.max(0, Math.min(100, 100 - penalty));
+
+    return {
+      score,
+      missingRmOwners,
+      missingActionOwners,
+      staleOpenRm,
+      overdueOpenActions,
+      orphanedRmCustomers,
+      orphanedActionCustomers,
+      upcomingDueIn14Days,
+    };
+  }, [rmTickets, actionItems]);
+
   /* ── Get data for a specific customer ── */
   function getCustomerData(slug: string) {
     const cust = customers.find(c => c.slug === slug);
@@ -453,6 +505,7 @@ export function useUnifiedData() {
     rmTickets,
     actionItems,
     kpis,
+    dataQuality,
     keyDates,
     renewals,
     staticTrackerRows,
