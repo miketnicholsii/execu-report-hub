@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useMemo } from "react";
 import AppShell from "@/components/AppShell";
 import { StatusBadge, PriorityBadge, FlagBadge } from "@/components/StatusBadge";
+import CopyButton from "@/components/CopyButton";
 import { useUnifiedData } from "@/hooks/useUnifiedData";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 import {
