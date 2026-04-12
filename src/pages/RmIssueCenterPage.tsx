@@ -227,7 +227,7 @@ export default function RmIssueCenterPage() {
           return (
             <div key={r.id} className={`rounded-xl border bg-card shadow-sm overflow-hidden ${r.flags.includes("Stale") ? "border-destructive/30" : r.flags.includes("Aging") ? "border-amber-500/30" : "border-border"}`}>
               <div className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => toggle(r.id)}>
-                <span className="font-mono text-sm font-semibold text-primary">{r.rm_number}</span>
+                <Link to={`/rm/${r.rm_number}`} onClick={e => e.stopPropagation()} className="font-mono text-sm font-semibold text-primary hover:underline">{r.rm_number}</Link>
                 <span className="text-sm font-medium text-foreground flex-1 truncate">{r.title || "—"}</span>
                 {r.flags.slice(0, 2).map(f => (
                   <FlagBadge key={f} flag={f} />
