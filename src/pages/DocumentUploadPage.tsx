@@ -30,7 +30,7 @@ const STATUS_ICONS: Record<string, typeof CheckCircle> = {
 };
 
 export default function DocumentUploadPage() {
-  const { documents, uploadDocument, updateDocument, deleteDocument } = useSupabaseDocuments();
+  const { documents, uploadDocuments, updateDocument, deleteDocument } = useSupabaseDocuments();
   const { bulkAdd } = useSupabaseActionItems();
   const { analyze, loading: aiLoading } = useAiAnalyze();
   const [dragging, setDragging] = useState(false);
@@ -38,21 +38,10 @@ export default function DocumentUploadPage() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   const handleFiles = async (files: FileList) => {
-    for (const file of Array.from(files)) {
-      const validTypes = [
-        "application/pdf", "text/csv",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/msword", "text/plain",
-      ];
-      const ext = file.name.split(".").pop()?.toLowerCase();
-      if (!validTypes.includes(file.type) && !["pdf", "csv", "xlsx", "xls", "doc", "docx", "txt"].includes(ext || "")) {
-        toast.error(`Unsupported file type: ${file.name}`);
-        continue;
-      }
-      uploadDocument.mutate({ file });
-    }
+    const selectedFiles = Array.from(files);
+    if (selectedFiles.length === 0) return;
+
+    await uploadDocuments.mutateAsync({ files: selectedFiles });
   };
 
   const processWithAi = async (doc: typeof documents[0]) => {
@@ -147,21 +136,23 @@ export default function DocumentUploadPage() {
         <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
         <p className="text-lg font-medium text-foreground mb-1">Drag & drop documents here</p>
         <p className="text-sm text-muted-foreground mb-4">
-          Supports PDF, Word, Excel, CSV, and text files
+          Accepts any file type and queues large uploads intelligently
         </p>
         <button
           onClick={() => fileInput.current?.click()}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 disabled:opacity-60 transition-colors"
+          disabled={uploadDocuments.isPending}
         >
-          <Upload className="h-4 w-4" /> Browse Files
+          {uploadDocuments.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          {uploadDocuments.isPending ? "Uploading..." : "Browse Files"}
         </button>
         <input
           ref={fileInput}
           type="file"
           multiple
-          accept=".pdf,.doc,.docx,.xlsx,.xls,.csv,.txt"
+          accept="*/*"
           className="hidden"
-          onChange={(e) => e.target.files && handleFiles(e.target.files)}
+          onChange={(e) => e.target.files && void handleFiles(e.target.files)}
         />
       </section>
 
