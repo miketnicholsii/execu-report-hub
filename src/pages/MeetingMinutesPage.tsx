@@ -233,9 +233,24 @@ export default function MeetingMinutesPage() {
                   <span className="flex items-center gap-1"><UsersIcon className="h-3 w-3" /> {customerName(mtg.customer_id)}</span>
                 </div>
               </div>
-              {mtg.source === "db" && (
-                <button onClick={() => deleteMeeting.mutate(mtg.id)} className="text-xs text-destructive hover:underline">Delete</button>
-              )}
+              <div className="flex items-center gap-2">
+                <CopyButton
+                  content={() => [
+                    `Meeting: ${mtg.title}`,
+                    `Date: ${mtg.date}`,
+                    `Attendees: ${mtg.attendees.join(", ")}`,
+                    mtg.summary ? `\nSummary:\n${mtg.summary}` : "",
+                    mtg.decisions.length ? `\nDecisions:\n${mtg.decisions.map(d => `• ${d}`).join("\n")}` : "",
+                    mtg.next_steps.length ? `\nNext Steps:\n${mtg.next_steps.map(s => `→ ${s}`).join("\n")}` : "",
+                    mtg.open_questions.length ? `\nOpen Questions:\n${mtg.open_questions.map(q => `? ${q}`).join("\n")}` : "",
+                  ].filter(Boolean).join("\n")}
+                  label="Copy"
+                  iconOnly
+                />
+                {mtg.source === "db" && (
+                  <button onClick={() => deleteMeeting.mutate(mtg.id)} className="text-xs text-destructive hover:underline">Delete</button>
+                )}
+              </div>
             </div>
 
             {mtg.attendees.length > 0 && (
