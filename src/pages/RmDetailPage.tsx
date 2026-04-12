@@ -240,8 +240,8 @@ export default function RmDetailPage() {
 
           {/* Missing Data */}
           {(ticket.flags.includes("Missing Owner") || !ticket.due_date || !ticket.last_update) && (
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 shadow-sm">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-2">Missing Data</h3>
+            <div className="rounded-xl border border-status-caution/30 bg-status-caution/5 p-4 shadow-sm">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-status-caution mb-2">Missing Data</h3>
               <ul className="space-y-1.5 text-xs text-foreground">
                 {ticket.flags.includes("Missing Owner") && <li className="flex items-center gap-1.5">⚠ No owner assigned</li>}
                 {!ticket.due_date && <li className="flex items-center gap-1.5">⚠ No due date set</li>}
