@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AppShell from "@/components/AppShell";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
 import KpiCard from "@/components/KpiCard";
+import CopyButton, { rowsToTsv } from "@/components/CopyButton";
 import { getTrackerRows } from "@/lib/cfs/selectors2";
 import { downloadCsv, exportPdf } from "@/lib/csvExport";
 

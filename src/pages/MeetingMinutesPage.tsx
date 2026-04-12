@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import AppShell from "@/components/AppShell";
 import KpiCard from "@/components/KpiCard";
 import { StatusBadge } from "@/components/StatusBadge";
+import CopyButton from "@/components/CopyButton";
 import { seed, customerById, getMeetingAllActions } from "@/lib/cfs/selectors2";
 import { useSupabaseMeetings } from "@/hooks/useSupabaseMeetings";
 import { useAiAnalyze } from "@/hooks/useAiAnalyze";
